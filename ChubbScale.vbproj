@@ -48,9 +48,19 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Interop.LabelManager2, Version=19.0.0.0, Culture=neutral, PublicKeyToken=1904804c83c4f22a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>DLLs\Interop.LabelManager2.dll</HintPath>
+    </Reference>
+    <Reference Include="RawPrinterHelper">
+      <HintPath>DLLs\RawPrinterHelper.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
+    <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -58,6 +68,9 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="TouchscreenKeyboard">
+      <HintPath>DLLs\TouchscreenKeyboard.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
@@ -73,11 +86,47 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.vb">
+    <Compile Include="Classes\DataCustom.vb" />
+    <Compile Include="CommonStuff.vb" />
+    <Compile Include="DatabaseHandling.vb" />
+    <Compile Include="Forms\frmCredentials.Designer.vb">
+      <DependentUpon>frmCredentials.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmCredentials.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.vb">
-      <DependentUpon>Form1.vb</DependentUpon>
+    <Compile Include="Forms\frmEditLot.Designer.vb">
+      <DependentUpon>frmEditLot.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmEditLot.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmKeyboard.Designer.vb">
+      <DependentUpon>frmKeyboard.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmKeyboard.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmKeyboardEntryOnly.Designer.vb">
+      <DependentUpon>frmKeyboardEntryOnly.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmKeyboardEntryOnly.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmScaleGrinding.Designer.vb">
+      <DependentUpon>frmScaleGrinding.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmScaleGrinding.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmSelectScale.Designer.vb">
+      <DependentUpon>frmSelectScale.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmSelectScale.vb" />
+    <Compile Include="Forms\Login.Designer.vb">
+      <DependentUpon>Login.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Login.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="My Project\AssemblyInfo.vb" />
@@ -95,8 +144,32 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="PrinterInfo.vb" />
+    <Compile Include="ScalePortInfo.vb" />
+    <Compile Include="Translate.vb" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Forms\frmCredentials.resx">
+      <DependentUpon>frmCredentials.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmEditLot.resx">
+      <DependentUpon>frmEditLot.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmKeyboard.resx">
+      <DependentUpon>frmKeyboard.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmKeyboardEntryOnly.resx">
+      <DependentUpon>frmKeyboardEntryOnly.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmScaleGrinding.resx">
+      <DependentUpon>frmScaleGrinding.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmSelectScale.resx">
+      <DependentUpon>frmSelectScale.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Login.resx">
+      <DependentUpon>Login.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.vb</LastGenOutput>
@@ -115,6 +188,9 @@
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\logo.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>
