@@ -59,7 +59,7 @@
             ChosenProductCode = StripDescription(lstProducts.SelectedItem.ToString)
             Me.Close()
         Catch ex As Exception
-            WriteToErrorLog(ex.Message, ex.StackTrace, "Error")
+            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
         End Try
     End Sub
 

@@ -158,7 +158,7 @@ Module CommonStuff
             End If
 
         Catch ex As Exception
-            WriteToErrorLog(ex.Message, ex.StackTrace, "Error")
+            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
             Return "-"
         End Try
     End Function
@@ -183,7 +183,7 @@ Module CommonStuff
                     File.Delete(ThisFile)
                 End If
             Catch ex As Exception
-                WriteToErrorLog(ex.Message, ex.StackTrace, "Error")
+                WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
 
             End Try
         Next
@@ -200,7 +200,7 @@ Module CommonStuff
                 End If
 
             Catch ex As Exception
-                WriteToErrorLog(ex.Message, ex.StackTrace, "Error")
+                WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
             End Try
         Next
 

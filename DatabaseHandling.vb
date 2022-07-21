@@ -214,7 +214,7 @@ Public Class DatabaseHandling
 
             Return Convert.ToInt64(cmd.ExecuteScalar())
         Catch ex As Exception
-            WriteToErrorLog(ex.Message, ex.StackTrace, "Error")
+            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
             Return 0
         Finally
             oConn.Close()
@@ -244,7 +244,7 @@ Public Class DatabaseHandling
             cmd.CommandType = CommandType.StoredProcedure
             cmd.ExecuteNonQuery()
         Catch ex As Exception
-            WriteToErrorLog(ex.Message, ex.StackTrace, "Error")
+            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
         Finally
             oConn.Close()
         End Try
@@ -264,7 +264,7 @@ Public Class DatabaseHandling
 
             cmd.ExecuteNonQuery()
         Catch ex As Exception
-            WriteToErrorLog(ex.Message, ex.StackTrace, "Error")
+            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
         Finally
             oConn.Close()
         End Try
@@ -281,7 +281,7 @@ Public Class DatabaseHandling
                 cmd.ExecuteNonQuery()
             Catch ex As Exception
                 MsgBox("There was a problem resetting the counters." & vbCrLf & ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Reset Daily Counters")
-                WriteToErrorLog(ex.Message, ex.StackTrace, "Error")
+                WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
             Finally
                 oConn.Close()
             End Try
@@ -302,7 +302,33 @@ Public Class DatabaseHandling
         cmd.Dispose()
         oConn.Dispose()
     End Sub
+    Public Shared Function GetLotBoxCountCurrent(scaleNumber As String, productCode As String, lot As Integer) As Integer
 
+        Dim oConn As New SqlConnection
+        Dim iReturn As Integer = 0
+
+        Try
+            oConn = DatabaseHandling.ConnectSQL(AppSettings("ConnectionString"))
+            Dim sSQL As String = ""
+            Dim cmd As New SqlCommand
+
+            'get highest number entered and add 1.  Count doesn't work correctly
+            'sSQL = "SELECT COUNT(PlantID) AS BoxesInLot From LabelPrintLog Where (LineID = '" & scaleNumber & "') AND (ProductCode = '" & productCode & "') AND (CAST(DateProcessed AS date) = CAST(GETDATE() AS date)) AND Lot = '" & lot & "'"
+            sSQL = "SELECT LotBoxCount From LabelPrintLog Where (LineID = '" & scaleNumber & "') AND (ProductCode = '" & productCode & "') AND (CAST(DateProcessed AS date) = CAST(GETDATE() AS date)) AND Lot = '" & lot & "' order by LotBoxCount Desc"
+            cmd = New SqlClient.SqlCommand(sSQL, oConn)
+            iReturn = cmd.ExecuteScalar
+            cmd.Dispose()
+
+
+        Catch ex As Exception
+            WriteToErrorLog(ex.Message, ex.StackTrace, "Error")
+        Finally
+            oConn.Close()
+        End Try
+
+        Return iReturn
+
+    End Function
     Public Shared Sub AddInfoToOldDB(scaleName As String, ProductCode As String, ProductGrade As String, Weight As String, BarcodeText As String, Lot As String, BarCodeLabelContent As String, Customer As String)
         ''cmd.CommandText = "INSERT INTO tblLabelPrint (ProductCode,ProductGrade,Weight,BarcodeText,Lot,LabelContent,Customer) VALUES (" &
         ''        CheckString(CurrentProductCode) & "," &
@@ -357,7 +383,7 @@ Public Class DatabaseHandling
             'oConn.Dispose()
 
         Catch ex As Exception
-            WriteToErrorLog(ex.Message, ex.StackTrace, "Error")
+            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
         End Try
 
     End Sub

@@ -171,7 +171,7 @@ Public Class Login
 
             UserInfo.LDAPVerified = True
         Catch ex As Exception
-            WriteToErrorLog(ex.Message, ex.StackTrace, "Error")
+            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
             MsgBox("User credentials not valid.", MsgBoxStyle.Critical Or MsgBoxStyle.OkOnly, "Invalid User")
             'otherwise, it will crash out so return false
             UserInfo.LDAPVerified = False

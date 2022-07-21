@@ -1,10 +1,26 @@
 ﻿Public Class frmEditLot
 
     Public SetLot As String = ""
+    Public SetBoxCount As String = ""
+    Private Property UserInfo As ProgramUser
+
+    Public Sub New(ByVal PassedUserInfo As ProgramUser)
+
+        ' This call is required by the designer.
+        InitializeComponent()
+
+        ' Add any initialization after the InitializeComponent() call.
+        UserInfo = PassedUserInfo
+    End Sub
 
     Private Sub frmEditLot_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.TopMost = True
         Me.CenterToParent()
+        If UserInfo.isSupervisor Or UserInfo.isTech Then
+            nudBoxCount.Enabled = True
+        Else
+            nudBoxCount.Enabled = False
+        End If
     End Sub
 
     Private Sub btnCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnCancel.Click
@@ -23,6 +39,11 @@
         '    MsgBox("Invalid numeric value entered.", MsgBoxStyle.Exclamation Or MsgBoxStyle.OkOnly, "Manual Weight")
         'End If
         SetLot = txtEntry.Text
+        If nudBoxCount.Enabled Then
+            SetBoxCount = nudBoxCount.Value
+        Else
+            SetBoxCount = 0
+        End If
         Me.Close()
 
     End Sub

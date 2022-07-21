@@ -1,0 +1,288 @@
+[LABEL]
+Page		= Detail
+Metric		= English
+Orientation	= 0
+Lbl_Width	= 410.0
+Lbl_Length	= 500.0
+Row_Offset	= 0
+Col_Offset	= 0
+Dot_Width	= 1
+Dot_Height	= 1
+Quantity	= 1
+CodePage	= 001
+Heat		= 90
+ClearFirst	= 1
+Print_Speed	= 60
+
+
+[Field_1]
+Label_ID	= Detail
+Field_ID	= ProdCode
+Section		= Body
+FieldType	= Text
+Metric		= ENGLISH
+Rotation	= 1
+Row		= 480
+Col		= 280
+FontType	= STANDARD
+Font		= S
+FontWidth	= 1
+FontHeight	= 1
+Size		= 1
+Length		= 30
+F1 		= "Standard S Test 01234ABCDabcd!#^
+
+[Field_2]
+Label_ID	= Detail
+Field_ID	= ProdCode
+Section		= Body
+FieldType	= Text
+Metric		= ENGLISH
+Rotation	= 1
+Row		= 480
+Col		= 267
+FontType	= STANDARD
+Font		= M
+FontWidth	= 1
+FontHeight	= 1
+Size		= 1
+Length		= 30
+F1 		= "Standard M Test 01234ABCDabcd!#^
+
+[Field_3]
+Label_ID	= Detail
+Field_ID	= ProdCode
+Section		= Body
+FieldType	= Text
+Metric		= ENGLISH
+Rotation	= 1
+Row		= 480
+Col		= 260
+FontType	= STANDARD
+Font		= U
+FontWidth	= 1
+FontHeight	= 1
+Size		= 1
+Length		= 30
+F1 		= "Standard U Test 01234ABCDabcd!#^
+
+[Field_4]
+Label_ID	= Detail
+Field_ID	= ProdCode
+Section		= Body
+FieldType	= Text
+Metric		= ENGLISH
+Rotation	= 1
+Row		= 480
+Col		= 245
+FontType	= STANDARD
+Font		= OA
+FontWidth	= 1
+FontHeight	= 1
+Size		= 1
+Length		= 30
+F1 		= "Standard OA Test 01234ABCDabcd!#^
+
+[Field_5]
+Label_ID	= Detail
+Field_ID	= ProdCode
+Section		= Body
+FieldType	= Text
+Metric		= ENGLISH
+Rotation	= 1
+Row		= 480
+Col		= 232
+FontType	= STANDARD
+Font		= OB
+FontWidth	= 1
+FontHeight	= 1
+Size		= 1
+Length		= 30
+F1 		= "Standard OB Test 01234ABCDabcd!#^
+
+[Field_6]
+Label_ID	= Detail
+Field_ID	= ProdCode
+Section		= Body
+FieldType	= Text
+Metric		= ENGLISH
+Rotation	= 1
+Row		= 480
+Col		= 220
+FontType	= STANDARD
+Font		= XS
+FontWidth	= 1
+FontHeight	= 1
+Size		= 1
+Length		= 30
+F1 		= Standard XS Test 01234ABCDabcd!#^
+
+[Field_7]
+Label_ID	= Detail
+Field_ID	= ProdCode
+Section		= Body
+FieldType	= Text
+Metric		= ENGLISH
+Rotation	= 1
+Row		= 480
+Col		= 205
+FontType	= STANDARD
+Font		= XM
+FontWidth	= 1
+FontHeight	= 1
+Size		= 1
+Length		= 30
+F1 		= Standard XM Test 01234ABCDabcd!#^
+
+[Field_8]
+Label_ID	= Detail
+Field_ID	= ProdCode
+Section		= Body
+FieldType	= Text
+Metric		= ENGLISH
+Rotation	= 1
+Row		= 480
+Col		= 197
+FontType	= STANDARD
+Font		= XU
+FontWidth	= 1
+FontHeight	= 1
+Size		= 1
+Length		= 30
+F1 		= Standard XU Test 01234ABCDabcd!#^
+
+[Field_9]
+Label_ID	= Detail
+Field_ID	= ProdCode
+Section		= Body
+FieldType	= Text
+Metric		= ENGLISH
+Rotation	= 1
+Row		= 480
+Col		= 180
+FontType	= STANDARD
+Font		= WB0
+FontWidth	= 1
+FontHeight	= 1
+Size		= 1
+Length		= 30
+F1 		= Standard WB0 Test 01234ABCDabcd!#^
+
+[Field_10]
+Label_ID	= Detail
+Field_ID	= ProdCode
+Section		= Body
+FieldType	= Text
+Metric		= ENGLISH
+Rotation	= 1
+Row		= 480
+Col		= 150
+FontType	= STANDARD
+Font		= WL0
+FontWidth	= 1
+FontHeight	= 1
+Size		= 1
+Length		= 30
+F1 		= Standard WL0 Test 01234ABCDabcd!#^
+
+[Field_11]
+Label_ID	= Detail
+Field_ID	= ProdCode
+Section		= Body
+FieldType	= Text
+Metric		= ENGLISH
+Rotation	= 1
+Row		= 480
+Col		= 125
+FontType	= STANDARD
+Font		= XB0
+FontWidth	= 1
+FontHeight	= 1
+Size		= 1
+Length		= 30
+F1 		= Standard XB0 Test 01234ABCDabcd!#^
+
+[Field_12]
+Label_ID	= Detail
+Field_ID	= ProdCode
+Section		= Body
+FieldType	= Text
+Metric		= ENGLISH
+Rotation	= 1
+Row		= 480
+Col		= 100
+FontType	= STANDARD
+Font		= XL0
+FontWidth	= 1
+FontHeight	= 1
+Size		= 1
+Length		= 30
+F1 		= Standard XL0 Test 01234ABCDabcd!#^
+
+[Field_13]
+Label_ID	= Detail
+Field_ID	= ProdCode
+Section		= Body
+FieldType	= Text
+Metric		= ENGLISH
+Rotation	= 1
+Row		= 480
+Col		= 73
+FontType	= Vector
+Font		= 0
+FontWidth	= 1
+FontHeight	= 1
+Size		= 1
+Length		= 30
+F1 		= Vector 0 Test 01234ABCDabcd!#^
+
+[Field_14]
+Label_ID	= Detail
+Field_ID	= ProdCode
+Section		= Body
+FieldType	= Text
+Metric		= ENGLISH
+Rotation	= 1
+Row		= 480
+Col		= 53
+FontType	= Vector
+Font		= 1
+FontWidth	= 1
+FontHeight	= 1
+Size		= 1
+Length		= 30
+F1 		= Vector 1 Test 01234ABCDabcd!#^
+
+[Field_15]
+Label_ID	= Detail
+Field_ID	= ProdCode
+Section		= Body
+FieldType	= Text
+Metric		= ENGLISH
+Rotation	= 1
+Row		= 480
+Col		= 33
+FontType	= Vector
+Font		= 2
+FontWidth	= 1
+FontHeight	= 1
+Size		= 1
+Length		= 30
+F1 		= Vector 2 Test 01234ABCDabcd!#^
+
+[Field_16]
+Label_ID	= Detail
+Field_ID	= ProdCode
+Section		= Body
+FieldType	= Text
+Metric		= ENGLISH
+Rotation	= 1
+Row		= 480
+Col		= 13
+FontType	= Vector
+Font		= 3
+FontWidth	= 1
+FontHeight	= 1
+Size		= 1
+Length		= 30
+F1 		= Vector 3 Test 01234ABCDabcd!#^

@@ -1,42 +1,49 @@
 ﻿Imports LabelManager2
-
+Imports System.Drawing
+Imports System.Drawing.Drawing2D
+Imports System.Drawing.Printing
+Imports System
+Imports System.IO
+Imports System.Windows.Forms
 
 Module PrinterInfo
 
     Private WindowsPrinterName As String = ""       'from appsettings
     Private PrintTemplate As String = ""            'from appsettings
     Private WithEvents MainDoc As LabelManager2.Document
+    Private m_Lppx2Manager As Lppx2Manager = Nothing
+    Private WithEvents MyCsApp As LabelManager2.Application = Nothing
+
+    ' Need to have a WithEvents object to manage events at the ActiveDocument level
+    Private WithEvents MyActiveDocument As LabelManager2.Document = Nothing
+    Private _IsPrinting As Boolean = False
 
 
     Public Sub InitializePrinter(printerInfo As MachineInfo)
 
+        Dim docToPrint As New PrintDocument
+        Dim dlg As New PrintDialog
 
-        'trim line
-        '    <add key="PrintTemplateLocation" value="\\192.168.20.106\Prod data\Trim Line\scale8a.prn"/>
+        docToPrint.DocumentName = "C:\temp\GOP.LBL"
+        'dlg.PrinterSettings.PrinterName = "\\PRDPRINTAPPW01.GOPACK.LOCAL\FO4515C-Lowerlevel-01"
+        dlg.PrinterSettings.PrinterName = "SATO S86-ex 305dpi"
+        dlg.Document = docToPrint
 
+        Dim result As DialogResult = dlg.ShowDialog
+        If result = DialogResult.OK Then
+            docToPrint.Print()
 
-        'offal
-        '    <add key="PrintTemplateLocation" value="\\192.168.20.106\Prod data\Offal\offall-a.prn"/>
-
-
-        'tongues
-        '    <add key="PrintTemplateLocation" value="\\192.168.20.106\Prod data\Tongues\scale8a.prn"/>
-
-        'combo
-        '<add key = "PrintTemplateLocation" value="C:\Users\Tom Kelley\Desktop\Source Code Steak scale\Combo\GOWeighAndPrint\combo1.prn"/>
-        '<add key = "LabelPrinterName" value="Combo"/>
+        End If
 
 
-        'steak
-        '    <add key="PrintTemplateLocation" value="C:\Users\Tom Kelley\Desktop\Source Code Steak scale\Current -6 digit\GOWeighAndPrint\scale8a.prn"/>
+        ''dlg.
 
-        'chubb/grinding/patty 12
-        '<add key = "PrintTemplateLocation" value="\\192.168.20.106\Prod data\PATTYLINE\scale8a.prn"/>
-        '<add key = "PrintTemplateLocation2" value="\\192.168.20.106\Prod data\PATTYLINE\scale8a18m.prn"/>
-        '<add key = "PrintTemplateLocation3" value="\\192.168.20.106\Prod data\PATTYLINE\scale8a12m.prn"/>
 
-        WindowsPrinterName = printerInfo.PrinterName
-        If String.IsNullOrEmpty(WindowsPrinterName) Then MsgBox("Windows Printer Name has not been defined." & vbCrLf & "Check the LabelPrinterName parameter in the application config file.", MsgBoxStyle.Exclamation Or MsgBoxStyle.OkOnly, "Printer Name")
+        'dlg.Document = oDoc
+
+
+        'WindowsPrinterName = printerInfo.PrinterName
+        'If String.IsNullOrEmpty(WindowsPrinterName) Then MsgBox("Windows Printer Name has not been defined." & vbCrLf & "Check the LabelPrinterName parameter in the application config file.", MsgBoxStyle.Exclamation Or MsgBoxStyle.OkOnly, "Printer Name")
 
         'Try
         '    PrintTemplate = System.IO.File.ReadAllText(System.Configuration.ConfigurationManager.AppSettings("PrintTemplateLocation"))
@@ -83,10 +90,102 @@ Module PrinterInfo
 
         MyApp.Quit()
 
-
-
-
     End Sub
+
+    Private Sub updateVarInLabFile()
+        Dim variables As Variables = MyActiveDocument.Variables
+
+        For i As Integer = 0 To varTab(0).Length - 2
+            Dim item As Variable = variables.Item(i + 1)
+            item.Name = varTab(0)(i)
+            item.Value = varTab(1)(i)
+            Marshal.ReleaseComObject(item)
+        Next i
+
+        Marshal.ReleaseComObject(variables)
+        Call Me.refreshDoc()
+    End Sub
+
+    Partial Public Class PrintHelp
+        Inherits System.Windows.Forms.Form
+
+        Private components As System.ComponentModel.Container
+        Private printButton As System.Windows.Forms.Button
+        Private printFont As Font
+        Private streamToPrint As StreamReader
+
+        Public Sub New()
+            InitializeComponent()
+        End Sub
+
+        Private Sub printButton_Click(ByVal sender As Object, ByVal e As EventArgs)
+            Try
+                streamToPrint = New StreamReader("C:\temp\GOP.LBL")
+
+                Try
+                    'printFont = New Font("Arial", 10)      'not needed
+                    Dim pd As PrintDocument = New PrintDocument()
+
+                    'figure this out
+                    'pd.PrintPage = New PrintPageEventHandler(AddressOf Me.pd_PrintPage)
+
+                    pd.Print()
+                Finally
+                    streamToPrint.Close()
+                End Try
+
+            Catch ex As Exception
+                MessageBox.Show(ex.Message)
+            End Try
+        End Sub
+
+        Private Sub pd_PrintPage(ByVal sender As Object, ByVal ev As PrintPageEventArgs)
+            Dim linesPerPage As Single = 0
+            Dim yPos As Single = 0
+            Dim count As Integer = 0
+            Dim leftMargin As Single = ev.MarginBounds.Left
+            Dim topMargin As Single = ev.MarginBounds.Top
+            Dim line As String = Nothing
+            linesPerPage = ev.MarginBounds.Height / printFont.GetHeight(ev.Graphics)
+
+            While count < linesPerPage AndAlso (line = streamToPrint.ReadLine()) = True
+                yPos = topMargin + (count * printFont.GetHeight(ev.Graphics))
+                ev.Graphics.DrawString(line, printFont, Brushes.Black, leftMargin, yPos, New StringFormat())
+                count += 1
+            End While
+
+            If line IsNot Nothing Then
+                ev.HasMorePages = True
+            Else
+                ev.HasMorePages = False
+            End If
+        End Sub
+
+        Private Sub InitializeComponent()
+            Me.components = New System.ComponentModel.Container()
+            Me.printButton = New System.Windows.Forms.Button()
+            Me.ClientSize = New System.Drawing.Size(504, 381)
+            Me.Text = "Print Example"
+            printButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+            printButton.Location = New System.Drawing.Point(32, 110)
+            printButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+            printButton.TabIndex = 0
+            printButton.Text = "Print the file."
+            printButton.Size = New System.Drawing.Size(136, 40)
+            AddHandler printButton.Click, New System.EventHandler(AddressOf printButton_Click)
+            Me.Controls.Add(printButton)
+        End Sub
+    End Class
+
+
+
+
+
+
+
+
+
+
 
 
     '    Function Make_Label()
@@ -132,5 +231,25 @@ Module PrinterInfo
     '    Printen = True
     '    Maak_Label()
     'End Sub
+
+    Private Sub GetSetDevMode()
+        Dim oCS As LabelManager2.Application
+        Dim oDoc As LabelManager2.Document
+        Dim ISize As Long
+        Dim devmode As New Object
+
+
+
+        oCS = GetObject(, "lppx2.Application")
+
+        oDoc = oCS.ActiveDocument
+
+        ISize = oDoc.Printer.GetDevMode(devmode)
+
+        ISize = oDoc.Printer.GetDevMode(devmode)
+
+        ISize = oDoc.Printer.SetDevMode(devmode)
+
+    End Sub
 
 End Module
