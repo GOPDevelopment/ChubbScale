@@ -25,7 +25,6 @@ Partial Class frmScaleGrinding
         Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmScaleGrinding))
         Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
-        Me.btnChangeLot = New System.Windows.Forms.Button()
         Me.PrintDocument1 = New System.Drawing.Printing.PrintDocument()
         Me.PrintDialog1 = New System.Windows.Forms.PrintDialog()
         Me.lblShiftDisplay = New System.Windows.Forms.Label()
@@ -70,10 +69,6 @@ Partial Class frmScaleGrinding
         Me.lblWeightTotalDaily = New System.Windows.Forms.Label()
         Me.lblProductCountShift = New System.Windows.Forms.Label()
         Me.lblDailyTotal = New System.Windows.Forms.Label()
-        Me.lblBoxesInLot = New System.Windows.Forms.Label()
-        Me.lblBoxesInLotDisplay = New System.Windows.Forms.Label()
-        Me.lblLot = New System.Windows.Forms.Label()
-        Me.lblLotDisplay = New System.Windows.Forms.Label()
         Me.lblSerial = New System.Windows.Forms.Label()
         Me.lblSerialNumberDisplay = New System.Windows.Forms.Label()
         Me.btnToggleLanguage = New System.Windows.Forms.Button()
@@ -98,16 +93,6 @@ Partial Class frmScaleGrinding
         '
         'Timer1
         '
-        '
-        'btnChangeLot
-        '
-        Me.btnChangeLot.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnChangeLot.Location = New System.Drawing.Point(819, 313)
-        Me.btnChangeLot.Name = "btnChangeLot"
-        Me.btnChangeLot.Size = New System.Drawing.Size(160, 54)
-        Me.btnChangeLot.TabIndex = 118
-        Me.btnChangeLot.Text = "Change Lot"
-        Me.btnChangeLot.UseVisualStyleBackColor = True
         '
         'PrintDialog1
         '
@@ -255,9 +240,9 @@ Partial Class frmScaleGrinding
         'btnSetWeightPrint
         '
         Me.btnSetWeightPrint.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnSetWeightPrint.Location = New System.Drawing.Point(61, 97)
+        Me.btnSetWeightPrint.Location = New System.Drawing.Point(832, 457)
         Me.btnSetWeightPrint.Name = "btnSetWeightPrint"
-        Me.btnSetWeightPrint.Size = New System.Drawing.Size(108, 29)
+        Me.btnSetWeightPrint.Size = New System.Drawing.Size(154, 29)
         Me.btnSetWeightPrint.TabIndex = 287
         Me.btnSetWeightPrint.Text = "Test Print"
         Me.btnSetWeightPrint.UseVisualStyleBackColor = True
@@ -564,46 +549,6 @@ Partial Class frmScaleGrinding
         Me.lblDailyTotal.TabIndex = 37
         Me.lblDailyTotal.Text = "Daily Total"
         '
-        'lblBoxesInLot
-        '
-        Me.lblBoxesInLot.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblBoxesInLot.Location = New System.Drawing.Point(458, 401)
-        Me.lblBoxesInLot.Name = "lblBoxesInLot"
-        Me.lblBoxesInLot.Size = New System.Drawing.Size(126, 19)
-        Me.lblBoxesInLot.TabIndex = 323
-        Me.lblBoxesInLot.Text = "Boxes/Lot:"
-        Me.lblBoxesInLot.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'lblBoxesInLotDisplay
-        '
-        Me.lblBoxesInLotDisplay.BackColor = System.Drawing.SystemColors.Control
-        Me.lblBoxesInLotDisplay.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.lblBoxesInLotDisplay.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblBoxesInLotDisplay.Location = New System.Drawing.Point(590, 398)
-        Me.lblBoxesInLotDisplay.Name = "lblBoxesInLotDisplay"
-        Me.lblBoxesInLotDisplay.Size = New System.Drawing.Size(90, 22)
-        Me.lblBoxesInLotDisplay.TabIndex = 322
-        '
-        'lblLot
-        '
-        Me.lblLot.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblLot.Location = New System.Drawing.Point(506, 357)
-        Me.lblLot.Name = "lblLot"
-        Me.lblLot.Size = New System.Drawing.Size(76, 19)
-        Me.lblLot.TabIndex = 321
-        Me.lblLot.Text = "Lot:"
-        Me.lblLot.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'lblLotDisplay
-        '
-        Me.lblLotDisplay.BackColor = System.Drawing.SystemColors.Control
-        Me.lblLotDisplay.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.lblLotDisplay.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblLotDisplay.Location = New System.Drawing.Point(590, 356)
-        Me.lblLotDisplay.Name = "lblLotDisplay"
-        Me.lblLotDisplay.Size = New System.Drawing.Size(90, 22)
-        Me.lblLotDisplay.TabIndex = 320
-        '
         'lblSerial
         '
         Me.lblSerial.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
@@ -621,7 +566,7 @@ Partial Class frmScaleGrinding
         Me.lblSerialNumberDisplay.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblSerialNumberDisplay.Location = New System.Drawing.Point(590, 313)
         Me.lblSerialNumberDisplay.Name = "lblSerialNumberDisplay"
-        Me.lblSerialNumberDisplay.Size = New System.Drawing.Size(163, 22)
+        Me.lblSerialNumberDisplay.Size = New System.Drawing.Size(182, 22)
         Me.lblSerialNumberDisplay.TabIndex = 318
         '
         'btnToggleLanguage
@@ -807,10 +752,6 @@ Partial Class frmScaleGrinding
         Me.Controls.Add(Me.btnProdActive)
         Me.Controls.Add(Me.grpFavorites)
         Me.Controls.Add(Me.btnExit)
-        Me.Controls.Add(Me.lblBoxesInLot)
-        Me.Controls.Add(Me.lblBoxesInLotDisplay)
-        Me.Controls.Add(Me.lblLot)
-        Me.Controls.Add(Me.lblLotDisplay)
         Me.Controls.Add(Me.lblSerial)
         Me.Controls.Add(Me.lblSerialNumberDisplay)
         Me.Controls.Add(Me.grpTotalsPerProduct)
@@ -844,7 +785,6 @@ Partial Class frmScaleGrinding
         Me.Controls.Add(Me.lblDate)
         Me.Controls.Add(Me.txtWarnings)
         Me.Controls.Add(Me.btnSetWeightPrint)
-        Me.Controls.Add(Me.btnChangeLot)
         Me.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "frmScaleGrinding"
@@ -857,7 +797,6 @@ Partial Class frmScaleGrinding
 
     End Sub
     Friend WithEvents Timer1 As Timer
-    Friend WithEvents btnChangeLot As Button
     Friend WithEvents PrintDocument1 As Printing.PrintDocument
     Friend WithEvents PrintDialog1 As PrintDialog
     Friend WithEvents lblShiftDisplay As Label
@@ -902,10 +841,6 @@ Partial Class frmScaleGrinding
     Friend WithEvents lblWeightTotalDaily As Label
     Friend WithEvents lblProductCountShift As Label
     Friend WithEvents lblDailyTotal As Label
-    Friend WithEvents lblBoxesInLot As Label
-    Friend WithEvents lblBoxesInLotDisplay As Label
-    Friend WithEvents lblLot As Label
-    Friend WithEvents lblLotDisplay As Label
     Friend WithEvents lblSerial As Label
     Friend WithEvents lblSerialNumberDisplay As Label
     Friend WithEvents btnToggleLanguage As Button

@@ -36,6 +36,8 @@ Public Class DatabaseHandling
                 tempProductInfo.PrinterPort = FixNull(rdr("PrinterPortInConfig"))
                 tempProductInfo.PrinterName = FixNull(rdr("PrinterNameInConfig"))
                 tempProductInfo.TemplateName = FixNull(rdr("TemplateName"))
+                tempProductInfo.AlphaLogFileLocation = FixNull(rdr("AlphaLogFileLocation"))
+                tempProductInfo.AlphaLogFileLocation2 = FixNull(rdr("AlphaLogFileLocation2"))
             End While
         End If
         cmd.Dispose()
@@ -214,7 +216,7 @@ Public Class DatabaseHandling
 
             Return Convert.ToInt64(cmd.ExecuteScalar())
         Catch ex As Exception
-            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
+            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, scale)
             Return 0
         Finally
             oConn.Close()
@@ -234,60 +236,60 @@ Public Class DatabaseHandling
         Return tempProductInfo
 
     End Function
-    Public Shared Sub ResetCount(ProductCode As String)
-        Dim oConn As New SqlConnection
+    'Public Shared Sub ResetCount(ProductCode As String)
+    '    Dim oConn As New SqlConnection
 
-        Try
-            oConn = ConnectSQL(AppSettings("ConnectionString"))
+    '    Try
+    '        oConn = ConnectSQL(AppSettings("ConnectionString"))
 
-            Dim cmd As New SqlCommand("sp_count_reset", oConn)
-            cmd.CommandType = CommandType.StoredProcedure
-            cmd.ExecuteNonQuery()
-        Catch ex As Exception
-            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
-        Finally
-            oConn.Close()
-        End Try
+    '        Dim cmd As New SqlCommand("sp_count_reset", oConn)
+    '        cmd.CommandType = CommandType.StoredProcedure
+    '        cmd.ExecuteNonQuery()
+    '    Catch ex As Exception
+    '        WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
+    '    Finally
+    '        oConn.Close()
+    '    End Try
 
-    End Sub
+    'End Sub
 
-    Public Shared Sub UpdateLot(ProductCode As String, Lot As Integer)
-        Dim oConn As New SqlConnection
+    'Public Shared Sub UpdateLot(ProductCode As String, Lot As Integer)
+    '    Dim oConn As New SqlConnection
 
-        Try
-            oConn = ConnectSQL(AppSettings("ConnectionString"))
+    '    Try
+    '        oConn = ConnectSQL(AppSettings("ConnectionString"))
 
-            Dim cmd As New SqlCommand("sp_update_Lot", oConn)
-            cmd.CommandType = CommandType.StoredProcedure
-            cmd.Parameters.AddWithValue("@ProductCode", ProductCode)
-            cmd.Parameters.AddWithValue("@Lot", Lot)
+    '        Dim cmd As New SqlCommand("sp_update_Lot", oConn)
+    '        cmd.CommandType = CommandType.StoredProcedure
+    '        cmd.Parameters.AddWithValue("@ProductCode", ProductCode)
+    '        cmd.Parameters.AddWithValue("@Lot", Lot)
 
-            cmd.ExecuteNonQuery()
-        Catch ex As Exception
-            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
-        Finally
-            oConn.Close()
-        End Try
-    End Sub
-    Public Shared Sub ResetDailyPrintCounter()
+    '        cmd.ExecuteNonQuery()
+    '    Catch ex As Exception
+    '        WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
+    '    Finally
+    '        oConn.Close()
+    '    End Try
+    'End Sub
+    'Public Shared Sub ResetDailyPrintCounter()
 
-        If MsgBox("Should the daily print counters be reset?", MsgBoxStyle.Information Or MsgBoxStyle.YesNo, "Reset Daily Counters") = MsgBoxResult.Yes Then
-            Dim oConn As New SqlConnection
+    '    If MsgBox("Should the daily print counters be reset?", MsgBoxStyle.Information Or MsgBoxStyle.YesNo, "Reset Daily Counters") = MsgBoxResult.Yes Then
+    '        Dim oConn As New SqlConnection
 
-            Try
-                oConn = ConnectSQL(AppSettings("ConnectionString"))
-                Dim cmd As New SqlCommand("sp_tblProduct_count_reset", oConn)
-                cmd.CommandType = CommandType.StoredProcedure
-                cmd.ExecuteNonQuery()
-            Catch ex As Exception
-                MsgBox("There was a problem resetting the counters." & vbCrLf & ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Reset Daily Counters")
-                WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
-            Finally
-                oConn.Close()
-            End Try
-        End If
+    '        Try
+    '            oConn = ConnectSQL(AppSettings("ConnectionString"))
+    '            Dim cmd As New SqlCommand("sp_tblProduct_count_reset", oConn)
+    '            cmd.CommandType = CommandType.StoredProcedure
+    '            cmd.ExecuteNonQuery()
+    '        Catch ex As Exception
+    '            MsgBox("There was a problem resetting the counters." & vbCrLf & ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Reset Daily Counters")
+    '            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
+    '        Finally
+    '            oConn.Close()
+    '        End Try
+    '    End If
 
-    End Sub
+    'End Sub
     Public Shared Sub LogUserChanges(name As String, datechange As Boolean, scalechange As String)
         Dim oConn As New SqlConnection
         oConn = ConnectSQL(AppSettings("ConnectionString"))
@@ -321,7 +323,7 @@ Public Class DatabaseHandling
 
 
         Catch ex As Exception
-            WriteToErrorLog(ex.Message, ex.StackTrace, "Error")
+            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, scaleNumber)
         Finally
             oConn.Close()
         End Try
@@ -329,64 +331,64 @@ Public Class DatabaseHandling
         Return iReturn
 
     End Function
-    Public Shared Sub AddInfoToOldDB(scaleName As String, ProductCode As String, ProductGrade As String, Weight As String, BarcodeText As String, Lot As String, BarCodeLabelContent As String, Customer As String)
-        ''cmd.CommandText = "INSERT INTO tblLabelPrint (ProductCode,ProductGrade,Weight,BarcodeText,Lot,LabelContent,Customer) VALUES (" &
-        ''        CheckString(CurrentProductCode) & "," &
-        ''        IIf(OverrideGradeValue = 0, CurrentGrade, OverrideGradeValue) & "," &
-        ''        nLBS & "," &
-        ''        CheckString(LastBarCodeText) & "," &
-        ''        CheckString(CurrentLot) & "," &
-        ''         CheckString(Microsoft.VisualBasic.Right(LastBarCodeText, 10)) & ", " &
-        ''         CheckString(Customer) & ")"
+    'Public Shared Sub AddInfoToOldDB(scaleName As String, ProductCode As String, ProductGrade As String, Weight As String, BarcodeText As String, Lot As String, BarCodeLabelContent As String, Customer As String)
+    '    ''cmd.CommandText = "INSERT INTO tblLabelPrint (ProductCode,ProductGrade,Weight,BarcodeText,Lot,LabelContent,Customer) VALUES (" &
+    '    ''        CheckString(CurrentProductCode) & "," &
+    '    ''        IIf(OverrideGradeValue = 0, CurrentGrade, OverrideGradeValue) & "," &
+    '    ''        nLBS & "," &
+    '    ''        CheckString(LastBarCodeText) & "," &
+    '    ''        CheckString(CurrentLot) & "," &
+    '    ''         CheckString(Microsoft.VisualBasic.Right(LastBarCodeText, 10)) & ", " &
+    '    ''         CheckString(Customer) & ")"
 
 
 
-        Try
-            'not doing this yet..............
+    '    Try
+    '        'not doing this yet..............
 
-            'Dim oConn As New SqlConnection
-            'Select Case scaleName
-            '    Case "TONGUES"
-            '        oConn = ConnectSQL(AppSettings("ConnectionStringTongues"))
-            '    Case "OFFAL"
-            '        oConn = ConnectSQL(AppSettings("ConnectionStringOffal"))
-            '    Case "TRIM"
-            '        oConn = ConnectSQL(AppSettings("ConnectionStringTrim"))
-            '    Case "GRINDING"
-            '        'no old database for this
-            '        'oConn = ConnectSQL(AppSettings("ConnectionStringGrinding"))
-            '    Case "COMBO"
-            '        oConn = ConnectSQL(AppSettings("ConnectionStringCombo"))
-            '    Case "STEAK"
-            '        oConn = ConnectSQL(AppSettings("ConnectionStringSteak"))
-            '    Case "PATTY"
-            '        oConn = ConnectSQL(AppSettings("ConnectionStringPatty"))
-            '    Case Else
-            '        WriteToLog("OLD DATABASE NAME NOT FOUND", "", "")
-            'End Select
+    '        'Dim oConn As New SqlConnection
+    '        'Select Case scaleName
+    '        '    Case "TONGUES"
+    '        '        oConn = ConnectSQL(AppSettings("ConnectionStringTongues"))
+    '        '    Case "OFFAL"
+    '        '        oConn = ConnectSQL(AppSettings("ConnectionStringOffal"))
+    '        '    Case "TRIM"
+    '        '        oConn = ConnectSQL(AppSettings("ConnectionStringTrim"))
+    '        '    Case "GRINDING"
+    '        '        'no old database for this
+    '        '        'oConn = ConnectSQL(AppSettings("ConnectionStringGrinding"))
+    '        '    Case "COMBO"
+    '        '        oConn = ConnectSQL(AppSettings("ConnectionStringCombo"))
+    '        '    Case "STEAK"
+    '        '        oConn = ConnectSQL(AppSettings("ConnectionStringSteak"))
+    '        '    Case "PATTY"
+    '        '        oConn = ConnectSQL(AppSettings("ConnectionStringPatty"))
+    '        '    Case Else
+    '        '        WriteToLog("OLD DATABASE NAME NOT FOUND", "", "")
+    '        'End Select
 
-            'Dim sSQL As String = "Insert Into tblLabelPrint (ProductCode,ProductGrade,Weight,BarcodeText,Lot,LabelContent,Customer) VALUES (@ProductCode,@ProductGrade,@Weight,@BarcodeText,@Lot,@LabelContent,@Customer)"
-            'Dim cmd As New SqlCommand
-            'cmd = New SqlClient.SqlCommand(sSQL, oConn)
+    '        'Dim sSQL As String = "Insert Into tblLabelPrint (ProductCode,ProductGrade,Weight,BarcodeText,Lot,LabelContent,Customer) VALUES (@ProductCode,@ProductGrade,@Weight,@BarcodeText,@Lot,@LabelContent,@Customer)"
+    '        'Dim cmd As New SqlCommand
+    '        'cmd = New SqlClient.SqlCommand(sSQL, oConn)
 
-            'cmd.Parameters.AddWithValue("@ProductCode", ProductCode)
-            'cmd.Parameters.AddWithValue("@ProductGrade", ProductGrade)
-            'cmd.Parameters.AddWithValue("@Weight", Weight)
-            'cmd.Parameters.AddWithValue("@BarcodeText", BarcodeText)
-            'cmd.Parameters.AddWithValue("@Lot", Lot)
-            'cmd.Parameters.AddWithValue("@LabelContent", BarCodeLabelContent)
-            'cmd.Parameters.AddWithValue("@Customer", Customer)
+    '        'cmd.Parameters.AddWithValue("@ProductCode", ProductCode)
+    '        'cmd.Parameters.AddWithValue("@ProductGrade", ProductGrade)
+    '        'cmd.Parameters.AddWithValue("@Weight", Weight)
+    '        'cmd.Parameters.AddWithValue("@BarcodeText", BarcodeText)
+    '        'cmd.Parameters.AddWithValue("@Lot", Lot)
+    '        'cmd.Parameters.AddWithValue("@LabelContent", BarCodeLabelContent)
+    '        'cmd.Parameters.AddWithValue("@Customer", Customer)
 
-            'cmd.ExecuteNonQuery()
+    '        'cmd.ExecuteNonQuery()
 
-            'cmd.Dispose()
-            'oConn.Dispose()
+    '        'cmd.Dispose()
+    '        'oConn.Dispose()
 
-        Catch ex As Exception
-            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
-        End Try
+    '    Catch ex As Exception
+    '        WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
+    '    End Try
 
-    End Sub
+    'End Sub
 
 End Class
 

@@ -38,11 +38,9 @@ Partial Class Login
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.GroupBox2 = New System.Windows.Forms.GroupBox()
-        Me.GroupBox3 = New System.Windows.Forms.GroupBox()
-        Me.nudDayNum = New System.Windows.Forms.NumericUpDown()
+        Me.grpSupTechOptions = New System.Windows.Forms.GroupBox()
         Me.Label14 = New System.Windows.Forms.Label()
         Me.lblDayDescription = New System.Windows.Forms.Label()
-        Me.lblDateDescription = New System.Windows.Forms.Label()
         Me.Panel2 = New System.Windows.Forms.Panel()
         Me.rdo2ndShift = New System.Windows.Forms.RadioButton()
         Me.rdo1stShift = New System.Windows.Forms.RadioButton()
@@ -56,10 +54,10 @@ Partial Class Login
         Me.btnAccept = New System.Windows.Forms.Button()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
+        Me.DateTimePicker1 = New System.Windows.Forms.DateTimePicker()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
-        Me.GroupBox3.SuspendLayout()
-        CType(Me.nudDayNum, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.grpSupTechOptions.SuspendLayout()
         Me.Panel2.SuspendLayout()
         Me.Panel1.SuspendLayout()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -211,7 +209,7 @@ Partial Class Login
         'GroupBox2
         '
         Me.GroupBox2.BackColor = System.Drawing.SystemColors.Control
-        Me.GroupBox2.Controls.Add(Me.GroupBox3)
+        Me.GroupBox2.Controls.Add(Me.grpSupTechOptions)
         Me.GroupBox2.Controls.Add(Me.Panel2)
         Me.GroupBox2.Controls.Add(Me.Panel1)
         Me.GroupBox2.Controls.Add(Me.Label12)
@@ -226,30 +224,18 @@ Partial Class Login
         Me.GroupBox2.TabStop = False
         Me.GroupBox2.Text = "Login"
         '
-        'GroupBox3
+        'grpSupTechOptions
         '
-        Me.GroupBox3.Controls.Add(Me.nudDayNum)
-        Me.GroupBox3.Controls.Add(Me.Label14)
-        Me.GroupBox3.Controls.Add(Me.lblDayDescription)
-        Me.GroupBox3.Controls.Add(Me.lblDateDescription)
-        Me.GroupBox3.Font = New System.Drawing.Font("Tahoma", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.GroupBox3.Location = New System.Drawing.Point(32, 187)
-        Me.GroupBox3.Name = "GroupBox3"
-        Me.GroupBox3.Size = New System.Drawing.Size(543, 123)
-        Me.GroupBox3.TabIndex = 21
-        Me.GroupBox3.TabStop = False
-        Me.GroupBox3.Text = "Supervisor/Tech Options"
-        '
-        'nudDayNum
-        '
-        Me.nudDayNum.Location = New System.Drawing.Point(174, 45)
-        Me.nudDayNum.Margin = New System.Windows.Forms.Padding(5)
-        Me.nudDayNum.Maximum = New Decimal(New Integer() {14, 0, 0, 0})
-        Me.nudDayNum.Minimum = New Decimal(New Integer() {14, 0, 0, -2147483648})
-        Me.nudDayNum.Name = "nudDayNum"
-        Me.nudDayNum.Size = New System.Drawing.Size(54, 30)
-        Me.nudDayNum.TabIndex = 10
-        Me.nudDayNum.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        Me.grpSupTechOptions.Controls.Add(Me.DateTimePicker1)
+        Me.grpSupTechOptions.Controls.Add(Me.Label14)
+        Me.grpSupTechOptions.Controls.Add(Me.lblDayDescription)
+        Me.grpSupTechOptions.Font = New System.Drawing.Font("Tahoma", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.grpSupTechOptions.Location = New System.Drawing.Point(32, 187)
+        Me.grpSupTechOptions.Name = "grpSupTechOptions"
+        Me.grpSupTechOptions.Size = New System.Drawing.Size(543, 123)
+        Me.grpSupTechOptions.TabIndex = 21
+        Me.grpSupTechOptions.TabStop = False
+        Me.grpSupTechOptions.Text = "Supervisor/Tech Options"
         '
         'Label14
         '
@@ -265,23 +251,11 @@ Partial Class Login
         '
         Me.lblDayDescription.AutoSize = True
         Me.lblDayDescription.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.lblDayDescription.Location = New System.Drawing.Point(240, 47)
+        Me.lblDayDescription.Location = New System.Drawing.Point(327, 52)
         Me.lblDayDescription.Margin = New System.Windows.Forms.Padding(7, 0, 7, 0)
         Me.lblDayDescription.Name = "lblDayDescription"
         Me.lblDayDescription.Size = New System.Drawing.Size(2, 25)
         Me.lblDayDescription.TabIndex = 14
-        '
-        'lblDateDescription
-        '
-        Me.lblDateDescription.AutoSize = True
-        Me.lblDateDescription.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.lblDateDescription.Location = New System.Drawing.Point(296, 47)
-        Me.lblDateDescription.Margin = New System.Windows.Forms.Padding(5, 0, 5, 0)
-        Me.lblDateDescription.Name = "lblDateDescription"
-        Me.lblDateDescription.RightToLeft = System.Windows.Forms.RightToLeft.Yes
-        Me.lblDateDescription.Size = New System.Drawing.Size(77, 23)
-        Me.lblDateDescription.TabIndex = 11
-        Me.lblDateDescription.Text = "<Date>"
         '
         'Panel2
         '
@@ -410,6 +384,14 @@ Partial Class Login
         'Timer1
         '
         '
+        'DateTimePicker1
+        '
+        Me.DateTimePicker1.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
+        Me.DateTimePicker1.Location = New System.Drawing.Point(153, 47)
+        Me.DateTimePicker1.Name = "DateTimePicker1"
+        Me.DateTimePicker1.Size = New System.Drawing.Size(149, 30)
+        Me.DateTimePicker1.TabIndex = 22
+        '
         'Login
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(15.0!, 33.0!)
@@ -432,9 +414,8 @@ Partial Class Login
         Me.GroupBox1.PerformLayout()
         Me.GroupBox2.ResumeLayout(False)
         Me.GroupBox2.PerformLayout()
-        Me.GroupBox3.ResumeLayout(False)
-        Me.GroupBox3.PerformLayout()
-        CType(Me.nudDayNum, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.grpSupTechOptions.ResumeLayout(False)
+        Me.grpSupTechOptions.PerformLayout()
         Me.Panel2.ResumeLayout(False)
         Me.Panel2.PerformLayout()
         Me.Panel1.ResumeLayout(False)
@@ -456,8 +437,6 @@ Partial Class Login
     Friend WithEvents Label2 As Label
     Friend WithEvents Label1 As Label
     Friend WithEvents GroupBox2 As GroupBox
-    Friend WithEvents lblDateDescription As Label
-    Friend WithEvents nudDayNum As NumericUpDown
     Friend WithEvents Label14 As Label
     Friend WithEvents Label12 As Label
     Friend WithEvents Label11 As Label
@@ -475,5 +454,6 @@ Partial Class Login
     Friend WithEvents Panel2 As Panel
     Friend WithEvents rdo2ndShift As RadioButton
     Friend WithEvents rdo1stShift As RadioButton
-    Friend WithEvents GroupBox3 As GroupBox
+    Friend WithEvents grpSupTechOptions As GroupBox
+    Friend WithEvents DateTimePicker1 As DateTimePicker
 End Class

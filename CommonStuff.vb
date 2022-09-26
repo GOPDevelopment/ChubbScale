@@ -25,7 +25,7 @@ Module CommonStuff
     Function FixNullInteger(ByVal szValue)
         If IsDBNull(szValue) Then
             Return 0
-        ElseIf IsNumeric(szvalue) Then
+        ElseIf IsNumeric(szValue) Then
             Return CInt(szValue)
         Else
             Return 0
@@ -79,6 +79,15 @@ Module CommonStuff
     Function FixButtonText(sValue As String) As String
         Return sValue.Replace(vbCrLf, "").Replace(" ", "")
     End Function
+    Public Function RemoveAllAlphas(sValue As String) As String
+        Dim sReturn As String = ""
+        For i = 0 To sValue.Length - 1
+            If IsNumeric(sValue(i)) Or sValue(i) = "." Then
+                sReturn += sValue(i)
+            End If
+        Next
+        Return sReturn
+    End Function
 
     Public Function GetWindowsUserName() As String
         Dim temp As String
@@ -87,57 +96,150 @@ Module CommonStuff
     End Function
     Public Function GetWindowsRoles() As IEnumerable(Of String)
         Dim identity As Principal.WindowsIdentity = Principal.WindowsIdentity.GetCurrent()
+        'Dim identity As Principal.WindowsIdentity = Principal.WindowsIdentity.Impersonate
+
         Dim groupNames = From id In identity.Groups Select id.Translate(GetType(NTAccount)).Value
 
         Return groupNames
     End Function
-
+    'Public Function UserIsAdmin(ByVal userName As String) As Boolean
+    '    Dim groupName As String = "administrators" '<--You can localize this'
+    '    Dim isAdmin As Boolean
+    '    Using context As accountmanagement.PrincipalContext = New PrincipalContext(ContextType.Machine)
+    '        Dim gfilter As GroupPrincipal = GroupPrincipal.FindByIdentity(context, groupName)
+    '        If gfilter IsNot Nothing Then
+    '            Dim members = gfilter.GetMembers
+    '            For Each member In members
+    '                If String.Compare(member.Name, userName, True) = 0 Then
+    '                    isAdmin = True
+    '                End If
+    '            Next
+    '        End If
+    '    End Using
+    '    Return isAdmin
+    'End Function
     Public Function IsUserUser() As Boolean
-        Dim groups As IEnumerable(Of String) = GetWindowsRoles()
-        For Each item In groups
-            If item = "CONSOLE LOGON" Then
+        'Dim groups As IEnumerable(Of String) = GetWindowsRoles()
+        'For Each item In groups
+        '    If item = "CONSOLE LOGON" Then
+        Return True
+        '    End If
+        'Next
+
+        'Return False
+    End Function
+    Public Function IsUserSupervisor(userName As String) As Boolean
+
+        'Dim credentialForm As New frmCredentials
+        'AddHandler credentialForm.AuthenticateUser, AddressOf frmCredentials_AuthenticateUser
+        'credentialForm.ShowDialog()
+        'userName = "JUACHAV"
+        Dim sResults As List(Of String) = GetGroups(userName)
+        For Each item In sResults
+            If item = "GOPACK\FabSupervisors" Then
                 Return True
             End If
         Next
 
+
+        'Dim groups As IEnumerable(Of String) = GetWindowsRoles()
+        'For Each item In groups
+        '    If item = "FABSUP" Then
+        '        Return True
+        '    End If
+        'Next
+
         Return False
     End Function
-    Public Function IsUserSupervisor() As Boolean
+    Public Function IsUserTech(userName As String) As Boolean
 
         'Dim credentialForm As New frmCredentials
         'AddHandler credentialForm.AuthenticateUser, AddressOf frmCredentials_AuthenticateUser
         'credentialForm.ShowDialog()
 
-
-
-        Dim groups As IEnumerable(Of String) = GetWindowsRoles()
-        For Each item In groups
-            If item = "FABSUP" Then
-                Return True
-            End If
-        Next
-
-        Return False
-    End Function
-    Public Function IsUserTech() As Boolean
-
-        'Dim credentialForm As New frmCredentials
-        'AddHandler credentialForm.AuthenticateUser, AddressOf frmCredentials_AuthenticateUser
-        'credentialForm.ShowDialog()
-
-
-        Dim groups As IEnumerable(Of String) = GetWindowsRoles()
-        For Each item In groups
+        Dim sResults As List(Of String) = GetGroups(userName)
+        For Each item In sResults
             If item = "GOPACK\IT" Then
                 Return True
             End If
         Next
 
+        'Dim groups As IEnumerable(Of String) = GetWindowsRoles()
+        'For Each item In groups
+        '    WriteToLog("INFO", item, "")
+        '    If item = "GOPACK\IT" Then
+        '        Return True
+        '    End If
+        'Next
+
         Return False
     End Function
 
+    Private Function GetGroups(userName As String) As List(Of String)
+        Dim result As New List(Of String)
+
+        Dim wi As WindowsIdentity = New WindowsIdentity(userName)
+
+        For Each group As IdentityReference In wi.Groups
+            Try
+                result.Add(group.Translate(GetType(NTAccount)).ToString())
+            Catch ex As Exception
+            End Try
+        Next
+
+        result.Sort()
+        Return result
+    End Function
+
+    Public Function GetUsersAndGroups(Group As String) As List(Of String)
+        Dim UsersInGroup As New List(Of String)
+        Dim path As String = "LDAP://DC=GOPACK,DC=LOCAL"
+        Dim de As New DirectoryEntry(path)
+
+        Dim MemberSearcher As New DirectorySearcher
+        With MemberSearcher
+            .SearchRoot = de
+            .Filter = "(&(ObjectClass=Group)(CN=" & Group & "))"
+            .PropertiesToLoad.Add("Member")
+        End With
+
+        Dim mySearchResults As SearchResult = MemberSearcher.FindOne()
+        For Each User In mySearchResults.Properties("Member")
+            Dim userName As String = User.ToString
+
+            Dim findUser As DirectorySearcher = New DirectorySearcher(de, "(displayname=" & ParseCN(User) & ")")
+            Dim results As SearchResultCollection = findUser.FindAll
+            For Each result As SearchResult In results
+                For Each prop As DictionaryEntry In result.Properties
+                    If prop.Key = "samaccountname" Then
+                        'WriteToLog("NEW PROP", prop.Key, prop.Value(0))
+                        UsersInGroup.Add(prop.Value(0))
+                    End If
+                Next
+            Next
+        Next
+
+        UsersInGroup.Sort()
+
+        Return UsersInGroup
+
+    End Function
+    Private Function ParseCN(toBeParsed As String) As String
+        Dim original As String = toBeParsed
+        Dim sreturn As String = ""
+
+        Dim parts As String()
+        parts = original.Split(",")
+
+        For Each item In parts
+            If item.StartsWith("CN") Then
+                sreturn = item.Replace("CN=", "")
+            End If
+        Next
 
 
+        Return sreturn
+    End Function
     Function GetCheckDigitGTIN_13(ByVal szString As String) As String
         Try
             ' String should be 13 characters
@@ -158,7 +260,7 @@ Module CommonStuff
             End If
 
         Catch ex As Exception
-            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
+            'WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
             Return "-"
         End Try
     End Function
@@ -175,7 +277,7 @@ Module CommonStuff
         Return checkDigit
     End Function
 
-    Sub CleanWorkFolder(tempWorkFolder As String)
+    Sub CleanWorkFolder(tempWorkFolder As String, ByVal machineInfo As String)
         Dim OldFiles() As String = Directory.GetFiles(Environment.CurrentDirectory & tempWorkFolder, "*.palco.lbl*")
         For Each ThisFile As String In OldFiles
             Try
@@ -183,13 +285,12 @@ Module CommonStuff
                     File.Delete(ThisFile)
                 End If
             Catch ex As Exception
-                WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
-
+                WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, machineInfo)
             End Try
         Next
     End Sub
 
-    Private Sub CleanErrLogFolder()
+    Private Sub CleanErrLogFolder(ByVal machineInfo As String)
 
         'clean out old err files
         Dim OldFiles() As String = Directory.GetFiles(Application.StartupPath & "\Errors\", "*.txt")
@@ -200,20 +301,20 @@ Module CommonStuff
                 End If
 
             Catch ex As Exception
-                WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
+                WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, machineInfo)
             End Try
         Next
 
     End Sub
 
-    Public Sub WriteToErrorLog(ByVal msg As String, ByVal stkTrace As String, ByVal title As String)
+    Public Sub WriteToErrorLog(ByVal title As String, ByVal msg As String, ByVal stkTrace As String, ByVal machineInfo As String)
         Try
 
             If Not System.IO.Directory.Exists(Application.StartupPath & "\Errors\") Then
                 System.IO.Directory.CreateDirectory(Application.StartupPath & "\Errors\")
             End If
 
-            Dim fn As String = "errlog" & DateTime.Now.ToString("yyyyMMdd") & ".txt"
+            Dim fn As String = "errlog_" & machineInfo & "_" & DateTime.Now.ToString("yyyyMMdd") & ".txt"
 
             'check the file
             Dim fs As FileStream = New FileStream(Application.StartupPath & "\Errors\" & fn, FileMode.OpenOrCreate, FileAccess.ReadWrite)
@@ -224,9 +325,8 @@ Module CommonStuff
             'log it
             Dim fs1 As FileStream = New FileStream(Application.StartupPath & "\Errors\" & fn, FileMode.Append, FileAccess.Write)
             Dim s1 As StreamWriter = New StreamWriter(fs1)
-            s1.Write("===== " & DateTime.Now.ToString() & "============================================================" & vbCrLf)
-            s1.Write(title & ": " & msg & vbCrLf)
-            s1.Write(stkTrace & vbCrLf)
+            s1.Write("===== " & DateTime.Now.ToString() & "============== E R R O R ===================================" & vbCrLf)
+            s1.Write(title & " - " & msg & " - " & stkTrace & vbCrLf & vbCrLf)
             s1.Close()
             fs1.Close()
 
@@ -235,14 +335,14 @@ Module CommonStuff
         End Try
     End Sub
 
-    Public Sub WriteToLog(ByVal msg As String, ByVal stkTrace As String, ByVal title As String)
+    Public Sub WriteToLog(ByVal title As String, ByVal msg As String, ByVal stkTrace As String, ByVal machineInfo As String)
         Try
 
             If Not System.IO.Directory.Exists(Application.StartupPath & "\Errors\") Then
                 System.IO.Directory.CreateDirectory(Application.StartupPath & "\Errors\")
             End If
 
-            Dim fn As String = "errlog" & DateTime.Now.ToString("yyyyMMdd") & ".txt"
+            Dim fn As String = "errlog_" & machineInfo & "_" & DateTime.Now.ToString("yyyyMMdd") & ".txt"
 
             'check the file
             Dim fs As FileStream = New FileStream(Application.StartupPath & "\Errors\" & fn, FileMode.OpenOrCreate, FileAccess.ReadWrite)
@@ -253,9 +353,7 @@ Module CommonStuff
             'log it
             Dim fs1 As FileStream = New FileStream(Application.StartupPath & "\Errors\" & fn, FileMode.Append, FileAccess.Write)
             Dim s1 As StreamWriter = New StreamWriter(fs1)
-            s1.Write("===== " & DateTime.Now.ToString() & "============= Informational Only ===========================" & vbCrLf)
-            s1.Write(title & ": " & msg & vbCrLf)
-            s1.Write(stkTrace & vbCrLf)
+            s1.Write(DateTime.Now.ToString() & " ===== " & title & " - " & msg & " - " & stkTrace & vbCrLf)
             s1.Close()
             fs1.Close()
 

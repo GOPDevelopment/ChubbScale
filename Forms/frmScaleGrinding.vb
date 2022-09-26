@@ -3,6 +3,8 @@ Imports System.Configuration.ConfigurationManager
 Imports System.IO
 Imports System.IO.Ports
 Imports System.Data.SqlClient
+Imports BarcodeLib.BarcodeReader
+
 
 Public Class frmScaleGrinding
 
@@ -27,6 +29,7 @@ Public Class frmScaleGrinding
     Private Property CURRENT_TEST_NO As String = ""
     Private Property LAST_BARCODE As String = ""
     Private Property LAST_SERIAL As String = ""
+    Private Property CURRENT_PRODUCT_LABEL_NET_WEIGHT As Single = 0
 
 
     Friend WithEvents SerialPortA As New System.IO.Ports.SerialPort
@@ -41,13 +44,15 @@ Public Class frmScaleGrinding
     Private Property BOX_LOT_COUNT_CHANGED As Boolean = False
 
 
-    Public Sub New(ByVal PassedUserInfo As ProgramUser, ByVal PassedMachineInstance As MachineInfo)
+    Public Sub New(ByVal PassedUserInfo As ProgramUser, ByVal PassedMachineInstance As MachineInfo, ByVal DateToUse As DateTime)
 
         ' This call is required by the designer.
         InitializeComponent()
 
         UserInfo = PassedUserInfo
         MachineInstance = PassedMachineInstance
+        PROD_DATE_TO_USE = DateToUse
+
 
         'only here for initial testing......comment out and add it later in Main_Load
         InitializePrinter(MachineInstance)
@@ -56,7 +61,7 @@ Public Class frmScaleGrinding
     Private Sub Main_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         Try
 
-            WriteToLog("Entering " & MachineInstance.ScaleName, "Scale Name", "")
+            WriteToLog("Entering " & MachineInstance.ScaleName, "Scale Name", MachineInstance.ScaleNumber, MachineInstance.ScaleNumber)
             Me.CenterToScreen()
 
             Me.KeyPreview = True
@@ -69,15 +74,17 @@ Public Class frmScaleGrinding
             Me.Timer1.Start()
 
             'Tue Jun / 01 / 2002
-            If Login.nudDayNum.Value <> 0 Then
-                lblDateDisplay.Text = DateTime.Now.AddDays(Login.nudDayNum.Value).ToString("ddd MMM / dd / yyyy")
-                lblDayDisplay.Text = DateTime.Now.AddDays(Login.nudDayNum.Value).DayOfYear.ToString
-                PROD_DATE_TO_USE = DateTime.Now.AddDays(Login.nudDayNum.Value).ToString("yyyy-MM-dd hh:mm:ss")
-            Else
-                lblDateDisplay.Text = DateTime.Now.ToString("ddd MMM / dd / yyyy")
-                lblDayDisplay.Text = DateTime.Now.DayOfYear.ToString
-                PROD_DATE_TO_USE = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss")
-            End If
+            'If Login.nudDayNum.Value <> 0 Then
+            '    lblDateDisplay.Text = DateTime.Now.AddDays(Login.nudDayNum.Value).ToString("ddd MMM / dd / yyyy")
+            '    lblDayDisplay.Text = DateTime.Now.AddDays(Login.nudDayNum.Value).DayOfYear.ToString
+            '    PROD_DATE_TO_USE = DateTime.Now.AddDays(Login.nudDayNum.Value).ToString("yyyy-MM-dd hh:mm:ss")
+            'Else
+            '    lblDateDisplay.Text = DateTime.Now.ToString("ddd MMM / dd / yyyy")
+            '    lblDayDisplay.Text = DateTime.Now.DayOfYear.ToString
+            '    PROD_DATE_TO_USE = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss")
+            'End If
+            lblDateDisplay.Text = PROD_DATE_TO_USE.ToString("ddd MMM / dd / yyyy")
+            lblDayDisplay.Text = PROD_DATE_TO_USE.DayOfYear.ToString
             lblTimeDisplay.Text = DateTime.Now.ToString("h:mm:ss tt")
 
             If Login.rdo1stShift.Checked Then
@@ -115,12 +122,13 @@ Public Class frmScaleGrinding
 
             If AppSettings("InTest") = "TRUE" Then
                 btnSetWeightPrint.Visible = True
+                btnProdActive.PerformClick()    'to make it inactive
             Else
                 btnSetWeightPrint.Visible = False
             End If
 
         Catch ex As Exception
-            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
+            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
         End Try
     End Sub
     Private Sub InitializeScalePorts()
@@ -131,7 +139,7 @@ Public Class frmScaleGrinding
             portString.Add(myPort(i).ToString)
         Next
 
-        'WriteToLog(portString, "", "Available Ports")
+        'WriteToLog(portString, "", "Available Ports", MachineInstance.ScaleNumber)
         Dim z As Integer = 1
         For Each portInstance In portString
             Dim scalePort As New ScalePortInfo(portInstance)
@@ -214,7 +222,7 @@ Public Class frmScaleGrinding
     Private Sub SerialPortA_DataReceived(sender As System.Object, e As System.IO.Ports.SerialDataReceivedEventArgs) Handles SerialPortA.DataReceived
         'System.Threading.Thread.Sleep(15000)
         Dim sRead As String = SerialPortA.ReadExisting()
-        WriteToLog(sRead, SerialPortA.PortName, "A Port Reading")
+        WriteToLog(sRead, SerialPortA.PortName, "A Port Reading", MachineInstance.ScaleNumber)
         Console.WriteLine(SerialPortA.PortName & " - " & sRead)
 
         HandleInput(sRead)
@@ -223,23 +231,26 @@ Public Class frmScaleGrinding
     Private Sub SerialPortB_DataReceived(sender As System.Object, e As System.IO.Ports.SerialDataReceivedEventArgs) Handles SerialPortB.DataReceived
         'System.Threading.Thread.Sleep(15000)
         Dim sRead As String = SerialPortB.ReadExisting()
-        WriteToLog(sRead, SerialPortB.PortName, "B Port Reading")
+        WriteToLog(sRead, SerialPortB.PortName, "B Port Reading", MachineInstance.ScaleNumber)
         Console.WriteLine(SerialPortB.PortName & " - " & sRead)
     End Sub
     Private Sub SerialPortC_DataReceived(sender As System.Object, e As System.IO.Ports.SerialDataReceivedEventArgs) Handles SerialPortC.DataReceived
         'System.Threading.Thread.Sleep(15000)
         Dim sRead As String = SerialPortC.ReadExisting()
-        WriteToLog(sRead, SerialPortC.PortName, "C Port Reading")
+        WriteToLog(sRead, SerialPortC.PortName, "C Port Reading", MachineInstance.ScaleNumber)
         Console.WriteLine(SerialPortC.PortName & " - " & sRead)
     End Sub
     Private Sub SerialPortD_DataReceived(sender As System.Object, e As System.IO.Ports.SerialDataReceivedEventArgs) Handles SerialPortD.DataReceived
         'System.Threading.Thread.Sleep(15000)
         Dim sRead As String = SerialPortD.ReadExisting()
-        WriteToLog(sRead, SerialPortD.PortName, "D Port Reading")
+        WriteToLog(sRead, SerialPortD.PortName, "D Port Reading", MachineInstance.ScaleNumber)
         Console.WriteLine(SerialPortD.PortName & " - " & sRead)
     End Sub
 
     Private Sub HandleInput(inputSent As String)
+
+        'this reads in the QR code - totally works!
+        Dim datas() As String = BarcodeReader.read("c:/temp/qr-code.png", BarcodeReader.QRCODE)
 
         'check for 4-6 digit code
         If inputSent.Trim.Length >= 4 And inputSent.Trim.Length <= 6 Then
@@ -280,8 +291,8 @@ Public Class frmScaleGrinding
             lblBoxTotalDaily.Text = ""
             lblWeightTotalDaily.Text = ""
             lblProductCountShift.Text = ""
-            lblLotDisplay.Text = CURRENT_LOT
-            lblBoxesInLotDisplay.Text = ""
+            'lblLotDisplay.Text = CURRENT_LOT
+            'lblBoxesInLotDisplay.Text = ""
             btnMakeFavorite.Text = "Make Favorite"
         Else
             'txtGrossWeight.Text = "0"
@@ -305,18 +316,22 @@ Public Class frmScaleGrinding
                 grossWeight = FixNullDecimal(txtGrossWeight.Text) - FixNullDecimal(txtTare.Text)
             End If
             txtNetWeight.Text = grossWeight
+            'get current totals by database queries
             If newProductCode Then  'blank out display because info won't be correct
-                lblLotDisplay.Text = ""
-                lblBoxesInLotDisplay.Text = ""
+                BOX_COUNT_LOT = GetLotBoxCountCurrent()
+
+                'lblLotDisplay.Text = CURRENT_LOT
+                'lblBoxesInLotDisplay.Text = BOX_COUNT_LOT
+
             Else
-                lblLotDisplay.Text = CURRENT_LOT
-                lblBoxesInLotDisplay.Text = BOX_COUNT_LOT
+                'lblLotDisplay.Text = CURRENT_LOT
+                'lblBoxesInLotDisplay.Text = BOX_COUNT_LOT
             End If
-            'lblGradeDisplay.Text = tempProductInfo.ProductGrade
             GRADE = tempProductInfo.ProductGrade
 
-
             'count for each scan
+            GetCounts()
+
             lblProductCountShift.Text = PRODUCT_COUNT_SHIFT
             lblProductCountDaily.Text = PRODUCT_COUNT_DAILY
 
@@ -349,20 +364,20 @@ Public Class frmScaleGrinding
             If txtMaxWeight.Text <> "" And txtMaxWeight.Text <> "0" Then
                 If FixNullInteger(txtGrossWeight.Text - txtTare.Text) > FixNullInteger(txtMaxWeight.Text) Then
                     warningReturn = "OVER MAX WEIGHT"
-                    WriteToLog("Weight over ", txtGrossWeight.Text, txtMaxWeight.Text)
+                    WriteToLog("Weight over ", txtGrossWeight.Text, txtMaxWeight.Text, MachineInstance.ScaleNumber)
                 End If
             End If
 
             If txtMinWeight.Text <> "" And txtMinWeight.Text <> "0" Then
                 If FixNullInteger(txtGrossWeight.Text - txtTare.Text) < FixNullInteger(txtMinWeight.Text) Then
                     warningReturn = "UNDER MIN WEIGHT"
-                    WriteToLog("Weight under ", txtGrossWeight.Text, txtMinWeight.Text)
+                    WriteToLog("Weight under ", txtGrossWeight.Text, txtMinWeight.Text, MachineInstance.ScaleNumber)
                 End If
             End If
 
             If FixNullInteger(txtGrossWeight.Text - txtTare.Text) < 0 Then
                 warningReturn = "UNDER 0 LBS"
-                WriteToLog("Weight over 0 ", txtGrossWeight.Text, "")
+                WriteToLog("Weight over 0 ", txtGrossWeight.Text, "", MachineInstance.ScaleNumber)
             End If
         End If
 
@@ -370,7 +385,7 @@ Public Class frmScaleGrinding
         'If BOX_COUNT_LOT > tempProductInfo.KickoutCount And tempProductInfo.KickoutCount > 0 Then
         If IsKickoutBox(tempProductInfo) Then
             warningReturn = "KICKOUT BOX COUNT MET AT " & tempProductInfo.KickoutCount
-            WriteToLog("Kickout Count met at ", BOX_COUNT_LOT, tempProductInfo.KickoutCount)
+            WriteToLog("Kickout Count met at ", BOX_COUNT_LOT, tempProductInfo.KickoutCount, MachineInstance.ScaleNumber)
         End If
 
         Return warningReturn
@@ -378,11 +393,15 @@ Public Class frmScaleGrinding
     Private Sub btnProdActive_Click(sender As Object, e As EventArgs) Handles btnProdActive.Click
         If btnToggleLanguage.Text = "English" Then
             'if it says English then the screen is in spanish
-            If btnProdActive.Text = "Producción Activa" Then
-                btnProdActive.Text = "Producción Inactivo"
+            If btnProdActive.Text = "ProducciÃ³n Activa" Then
+                btnProdActive.Text = "ProducciÃ³n Inactivo"
                 PROD_ACTIVE = False
+                txtWarnings.BackColor = SystemColors.Highlight
+                txtWarnings.Text = "ProducciÃ³n Inactivo"
             Else
-                btnProdActive.Text = "Producción Activa"
+                btnProdActive.Text = "ProducciÃ³n Activa"
+                txtWarnings.BackColor = SystemColors.Control
+                txtWarnings.Text = ""
                 PROD_ACTIVE = True
             End If
         Else
@@ -390,8 +409,12 @@ Public Class frmScaleGrinding
             If btnProdActive.Text = "Production Active" Then
                 btnProdActive.Text = "Production Inactive"
                 PROD_ACTIVE = False
+                txtWarnings.BackColor = SystemColors.Highlight
+                txtWarnings.Text = "Production Inactive"
             Else
                 btnProdActive.Text = "Production Active"
+                txtWarnings.BackColor = SystemColors.Control
+                txtWarnings.Text = ""
                 PROD_ACTIVE = True
             End If
         End If
@@ -404,31 +427,27 @@ Public Class frmScaleGrinding
                 'DO NOTHING, START AT 0, WELL REALLY START AT 1
                 If BOX_COUNT_LOT = 0 Then BOX_COUNT_LOT = 1
             Else
-                BOX_COUNT_LOT = DatabaseHandling.GetLotBoxCountCurrent(MachineInstance.ScaleNumber, lblProductCode.Text, CURRENT_LOT)
+                'BOX_COUNT_LOT = DatabaseHandling.GetLotBoxCountCurrent(MachineInstance.ScaleNumber, lblProductCode.Text, CURRENT_LOT)
+                BOX_COUNT_LOT = GetLotBoxCountCurrent()
                 BOX_COUNT_LOT = BOX_COUNT_LOT + 1
             End If
 
             'set prod date time to current time at print
-            PROD_DATE_TO_USE = PROD_DATE_TO_USE.ToString("yyyy-MM-dd ") & DateTime.Now.ToString("hh:mm:ss")
+            PROD_DATE_TO_USE = PROD_DATE_TO_USE.ToString("yyyy-MM-dd ") & DateTime.Now.ToString("HH:mm:ss tt")
 
             BuildFileAndPrint(weight)
 
+            'add info for transaction
+            AddTransactionToDB()
+
             If PROD_ACTIVE Then
-                'add info for transaction
-                AddTransactionToDB()
-
-                'get current totals by database queries
-                GetCounts()
-
                 CreateInfoForAlpha()
-
-                SetDisplay(lblProductCode.Text, True)
-
-                BOX_LOT_COUNT_CHANGED = False       'reset
             End If
 
+            BOX_LOT_COUNT_CHANGED = False       'reset
+
         Catch ex As Exception
-            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
+            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
         End Try
     End Sub
     Private Sub BuildFileAndPrint(ByVal nLBS As Single)
@@ -449,7 +468,7 @@ Public Class frmScaleGrinding
             nLBS -= (tempProductInfo.ItemCountPerBox * tempProductInfo.ItemTareEach)
 
 
-            CURRENT_LOT = FixNullInteger(lblLotDisplay.Text)
+            'CURRENT_LOT = FixNullInteger(lblLotDisplay.Text)
 
             If tempProductInfo.SetWeight <> 0 Then LAST_GROSS_WEIGHT = tempProductInfo.SetWeight + tempProductInfo.Tare
             If tempProductInfo.SetWeight <> 0 Then nLBS = tempProductInfo.SetWeight
@@ -459,19 +478,19 @@ Public Class frmScaleGrinding
 
             System.IO.File.WriteAllText(outFile, BuildLabelContentGrinding(nLBS, BOX_COUNT_LOT))
 
-            WriteToLog("before print", outFile, MachineInstance.PrinterName)
+            WriteToLog("before print", outFile, MachineInstance.PrinterName, MachineInstance.ScaleNumber)
 
             Dim bSuccess As Boolean = RawPrinterHelper.RawPrinterHelper.SendFileToPrinter(MachineInstance.PrinterName, outFile)
 
 
-            WriteToLog("after print", outFile, MachineInstance.PrinterPort)
+            WriteToLog("after print", outFile, MachineInstance.PrinterPort, MachineInstance.ScaleNumber)
 
             'Me.BeginInvoke(DirectCast(Sub() lblSerialNumberDisplay.Text = Microsoft.VisualBasic.Right(LAST_BARCODE, 10), System.Windows.Forms.MethodInvoker))
 
             LAST_SERIAL = Microsoft.VisualBasic.Right(LAST_BARCODE, 10)
 
         Catch ex As Exception
-            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
+            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
         End Try
 
     End Sub
@@ -598,7 +617,7 @@ Public Class frmScaleGrinding
             'LastBarCodeText = tBarcodeText
 
         Catch ex As Exception
-            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
+            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
         Finally
         End Try
 
@@ -611,9 +630,9 @@ Public Class frmScaleGrinding
 
             Dim sSql As String
             sSql = "INSERT INTO LabelPrintLog(PlantID, ShiftID, StationName, LineID, DateProcessed, ProductCode, ProductName, 
-                  BoxBarcode, LotBoxCount, Lot, Grade, SetWeightLB, CaptureWeightLB, TareWeightLB, MaxWeightLB, MinWeightLB)
+                  BoxBarcode, LotBoxCount, Lot, Grade, SetWeightLB, CaptureWeightLB, TareWeightLB, MaxWeightLB, MinWeightLB, ProductLabelWeightLB, ProductionActive)
                   VALUES (@PlantID, @ShiftID, @StationName, @LineID, @DateProcessed, @ProductCode, @ProductName, 
-                  @BoxBarcode, @LotBoxCount, @Lot, @Grade, @SetWeightLB, @CaptureWeightLB, @TareWeightLB, @MaxWeightLB, @MinWeightLB)"
+                  @BoxBarcode, @LotBoxCount, @Lot, @Grade, @SetWeightLB, @CaptureWeightLB, @TareWeightLB, @MaxWeightLB, @MinWeightLB, @ProductLabelWeightLB, @ProductionActive)"
 
 
             Dim oConn As New SqlConnection
@@ -626,7 +645,7 @@ Public Class frmScaleGrinding
             cmd.Parameters.AddWithValue("@ShiftID", lblShiftDisplay.Text)
             cmd.Parameters.AddWithValue("@StationName", MachineInstance.ScaleName)
             cmd.Parameters.AddWithValue("@LineID", MachineInstance.ScaleNumber)
-            cmd.Parameters.AddWithValue("@DateProcessed", Convert.ToDateTime(PROD_DATE_TO_USE.ToString("yyyy-MM-dd hh:mm:ss")))
+            cmd.Parameters.AddWithValue("@DateProcessed", Convert.ToDateTime(PROD_DATE_TO_USE.ToString("yyyy-MM-dd HH:mm:ss")))
             cmd.Parameters.AddWithValue("@ProductCode", lblProductCode.Text)
             cmd.Parameters.AddWithValue("@ProductName", lblProductDesc.Text)
             cmd.Parameters.AddWithValue("@BoxBarcode", LAST_BARCODE)
@@ -638,12 +657,14 @@ Public Class frmScaleGrinding
             cmd.Parameters.AddWithValue("@TareWeightLB", FixNullDecimal(txtTare.Text))
             cmd.Parameters.AddWithValue("@MaxWeightLB", FixNullDecimal(txtMaxWeight.Text))
             cmd.Parameters.AddWithValue("@MinWeightLB", FixNullDecimal(txtMinWeight.Text))
+            cmd.Parameters.AddWithValue("@ProductLabelWeightLB", CURRENT_PRODUCT_LABEL_NET_WEIGHT)
+            cmd.Parameters.AddWithValue("@ProductionActive", PROD_ACTIVE)
             'cmd.Parameters.AddWithValue("@FreezeBy", "")    '???
 
             cmd.ExecuteNonQuery()
 
         Catch ex As Exception
-            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
+            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
         End Try
 
     End Sub
@@ -670,25 +691,35 @@ Public Class frmScaleGrinding
         If AppSettings("InTest") = "TRUE" Then
             Dim random As New Random
             txtGrossWeight.Text = random.Next(7, 100)
-            WriteToLog("Print button hit", txtGrossWeight.Text, "")
+            WriteToLog("Print button hit", txtGrossWeight.Text, "", MachineInstance.ScaleNumber)
         End If
 
         HandleAllPrinting(txtGrossWeight.Text)
     End Sub
     Private Sub btnMakeFavorite_Click(sender As Object, e As EventArgs) Handles btnMakeFavorite.Click
-        If btnMakeFavorite.Text.Contains("Make Favorite") Then
+        If btnMakeFavorite.Text.Contains("Make Favorite") Or btnMakeFavorite.Text.Contains("Hacer Favorito") Then
             If FavoriteProductList.Count >= 12 Then
                 MsgBox("Only 12 favorites allowed. " & vbCrLf & "Please remove a code before adding a new one.", vbOKOnly, "Too Many Favorites")
+                'Solo 12 usuarios son permitidos
+
             Else
                 'add product code to favorites db 
 
                 DatabaseHandling.MakeProductFavorite(MachineInstance.ScaleName, MachineInstance.ScaleNumber, lblProductCode.Text)
-                btnMakeFavorite.Text = "Remove Favorite"
+                If btnToggleLanguage.Text = "English" Then
+                    btnMakeFavorite.Text = "Eliminar Favorito"
+                Else
+                    btnMakeFavorite.Text = "Remove Favorite"
+                End If
             End If
         Else
             'remove product code to favorites db 
             DatabaseHandling.RemoveProductFavorite(MachineInstance.ScaleName, MachineInstance.ScaleNumber, lblProductCode.Text)
-            btnMakeFavorite.Text = "Make Favorite"
+            If btnToggleLanguage.Text = "English" Then
+                btnMakeFavorite.Text = "Hacer Favorito"
+            Else
+                btnMakeFavorite.Text = "Make Favorite"
+            End If
         End If
 
         SetFavoriteKeys()
@@ -750,36 +781,72 @@ Public Class frmScaleGrinding
             Dim sSQL As String = ""
             Dim cmd As New SqlCommand
 
-            sSQL = "SELECT COUNT(PlantID) AS CountReturn From LabelPrintLog Where (ShiftID = '" & lblShiftDisplay.Text & "') AND (LineID = '" & MachineInstance.ScaleNumber & "') AND (ProductCode = '" & lblProductCode.Text & "') AND (CAST(DateProcessed AS date) = CAST(GETDATE() AS date))"
+            sSQL = "SELECT COUNT(PlantID) AS CountReturn From LabelPrintLog Where (ShiftID = '" & lblShiftDisplay.Text & "') AND (LineID = '" & MachineInstance.ScaleNumber & "') AND (ProductCode = '" & lblProductCode.Text & "') AND (CAST(DateProcessed AS date) = CAST('" & PROD_DATE_TO_USE & "' AS date)) AND ProductionActive = '" & PROD_ACTIVE & "'"
             cmd = New SqlClient.SqlCommand(sSQL, oConn)
             PRODUCT_COUNT_SHIFT = cmd.ExecuteScalar
             cmd.Dispose()
 
-            sSQL = "SELECT COUNT(PlantID) AS CountReturn From LabelPrintLog Where (LineID = '" & MachineInstance.ScaleNumber & "') AND (ProductCode = '" & lblProductCode.Text & "') AND (CAST(DateProcessed AS date) = CAST(GETDATE() AS date))"
+            sSQL = "SELECT COUNT(PlantID) AS CountReturn From LabelPrintLog Where (LineID = '" & MachineInstance.ScaleNumber & "') AND (ProductCode = '" & lblProductCode.Text & "') AND (CAST(DateProcessed AS date) = CAST('" & PROD_DATE_TO_USE & "' AS date)) AND ProductionActive = '" & PROD_ACTIVE & "'"
             cmd = New SqlClient.SqlCommand(sSQL, oConn)
             PRODUCT_COUNT_DAILY = cmd.ExecuteScalar
             cmd.Dispose()
 
-            sSQL = "SELECT SUM(CAST(CaptureWeightLB AS decimal)) AS WeightReturn From LabelPrintLog Where (ShiftID = '" & lblShiftDisplay.Text & "') AND (LineID = '" & MachineInstance.ScaleNumber & "') AND (ProductCode = '" & lblProductCode.Text & "') AND (CAST(DateProcessed AS date) = CAST(GETDATE() AS date))"
-            cmd = New SqlClient.SqlCommand(sSQL, oConn)
-            WEIGHT_TOTAL_SHIFT = cmd.ExecuteScalar
-            cmd.Dispose()
+            If PRODUCT_COUNT_SHIFT = 0 Then
+                WEIGHT_TOTAL_SHIFT = 0
+            Else
+                sSQL = "SELECT SUM(CAST(CaptureWeightLB AS decimal)) AS WeightReturn From LabelPrintLog Where (ShiftID = '" & lblShiftDisplay.Text & "') AND (LineID = '" & MachineInstance.ScaleNumber & "') AND (ProductCode = '" & lblProductCode.Text & "') AND (CAST(DateProcessed AS date) = CAST('" & PROD_DATE_TO_USE & "' AS date)) AND ProductionActive = '" & PROD_ACTIVE & "'"
+                cmd = New SqlClient.SqlCommand(sSQL, oConn)
+                WEIGHT_TOTAL_SHIFT = cmd.ExecuteScalar
+                cmd.Dispose()
+            End If
 
-            sSQL = "SELECT SUM(CAST(CaptureWeightLB AS decimal)) AS WeightReturn From LabelPrintLog Where (LineID = '" & MachineInstance.ScaleNumber & "') AND (ProductCode = '" & lblProductCode.Text & "') AND (CAST(DateProcessed AS date) = CAST(GETDATE() AS date))"
-            cmd = New SqlClient.SqlCommand(sSQL, oConn)
-            WEIGHT_TOTAL_DAILY = cmd.ExecuteScalar
-            cmd.Dispose()
+            If PRODUCT_COUNT_DAILY = 0 Then
+                WEIGHT_TOTAL_DAILY = 0
+            Else
+                sSQL = "SELECT SUM(CAST(CaptureWeightLB AS decimal)) AS WeightReturn From LabelPrintLog Where (LineID = '" & MachineInstance.ScaleNumber & "') AND (ProductCode = '" & lblProductCode.Text & "') AND (CAST(DateProcessed AS date) = CAST('" & PROD_DATE_TO_USE & "' AS date)) AND ProductionActive = '" & PROD_ACTIVE & "'"
+                cmd = New SqlClient.SqlCommand(sSQL, oConn)
+                WEIGHT_TOTAL_DAILY = cmd.ExecuteScalar
+                cmd.Dispose()
+            End If
 
             BOX_TOTAL_SHIFT = PRODUCT_COUNT_SHIFT
             BOX_TOTAL_DAILY = PRODUCT_COUNT_DAILY
 
         Catch ex As Exception
-            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
+            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
         Finally
             oConn.Close()
         End Try
 
     End Sub
+    Private Function GetLotBoxCountCurrent() As Integer
+        'MachineInstance.ScaleNumber, lblProductCode.Text, CURRENT_LOT, PROD_DATE_TO_USE
+        Dim oConn As New SqlConnection
+        Dim iReturn As Integer = 0
+
+        Try
+            oConn = DatabaseHandling.ConnectSQL(AppSettings("ConnectionString"))
+            Dim sSQL As String = ""
+            Dim cmd As New SqlCommand
+
+            'get highest number entered and add 1.  Count doesn't work correctly
+            'sSQL = "SELECT COUNT(PlantID) AS BoxesInLot From LabelPrintLog Where (LineID = '" & scaleNumber & "') AND (ProductCode = '" & productCode & "') AND (CAST(DateProcessed AS date) = CAST(GETDATE() AS date)) AND Lot = '" & lot & "'"
+            'sSQL = "SELECT LotBoxCount From LabelPrintLog Where (LineID = '" & scaleNumber & "') AND (ProductCode = '" & productCode & "') AND (CAST(DateProcessed AS date) = CAST(GETDATE() AS date)) AND Lot = '" & lot & "' AND ProductionActive = 'True' order by LotBoxCount Desc"
+            sSQL = "SELECT LotBoxCount From LabelPrintLog Where (LineID = '" & MachineInstance.ScaleNumber & "') AND (ProductCode = '" & lblProductCode.Text & "') AND (CAST(DateProcessed AS date) = CAST('" & PROD_DATE_TO_USE & "' AS date)) AND Lot = '" & CURRENT_LOT & "' AND ProductionActive = '" & PROD_ACTIVE & "' order by LotBoxCount Desc"
+            cmd = New SqlClient.SqlCommand(sSQL, oConn)
+            iReturn = cmd.ExecuteScalar
+            cmd.Dispose()
+
+
+        Catch ex As Exception
+            WriteToErrorLog(ex.Message, ex.StackTrace, "Error", MachineInstance.ScaleNumber)
+        Finally
+            oConn.Close()
+        End Try
+
+        Return iReturn
+
+    End Function
     'Private Sub btnChangeGrade_Click(sender As Object, e As EventArgs)
     '    Dim GradeSelect As frmEditGrade = New frmEditGrade
     '    'GradeSelect.SetProductList(ProductList)
@@ -789,7 +856,8 @@ Public Class frmScaleGrinding
 
     'End Sub
     Private Sub btnExit_Click(sender As Object, e As EventArgs) Handles btnExit.Click
-        WriteToLog("Program End", "", "Program End")
+        WriteToLog("Program End", "", "Program End", MachineInstance.ScaleNumber)
+        WriteToLog("", "", "", MachineInstance.ScaleNumber)
         Me.Close()
     End Sub
     Private Sub btnProductLookup_Click(sender As Object, e As EventArgs) Handles btnProductLookup.Click
@@ -880,20 +948,20 @@ Public Class frmScaleGrinding
         'constantly updates the time onscreen
         lblTimeDisplay.Text = CStr(TimeValue(CStr(Now)))
     End Sub
-    Private Sub btnChangeLot_Click(sender As Object, e As EventArgs) Handles btnChangeLot.Click
-        Dim ChangeLot As frmEditLot = New frmEditLot(UserInfo)
-        ChangeLot.ShowDialog()
+    'Private Sub btnChangeLot_Click(sender As Object, e As EventArgs)
+    '    Dim ChangeLot As frmEditLot = New frmEditLot(UserInfo)
+    '    ChangeLot.ShowDialog()
 
-        BOX_LOT_COUNT_CHANGED = True
+    '    BOX_LOT_COUNT_CHANGED = True
 
-        BOX_COUNT_LOT = FixNullInteger(ChangeLot.SetBoxCount)
-        lblBoxesInLotDisplay.Text = BOX_COUNT_LOT
+    '    BOX_COUNT_LOT = FixNullInteger(ChangeLot.SetBoxCount)
+    '    lblBoxesInLotDisplay.Text = BOX_COUNT_LOT
 
 
-        Dim newLot As String = ChangeLot.SetLot
-        lblLotDisplay.Text = newLot
-        CURRENT_LOT = newLot
-    End Sub
+    '    Dim newLot As String = ChangeLot.SetLot
+    '    lblLotDisplay.Text = newLot
+    '    CURRENT_LOT = newLot
+    'End Sub
     Private Sub btnToggleLanguage_Click(sender As Object, e As EventArgs) Handles btnToggleLanguage.Click
         If btnToggleLanguage.Text = "Español" Then
             Dim LanguageToUse As New TranslateToSpanish
@@ -929,11 +997,11 @@ Public Class frmScaleGrinding
             btnProdActive.Text = LanguageToUse.ProdActive
             btnToggleLanguage.Text = LanguageToUse.ToggleLanguage
 
-            lblBoxesInLot.Text = LanguageToUse.BoxesInLot
-            lblLot.Text = LanguageToUse.Lot
+            'lblBoxesInLot.Text = LanguageToUse.BoxesInLot
+            'lblLot.Text = LanguageToUse.Lot
             'lblGrade.Text = LanguageToUse.Grade
             'btnScanCombo.Text = LanguageToUse.ScanCombo
-            btnChangeLot.Text = LanguageToUse.ChangeLot
+            'btnChangeLot.Text = LanguageToUse.ChangeLot
 
 
         Else
@@ -970,11 +1038,11 @@ Public Class frmScaleGrinding
             btnProdActive.Text = LanguageToUse.ProdActive
             btnToggleLanguage.Text = LanguageToUse.ToggleLanguage
 
-            lblBoxesInLot.Text = LanguageToUse.BoxesInLot
-            lblLot.Text = LanguageToUse.Lot
+            'lblBoxesInLot.Text = LanguageToUse.BoxesInLot
+            'lblLot.Text = LanguageToUse.Lot
             'lblGrade.Text = LanguageToUse.Grade
             'btnScanCombo.Text = LanguageToUse.ScanCombo
-            btnChangeLot.Text = LanguageToUse.ChangeLot
+            'btnChangeLot.Text = LanguageToUse.ChangeLot
 
         End If
 

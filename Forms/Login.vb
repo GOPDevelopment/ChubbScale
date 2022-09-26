@@ -14,7 +14,7 @@ Public Class Login
     Private Sub btnAccept_Click(sender As Object, e As EventArgs) Handles btnAccept.Click
         Dim bContinue As Boolean = True
 
-        CleanWorkFolder(AppSettings("TempWorkFolder"))
+        CleanWorkFolder(AppSettings("TempWorkFolder"), MachineInstance.ScaleNumber)
 
         'shift validation
         'defaulted so something will always be selected.
@@ -29,8 +29,12 @@ Public Class Login
                     bContinue = False
                 End If
 
-                If nudDayNum.Value <> 0 Then
-                    nudDayNum.Value = 0
+                'If nudDayNum.Value <> 0 Then
+                '    nudDayNum.Value = 0
+                '    MessageBox.Show("User does not have access to change the date", "No Access", MessageBoxButtons.OK)
+                'End If
+                If DateTimePicker1.Value.DayOfYear = DateTime.Now.DayOfYear Then
+                Else
                     MessageBox.Show("User does not have access to change the date", "No Access", MessageBoxButtons.OK)
                 End If
 
@@ -43,12 +47,14 @@ Public Class Login
             Case rdoSupervisor.Checked
                 'If dayChanged Or scaleChanged Then
                 Dim credentialForm As New frmCredentials
-                    AddHandler credentialForm.AuthenticateUser, AddressOf frmCredentials_AuthenticateUser
-                    credentialForm.ShowDialog()
+                AddHandler credentialForm.AuthenticateUser, AddressOf frmCredentials_AuthenticateUser
+                credentialForm.ShowDialog()
                 'End If
 
-
-                If Not IsUserSupervisor() Then
+                If UserInfo.userName = "" Then
+                    MessageBox.Show("Username not entered. Please choose User for regular access.", "No Access", MessageBoxButtons.OK)
+                    bContinue = False
+                ElseIf Not IsUserSupervisor(UserInfo.userName) Then
                     MessageBox.Show("User not valid for this access", "No Access", MessageBoxButtons.OK)
                     bContinue = False
                 ElseIf UserInfo.LDAPVerified Then
@@ -60,12 +66,14 @@ Public Class Login
             Case rdoTech.Checked
                 'If dayChanged Or scaleChanged Then
                 Dim credentialForm As New frmCredentials
-                    AddHandler credentialForm.AuthenticateUser, AddressOf frmCredentials_AuthenticateUser
-                    credentialForm.ShowDialog()
+                AddHandler credentialForm.AuthenticateUser, AddressOf frmCredentials_AuthenticateUser
+                credentialForm.ShowDialog()
                 'End If
 
-
-                If Not IsUserTech() Then
+                If UserInfo.userName = "" Then
+                    MessageBox.Show("Username not entered. Please choose User for regular access.", "No Access", MessageBoxButtons.OK)
+                    bContinue = False
+                ElseIf Not IsUserTech(UserInfo.userName) Then
                     MessageBox.Show("User not valid for this access", "No Access", MessageBoxButtons.OK)
                     bContinue = False
                 ElseIf UserInfo.LDAPVerified Then
@@ -80,12 +88,18 @@ Public Class Login
 
         If bContinue Then
             'log admin/tech changes
-            If nudDayNum.Value <> 0 Or scaleChanged Then
-                DatabaseHandling.LogUserChanges(UserInfo.userName, nudDayNum.Value, scaleChanged)
+            If dayChanged Or scaleChanged Then
+                DatabaseHandling.LogUserChanges(UserInfo.userName, DateTimePicker1.Value.ToString, scaleChanged)
             End If
 
             Me.Hide()
-            Dim formGrinding As New frmScaleGrinding(UserInfo, MachineInstance)
+
+            Dim DateToUse As DateTime = DateTime.Now
+            If dayChanged Then
+                DateToUse = DateTimePicker1.Value
+            End If
+
+            Dim formGrinding As New frmScaleGrinding(UserInfo, MachineInstance, DateToUse)
             formGrinding.ShowDialog()
 
             Me.Close()
@@ -100,16 +114,10 @@ Public Class Login
         Me.Timer1.Interval = 1000   'every second update
         Me.Timer1.Start()
 
-        WriteToLog("Program Start", "", "Program Start")
-
         Dim machineName As String = "13"
+        WriteToLog("Program Start", "", "Program Start", machineName)
 
-        'MachineInstance = DatabaseHandling.GetMachineInfo(AppSettings("ScaleNumber"))
-        'not using app settings to get default
         MachineInstance = DatabaseHandling.GetMachineInfo(machineName)
-
-        'WriteToLog(machineName, "Machine Name", "")
-
 
         lblStationDisplay.Text = MachineInstance.ScaleNumber
         lblScaleDisplay.Text = MachineInstance.ScaleName
@@ -119,30 +127,31 @@ Public Class Login
         lblDayDisplay.Text = DateTime.Now.DayOfYear.ToString
         lblTimeDisplay.Text = DateTime.Now.ToString("h:mm:ss tt")
 
-        lblDateDescription.Text = DateTime.Now.ToString("ddd MMM / dd / yyyy")
+        'lblDateDescription.Text = DateTime.Now.ToString("ddd MMM / dd / yyyy")
         lblDayDescription.Text = DateTime.Now.DayOfYear.ToString
 
         rdo1stShift.Checked = CheckState.Checked
         rdoUser.Checked = CheckState.Checked
 
+        grpSupTechOptions.Enabled = False
     End Sub
     Private Sub Timer1_Tick(sender As Object, e As System.EventArgs) Handles Timer1.Tick
         'constantly updates the time onscreen
         lblTimeDisplay.Text = CStr(TimeValue(CStr(Now)))
     End Sub
 
-    Private Sub nudDayNum_ValueChanged(sender As Object, e As EventArgs) Handles nudDayNum.ValueChanged
-        If rdoUser.Checked = True And nudDayNum.Value <> 0 Then
-            nudDayNum.Value = 0
-            MessageBox.Show("User does not have access to change the date", "No Access", MessageBoxButtons.OK)
-            dayChanged = False
-        Else
-            'update with ticker, then pass to form
-            lblDateDescription.Text = DateTime.Now.AddDays(nudDayNum.Value).ToString("ddd MMM / dd / yyyy")
-            lblDayDescription.Text = DateTime.Now.AddDays(nudDayNum.Value).DayOfYear.ToString
-            dayChanged = True
-        End If
-    End Sub
+    'Private Sub nudDayNum_ValueChanged(sender As Object, e As EventArgs)
+    '    If rdoUser.Checked = True And nudDayNum.Value <> 0 Then
+    '        nudDayNum.Value = 0
+    '        MessageBox.Show("User does not have access to change the date", "No Access", MessageBoxButtons.OK)
+    '        dayChanged = False
+    '    Else
+    '        'update with ticker, then pass to form
+    '        lblDateDescription.Text = DateTime.Now.AddDays(nudDayNum.Value).ToString("ddd MMM / dd / yyyy")
+    '        lblDayDescription.Text = DateTime.Now.AddDays(nudDayNum.Value).DayOfYear.ToString
+    '        dayChanged = True
+    '    End If
+    'End Sub
 
 
     Private Sub frmCredentials_AuthenticateUser(sender As Object, e As EventArgs)
@@ -171,67 +180,94 @@ Public Class Login
 
             UserInfo.LDAPVerified = True
         Catch ex As Exception
-            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
+            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
             MsgBox("User credentials not valid.", MsgBoxStyle.Critical Or MsgBoxStyle.OkOnly, "Invalid User")
             'otherwise, it will crash out so return false
             UserInfo.LDAPVerified = False
         End Try
     End Sub
+    Private Sub DateTimePicker1_ValueChanged(sender As Object, e As EventArgs) Handles DateTimePicker1.ValueChanged
+        If rdoUser.Checked = True Then
+            'nudDayNum.Value = 0
+            'DateTimePicker1.Value = DateTime.Now()
+            MessageBox.Show("User does not have access to change the date", "No Access", MessageBoxButtons.OK)
+            dayChanged = False
+        Else
+            'update with ticker, then pass to form
+            'lblDateDescription.Text = DateTime.Now.AddDays(nudDayNum.Value).ToString("ddd MMM / dd / yyyy")
+            'lblDayDescription.Text = DateTime.Now.AddDays(nudDayNum.Value).DayOfYear.ToString
+            'lblDateDescription.Text = DateTimePicker1.Value.ToString("ddd MMM / dd / yyyy")
+            lblDayDescription.Text = DateTimePicker1.Value.DayOfYear.ToString
+            dayChanged = True
+        End If
+    End Sub
 
+    Private Sub rdoSupervisor_CheckedChanged(sender As Object, e As EventArgs) Handles rdoSupervisor.CheckedChanged
+        grpSupTechOptions.Enabled = True
+    End Sub
+
+    Private Sub rdoTech_CheckedChanged(sender As Object, e As EventArgs) Handles rdoTech.CheckedChanged
+        grpSupTechOptions.Enabled = True
+    End Sub
+
+    Private Sub rdoUser_CheckedChanged(sender As Object, e As EventArgs) Handles rdoUser.CheckedChanged
+        grpSupTechOptions.Enabled = False
+        'DateTimePicker1.Value = DateTime.Now()
+    End Sub
     Private Sub btnExit_Click(sender As Object, e As EventArgs) Handles btnExit.Click
-        WriteToLog("Program End", "", "Program End")
+        WriteToLog("Program End", "", "Program End", MachineInstance.ScaleNumber)
         Me.Close()
     End Sub
 
-    Private Function GetScaleFromMachineName(infoSent As String) As String
-        Dim sReturn As String = "5" 'default to Trim
+    'Private Function GetScaleFromMachineName(infoSent As String) As String
+    '    Dim sReturn As String = "5" 'default to Trim
 
-        If infoSent = "GOP001539" Then
-            'teresa's machine, in test, no default
-            sReturn = "8"
-            inTest = True
-        End If
-        'ScaleNumber = COMBO (7/8) OFFAL (6/9) TONGUES (99) TRIM (4/5) STEAK (0/14) GRINDING (13) PATTY (12)   
-
-
-        If infoSent.Contains("05") Or infoSent.Contains("TRIM") Then    'scale05
-            sReturn = "5"
-        End If
-        If infoSent.Contains("7") Then
-            sReturn = "7"
-        End If
-        If infoSent.Contains("8") Then
-            sReturn = "8"
-        End If
-        If infoSent.Contains("06") Then 'scale06
-            sReturn = "6"
-        End If
-        If infoSent.Contains("99") Then 'scale99
-            sReturn = "99"
-        ElseIf infoSent.Contains("09") Then 'scale09
-            sReturn = "9"
-        End If
-
-        If infoSent.Contains("scale00") Then 'scale00
-            sReturn = "0"
-        End If
-
-        If infoSent.Contains("14") Then
-            sReturn = "14"
-        ElseIf infoSent.Contains("4") Then  'not in use
-            sReturn = "4"
-        End If
+    '    If infoSent = "GOP001539" Then
+    '        'teresa's machine, in test, no default
+    '        sReturn = "8"
+    '        inTest = True
+    '    End If
+    '    'ScaleNumber = COMBO (7/8) OFFAL (6/9) TONGUES (99) TRIM (4/5) STEAK (0/14) GRINDING (13) PATTY (12)   
 
 
-        If infoSent.Contains("13") Then 'scale13    'Chubline
-            sReturn = "13"
-        End If
-        If infoSent.Contains("12") Then 'scale12    'PattyLine Scale 12
-            sReturn = "12"
-        End If
+    '    If infoSent.Contains("05") Or infoSent.Contains("TRIM") Then    'scale05
+    '        sReturn = "5"
+    '    End If
+    '    If infoSent.Contains("7") Then
+    '        sReturn = "7"
+    '    End If
+    '    If infoSent.Contains("8") Then
+    '        sReturn = "8"
+    '    End If
+    '    If infoSent.Contains("06") Then 'scale06
+    '        sReturn = "6"
+    '    End If
+    '    If infoSent.Contains("99") Then 'scale99
+    '        sReturn = "99"
+    '    ElseIf infoSent.Contains("09") Then 'scale09
+    '        sReturn = "9"
+    '    End If
 
-        Return sReturn
-    End Function
+    '    If infoSent.Contains("scale00") Then 'scale00
+    '        sReturn = "0"
+    '    End If
+
+    '    If infoSent.Contains("14") Then
+    '        sReturn = "14"
+    '    ElseIf infoSent.Contains("4") Then  'not in use
+    '        sReturn = "4"
+    '    End If
+
+
+    '    If infoSent.Contains("13") Then 'scale13    'Chubline
+    '        sReturn = "13"
+    '    End If
+    '    If infoSent.Contains("12") Then 'scale12    'PattyLine Scale 12
+    '        sReturn = "12"
+    '    End If
+
+    '    Return sReturn
+    'End Function
 
     'Private Sub btnChangeScale_Click_1(sender As Object, e As EventArgs)
     '    If rdoTech.Checked Or rdoSupervisor.Checked Then

@@ -1,16 +1,17 @@
 ﻿Imports LabelManager2
-Imports System.Drawing
-Imports System.Drawing.Drawing2D
+'Imports System.Drawing
+'Imports System.Drawing.Drawing2D
 Imports System.Drawing.Printing
-Imports System
+'Imports System
 Imports System.IO
-Imports System.Windows.Forms
+'Imports System.Windows.Forms
+Imports System.Runtime.InteropServices
 
 Module PrinterInfo
 
     Private WindowsPrinterName As String = ""       'from appsettings
     Private PrintTemplate As String = ""            'from appsettings
-    Private WithEvents MainDoc As LabelManager2.Document
+    'Private WithEvents MainDoc As LabelManager2.Document
     Private m_Lppx2Manager As Lppx2Manager = Nothing
     Private WithEvents MyCsApp As LabelManager2.Application = Nothing
 
@@ -18,13 +19,35 @@ Module PrinterInfo
     Private WithEvents MyActiveDocument As LabelManager2.Document = Nothing
     Private _IsPrinting As Boolean = False
 
+    Private picDefW As System.Int32
+    Private picDefH As System.Int32
+    Private currentImage As Drawing.Image
+
+    Private myCallback As Drawing.Image.GetThumbnailImageAbort
+
+    Dim varTab As String()() = New String(2)() {}
+
+    Public realSizeImage As Drawing.Image
+
+    Private csPath As System.String
+
+    'Used by Invoke call to update the UI from the Events thread
+    'Necessary to avoid an inter-thread invalid operation exception
+    'Private Delegate Sub UpdateMessagesListEvent(ByVal strMessage As String)
+    'Private _UpdateMessagesList As UpdateMessagesListEvent
+
+    'Need to use BeginInvoke instead of Invoke for Printing events
+    'or the Printing thread is blocked by Invoke (synchronous call)
+    Private _BeginPrintingEventRes As IAsyncResult
+    Private _PausedPrintingEventRes As IAsyncResult
+    Private _EndPrintingEventRes As IAsyncResult
 
     Public Sub InitializePrinter(printerInfo As MachineInfo)
 
         Dim docToPrint As New PrintDocument
         Dim dlg As New PrintDialog
 
-        docToPrint.DocumentName = "C:\temp\GOP.LBL"
+        docToPrint.DocumentName = "C:\Code\ChubScale\ChubScale\Labels\Box Line 4.5x3.lab_18_teresa.lab"
         'dlg.PrinterSettings.PrinterName = "\\PRDPRINTAPPW01.GOPACK.LOCAL\FO4515C-Lowerlevel-01"
         dlg.PrinterSettings.PrinterName = "SATO S86-ex 305dpi"
         dlg.Document = docToPrint
@@ -55,6 +78,18 @@ Module PrinterInfo
 
     End Sub
 
+    Private Sub CreateLppx2Manager()
+        'Create an instance of Lppx2Manager
+        m_Lppx2Manager = New Lppx2Manager
+        MyCsApp = DirectCast(m_Lppx2Manager.GetApplication(), LabelManager2.Application)
+        'lblLoading.Text = "Please Wait. " & vbCr & "Loading in progress... "
+        MyCsApp.PreloadUI()
+
+        '_UpdateMessagesList = New UpdateMessagesListEvent(AddressOf UpdateMessagesList)
+        'chkEvents.CheckState = CheckState.Unchecked
+
+    End Sub
+
     Public Sub PrinterStuff()
 
         Dim MyApp As New LabelManager2.Application
@@ -73,15 +108,15 @@ Module PrinterInfo
             .EnableEvents = True
             .Visible = False
 
-            MainDoc = .ActiveDocument
+            MyActiveDocument = .ActiveDocument
 
             'not sure what the int here means
-            Dim Var As Object = MainDoc.ReadVariables(1)
+            Dim Var As Object = MyActiveDocument.ReadVariables(1)
 
-            Dim barcodeReturn = MainDoc.DocObjects.Barcodes.Item(1).Value
-            Dim textcodeReturn = MainDoc.DocObjects.Texts.Item(1).Value
-            Dim variablesReturn = MainDoc.Variables.Item(1).Value
-            Dim variableReturn = MainDoc.Variable.Item(1).Value
+            Dim barcodeReturn = MyActiveDocument.DocObjects.Barcodes.Item(1).Value
+            Dim textcodeReturn = MyActiveDocument.DocObjects.Texts.Item(1).Value
+            Dim variablesReturn = MyActiveDocument.Variables.Item(1).Value
+            Dim variableReturn = MyActiveDocument.Variable.Item(1).Value
 
             'closing all out
             MyApp.Documents.CloseAll(False)
@@ -90,20 +125,6 @@ Module PrinterInfo
 
         MyApp.Quit()
 
-    End Sub
-
-    Private Sub updateVarInLabFile()
-        Dim variables As Variables = MyActiveDocument.Variables
-
-        For i As Integer = 0 To varTab(0).Length - 2
-            Dim item As Variable = variables.Item(i + 1)
-            item.Name = varTab(0)(i)
-            item.Value = varTab(1)(i)
-            Marshal.ReleaseComObject(item)
-        Next i
-
-        Marshal.ReleaseComObject(variables)
-        Call Me.refreshDoc()
     End Sub
 
     Partial Public Class PrintHelp
@@ -120,7 +141,7 @@ Module PrinterInfo
 
         Private Sub printButton_Click(ByVal sender As Object, ByVal e As EventArgs)
             Try
-                streamToPrint = New StreamReader("C:\temp\GOP.LBL")
+                streamToPrint = New StreamReader("C:\Code\ChubScale\ChubScale\Labels\Box Line 4.5x3.lab_18_teresa.lab")
 
                 Try
                     'printFont = New Font("Arial", 10)      'not needed

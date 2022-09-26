@@ -27,7 +27,7 @@ Public Class ScalePortInfo
                 End With
 
             Catch ex As Exception
-                WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
+                'WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
                 'MsgBox("Unable to open the data port for the Scale.", MsgBoxStyle.Critical Or MsgBoxStyle.OkOnly, "Can't open " & System.Configuration.ConfigurationManager.AppSettings("ScalePort"))
             End Try
         End If

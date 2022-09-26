@@ -55,11 +55,12 @@
     End Sub
     Private Sub lstProducts_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstProducts.SelectedIndexChanged
         Try
-            ' txtProductCode.Text = StripDescription(lstProducts.SelectedItem.ToString)
-            ChosenProductCode = StripDescription(lstProducts.SelectedItem.ToString)
+            If lstProducts.Items.Count > 0 Then
+                ChosenProductCode = StripDescription(lstProducts.SelectedItem.ToString)
+            End If
             Me.Close()
         Catch ex As Exception
-            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
+            'WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
         End Try
     End Sub
 
