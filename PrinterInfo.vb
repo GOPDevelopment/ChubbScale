@@ -12,11 +12,11 @@ Module PrinterInfo
     Private WindowsPrinterName As String = ""       'from appsettings
     Private PrintTemplate As String = ""            'from appsettings
     'Private WithEvents MainDoc As LabelManager2.Document
-    Private m_Lppx2Manager As Lppx2Manager = Nothing
-    Private WithEvents MyCsApp As LabelManager2.Application = Nothing
+    'Private m_Lppx2Manager As Lppx2Manager = Nothing
+    'Private WithEvents MyCsApp As LabelManager2.Application = Nothing
 
     ' Need to have a WithEvents object to manage events at the ActiveDocument level
-    Private WithEvents MyActiveDocument As LabelManager2.Document = Nothing
+    'Private WithEvents MyActiveDocument As LabelManager2.Document = Nothing
     Private _IsPrinting As Boolean = False
 
     Private picDefW As System.Int32
@@ -25,11 +25,11 @@ Module PrinterInfo
 
     Private myCallback As Drawing.Image.GetThumbnailImageAbort
 
-    Dim varTab As String()() = New String(2)() {}
+    'Dim varTab As String()() = New String(2)() {}
 
-    Public realSizeImage As Drawing.Image
+    'Public realSizeImage As Drawing.Image
 
-    Private csPath As System.String
+    'Private csPath As System.String
 
     'Used by Invoke call to update the UI from the Events thread
     'Necessary to avoid an inter-thread invalid operation exception
@@ -78,17 +78,17 @@ Module PrinterInfo
 
     End Sub
 
-    Private Sub CreateLppx2Manager()
-        'Create an instance of Lppx2Manager
-        m_Lppx2Manager = New Lppx2Manager
-        MyCsApp = DirectCast(m_Lppx2Manager.GetApplication(), LabelManager2.Application)
-        'lblLoading.Text = "Please Wait. " & vbCr & "Loading in progress... "
-        MyCsApp.PreloadUI()
+    'Private Sub CreateLppx2Manager()
+    '    'Create an instance of Lppx2Manager
+    '    'm_Lppx2Manager = New Lppx2Manager
+    '    'MyCsApp = DirectCast(m_Lppx2Manager.GetApplication(), LabelManager2.Application)
+    '    ''lblLoading.Text = "Please Wait. " & vbCr & "Loading in progress... "
+    '    'MyCsApp.PreloadUI()
 
-        '_UpdateMessagesList = New UpdateMessagesListEvent(AddressOf UpdateMessagesList)
-        'chkEvents.CheckState = CheckState.Unchecked
+    '    ''_UpdateMessagesList = New UpdateMessagesListEvent(AddressOf UpdateMessagesList)
+    '    ''chkEvents.CheckState = CheckState.Unchecked
 
-    End Sub
+    'End Sub
 
     Public Sub PrinterStuff()
 
@@ -104,26 +104,26 @@ Module PrinterInfo
         'MyApp = GetObject("LabelManager2.Application")
 
 
-        With MyApp
-            .EnableEvents = True
-            .Visible = False
+        'With MyApp
+        '    .EnableEvents = True
+        '    .Visible = False
 
-            MyActiveDocument = .ActiveDocument
+        '    MyActiveDocument = .ActiveDocument
 
-            'not sure what the int here means
-            Dim Var As Object = MyActiveDocument.ReadVariables(1)
+        '    'not sure what the int here means
+        '    Dim Var As Object = MyActiveDocument.ReadVariables(1)
 
-            Dim barcodeReturn = MyActiveDocument.DocObjects.Barcodes.Item(1).Value
-            Dim textcodeReturn = MyActiveDocument.DocObjects.Texts.Item(1).Value
-            Dim variablesReturn = MyActiveDocument.Variables.Item(1).Value
-            Dim variableReturn = MyActiveDocument.Variable.Item(1).Value
+        '    Dim barcodeReturn = MyActiveDocument.DocObjects.Barcodes.Item(1).Value
+        '    Dim textcodeReturn = MyActiveDocument.DocObjects.Texts.Item(1).Value
+        '    Dim variablesReturn = MyActiveDocument.Variables.Item(1).Value
+        '    Dim variableReturn = MyActiveDocument.Variable.Item(1).Value
 
-            'closing all out
-            MyApp.Documents.CloseAll(False)
-            MyApp.EnableEvents = False
-        End With
+        '    'closing all out
+        '    MyApp.Documents.CloseAll(False)
+        '    MyApp.EnableEvents = False
+        'End With
 
-        MyApp.Quit()
+        'MyApp.Quit()
 
     End Sub
 

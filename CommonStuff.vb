@@ -278,7 +278,7 @@ Module CommonStuff
     End Function
 
     Sub CleanWorkFolder(tempWorkFolder As String, ByVal machineInfo As String)
-        Dim OldFiles() As String = Directory.GetFiles(Environment.CurrentDirectory & tempWorkFolder, "*.palco.lbl*")
+        Dim OldFiles() As String = Directory.GetFiles(Environment.CurrentDirectory & tempWorkFolder, "*.lab*")
         For Each ThisFile As String In OldFiles
             Try
                 If DateDiff(DateInterval.DayOfYear, File.GetLastWriteTime(ThisFile), Now) > 30 Then

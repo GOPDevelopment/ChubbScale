@@ -1,10 +1,11 @@
-﻿Imports System.Globalization
+﻿'Imports System.Globalization
 Imports System.Configuration.ConfigurationManager
-Imports System.IO
-Imports System.IO.Ports
+'Imports System.IO
+'Imports System.IO.Ports
 Imports System.Data.SqlClient
 Imports BarcodeLib.BarcodeReader
-
+Imports System.Runtime.InteropServices
+'Imports LabelManager2
 
 Public Class frmScaleGrinding
 
@@ -43,6 +44,20 @@ Public Class frmScaleGrinding
     Private Property PROD_DATE_TO_USE As Date
     Private Property BOX_LOT_COUNT_CHANGED As Boolean = False
 
+    Private m_Lppx2Manager As Lppx2Manager = Nothing
+    Private WithEvents MyCsApp As LabelManager2.Application = Nothing
+
+    ' Need to have a WithEvents object to manage events at the ActiveDocument level
+    Private WithEvents ActiveLabelDocument As LabelManager2.Document = Nothing
+
+    'Private _IsPrinting As Boolean = False
+    'Private picDefW As System.Int32
+    'Private picDefH As System.Int32
+    'Private currentImage As Drawing.Image
+    'Private myCallback As Drawing.Image.GetThumbnailImageAbort
+
+    Dim varTab As String()() = New String(2)() {}
+
 
     Public Sub New(ByVal PassedUserInfo As ProgramUser, ByVal PassedMachineInstance As MachineInfo, ByVal DateToUse As DateTime)
 
@@ -53,9 +68,12 @@ Public Class frmScaleGrinding
         MachineInstance = PassedMachineInstance
         PROD_DATE_TO_USE = DateToUse
 
+        m_Lppx2Manager = New Lppx2Manager
+        MyCsApp = DirectCast(m_Lppx2Manager.GetApplication(), LabelManager2.Application)
+        MyCsApp.PreloadUI()
 
         'only here for initial testing......comment out and add it later in Main_Load
-        InitializePrinter(MachineInstance)
+        'InitializePrinter(MachineInstance)
 
     End Sub
     Private Sub Main_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
@@ -268,6 +286,7 @@ Public Class frmScaleGrinding
     End Sub
     Private Sub ReadProductCodeAndApply(productCode As String)
 
+        'read qr code and gather info
 
     End Sub
     Private Sub SetDisplay(ProductCodePassed As String, newProductCode As Boolean)
@@ -420,6 +439,7 @@ Public Class frmScaleGrinding
         End If
 
     End Sub
+
     Private Sub HandleAllPrinting(weight As Single)
 
         Try
@@ -453,7 +473,65 @@ Public Class frmScaleGrinding
     Private Sub BuildFileAndPrint(ByVal nLBS As Single)
 
         Try
+            Dim outFile As String = Environment.CurrentDirectory & AppSettings("TempWorkFolder") & MachineInstance.ScaleName & "_" & System.Guid.NewGuid.ToString & ".lab"
 
+            'copy original label file to new file and update
+            OpenLabelFile(outFile)
+
+            UpdateLabelFields(nLBS)
+
+
+            'System.IO.File.WriteAllText(outFile, BuildLabelContentGrinding(nLBS, BOX_COUNT_LOT))
+
+            'WriteToLog("before print", outFile, MachineInstance.PrinterName, MachineInstance.ScaleNumber)
+
+            'Dim bSuccess As Boolean = RawPrinterHelper.RawPrinterHelper.SendFileToPrinter(MachineInstance.PrinterName, outFile)
+            PrintLabel(outFile)
+
+            'WriteToLog("after print", outFile, MachineInstance.PrinterPort, MachineInstance.ScaleNumber)
+
+
+        Catch ex As Exception
+            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
+        End Try
+
+    End Sub
+    Private Sub OpenLabelFile(outFile As String)
+
+        Try
+
+            If (Not (ActiveLabelDocument Is Nothing)) Then
+                ActiveLabelDocument.Close(False)
+                Marshal.ReleaseComObject(ActiveLabelDocument)
+                ActiveLabelDocument = Nothing
+            End If
+
+
+            'copy template file to new file and open
+            Dim templateFile As String = Environment.CurrentDirectory & AppSettings("PrintTemplateLocation_Chubb")
+            If System.IO.File.Exists(templateFile) Then
+                System.IO.File.Copy(templateFile, outFile)
+            End If
+
+            Dim csDocuments As LabelManager2.Documents = MyCsApp.Documents
+            ActiveLabelDocument = csDocuments.Open(outFile, False)
+            Marshal.ReleaseComObject(csDocuments)
+
+        Catch ex As Exception
+            MessageBox.Show("OnSelectLabel: " + ex.Message)
+            If ActiveLabelDocument IsNot Nothing Then
+                Marshal.ReleaseComObject(ActiveLabelDocument)
+                ActiveLabelDocument = Nothing
+            End If
+        End Try
+
+
+    End Sub
+    Private Sub UpdateLabelFields(ByVal nLBS As Single)
+
+        Dim sReturn As String = ""
+
+        Try
             Dim tempProductInfo As New ProductInfo
             tempProductInfo = DatabaseHandling.LookupSpecificProduct(lblProductCode.Text, ProductList)
 
@@ -464,43 +542,10 @@ Public Class frmScaleGrinding
             nLBS -= tempProductInfo.Tare
 
             ' Adjust for tare of "items"
-
             nLBS -= (tempProductInfo.ItemCountPerBox * tempProductInfo.ItemTareEach)
-
-
-            'CURRENT_LOT = FixNullInteger(lblLotDisplay.Text)
 
             If tempProductInfo.SetWeight <> 0 Then LAST_GROSS_WEIGHT = tempProductInfo.SetWeight + tempProductInfo.Tare
             If tempProductInfo.SetWeight <> 0 Then nLBS = tempProductInfo.SetWeight
-
-
-            Dim outFile As String = Environment.CurrentDirectory & AppSettings("TempWorkFolder") & MachineInstance.ScaleName & "_" & System.Guid.NewGuid.ToString & ".palco.lbl"
-
-            System.IO.File.WriteAllText(outFile, BuildLabelContentGrinding(nLBS, BOX_COUNT_LOT))
-
-            WriteToLog("before print", outFile, MachineInstance.PrinterName, MachineInstance.ScaleNumber)
-
-            Dim bSuccess As Boolean = RawPrinterHelper.RawPrinterHelper.SendFileToPrinter(MachineInstance.PrinterName, outFile)
-
-
-            WriteToLog("after print", outFile, MachineInstance.PrinterPort, MachineInstance.ScaleNumber)
-
-            'Me.BeginInvoke(DirectCast(Sub() lblSerialNumberDisplay.Text = Microsoft.VisualBasic.Right(LAST_BARCODE, 10), System.Windows.Forms.MethodInvoker))
-
-            LAST_SERIAL = Microsoft.VisualBasic.Right(LAST_BARCODE, 10)
-
-        Catch ex As Exception
-            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
-        End Try
-
-    End Sub
-    Private Function BuildLabelContentGrinding(ByVal nLBS As Single, ByVal iBoxCount As Integer) As String
-
-        Dim sReturn As String = ""
-
-        Try
-            Dim tempProductInfo As New ProductInfo
-            tempProductInfo = DatabaseHandling.LookupSpecificProduct(lblProductCode.Text, ProductList)
 
 
             'If setweight <> 0 Then nLBS = setweight
@@ -515,9 +560,9 @@ Public Class frmScaleGrinding
             Dim tLBSHundred As String = Microsoft.VisualBasic.Right("000000" & wrkNumber.Substring(0, wrkNumber.Length - 1), 6)
             Dim tBoxCount As String
             If tempProductInfo.Lot <> 0 Then
-                tBoxCount = Microsoft.VisualBasic.Right("0000" & iBoxCount, 4) & "-" & MachineInstance.ScaleNumber & IIf(IsKickoutBox(tempProductInfo), "+", "") & "  Lot " & tempProductInfo.Lot
+                tBoxCount = Microsoft.VisualBasic.Right("0000" & BOX_COUNT_LOT, 4) & "-" & MachineInstance.ScaleNumber & IIf(IsKickoutBox(tempProductInfo), "+", "") & "  Lot " & tempProductInfo.Lot
             Else
-                tBoxCount = Microsoft.VisualBasic.Right("0000" & iBoxCount, 4) & "-" & MachineInstance.ScaleNumber & IIf(IsKickoutBox(tempProductInfo), "+", "")
+                tBoxCount = Microsoft.VisualBasic.Right("0000" & BOX_COUNT_LOT, 4) & "-" & MachineInstance.ScaleNumber & IIf(IsKickoutBox(tempProductInfo), "+", "")
             End If
 
 
@@ -615,15 +660,261 @@ Public Class frmScaleGrinding
             sReturn = sReturn.Replace("<<TOP_MINI_GROSS_KGS>>", tGrossKGS)
 
             'LastBarCodeText = tBarcodeText
+            LAST_SERIAL = Microsoft.VisualBasic.Right(LAST_BARCODE, 10)
 
         Catch ex As Exception
             WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
         Finally
         End Try
 
-        Return sReturn
+        'Return sReturn
 
-    End Function
+    End Sub
+
+    Private Sub PrintLabel(outfile As String)
+
+        If (ActiveLabelDocument Is Nothing) Then
+            MessageBox.Show("A document must be opened to print !")
+            Exit Sub
+        End If
+
+        Try
+
+            Dim csDialogs As LabelManager2.Dialogs = MyCsApp.Dialogs
+            Dim csDialog As LabelManager2.Dialog = csDialogs.Item(LabelManager2.enumDialogType.lppxPrinterSelectDialog)
+            csDialog.Show(Me.Handle)
+            Me.Text = MyCsApp.ActivePrinterName
+            Marshal.ReleaseComObject(csDialogs)
+            Marshal.ReleaseComObject(csDialog)
+
+            'AddPrintingHandlers()
+
+            ActiveLabelDocument.PrintDocument(1)
+
+            'If Not (_BeginPrintingEventRes Is Nothing) Then
+            '    listBoxEvents.EndInvoke(_BeginPrintingEventRes)
+            '    _BeginPrintingEventRes = Nothing
+            'End If
+
+            'If Not (_EndPrintingEventRes Is Nothing) Then
+            '    listBoxEvents.EndInvoke(_EndPrintingEventRes)
+            '    _EndPrintingEventRes = Nothing
+            'End If
+
+            'RemovePrintingHandlers()
+
+        Catch ex As Exception
+            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
+        Finally
+        End Try
+
+    End Sub
+
+
+    'Private Sub HandleAllPrinting(weight As Single)
+
+    '    Try
+    '        If BOX_LOT_COUNT_CHANGED Then
+    '            'DO NOTHING, START AT 0, WELL REALLY START AT 1
+    '            If BOX_COUNT_LOT = 0 Then BOX_COUNT_LOT = 1
+    '        Else
+    '            'BOX_COUNT_LOT = DatabaseHandling.GetLotBoxCountCurrent(MachineInstance.ScaleNumber, lblProductCode.Text, CURRENT_LOT)
+    '            BOX_COUNT_LOT = GetLotBoxCountCurrent()
+    '            BOX_COUNT_LOT = BOX_COUNT_LOT + 1
+    '        End If
+
+    '        'set prod date time to current time at print
+    '        PROD_DATE_TO_USE = PROD_DATE_TO_USE.ToString("yyyy-MM-dd ") & DateTime.Now.ToString("HH:mm:ss tt")
+
+    '        BuildFileAndPrint(weight)
+
+    '        'add info for transaction
+    '        AddTransactionToDB()
+
+    '        If PROD_ACTIVE Then
+    '            CreateInfoForAlpha()
+    '        End If
+
+    '        BOX_LOT_COUNT_CHANGED = False       'reset
+
+    '    Catch ex As Exception
+    '        WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
+    '    End Try
+    'End Sub
+    'Private Sub BuildFileAndPrint(ByVal nLBS As Single)
+
+    '    Try
+
+    '        Dim tempProductInfo As New ProductInfo
+    '        tempProductInfo = DatabaseHandling.LookupSpecificProduct(lblProductCode.Text, ProductList)
+
+    '        ' Save reported weight as Gross
+    '        LAST_GROSS_WEIGHT = nLBS
+
+    '        ' Adjust for tare of Box
+    '        nLBS -= tempProductInfo.Tare
+
+    '        ' Adjust for tare of "items"
+
+    '        nLBS -= (tempProductInfo.ItemCountPerBox * tempProductInfo.ItemTareEach)
+
+
+    '        'CURRENT_LOT = FixNullInteger(lblLotDisplay.Text)
+
+    '        If tempProductInfo.SetWeight <> 0 Then LAST_GROSS_WEIGHT = tempProductInfo.SetWeight + tempProductInfo.Tare
+    '        If tempProductInfo.SetWeight <> 0 Then nLBS = tempProductInfo.SetWeight
+
+
+    '        Dim outFile As String = Environment.CurrentDirectory & AppSettings("TempWorkFolder") & MachineInstance.ScaleName & "_" & System.Guid.NewGuid.ToString & ".palco.lbl"
+
+    '        System.IO.File.WriteAllText(outFile, BuildLabelContentGrinding(nLBS, BOX_COUNT_LOT))
+
+    '        WriteToLog("before print", outFile, MachineInstance.PrinterName, MachineInstance.ScaleNumber)
+
+    '        Dim bSuccess As Boolean = RawPrinterHelper.RawPrinterHelper.SendFileToPrinter(MachineInstance.PrinterName, outFile)
+
+
+    '        WriteToLog("after print", outFile, MachineInstance.PrinterPort, MachineInstance.ScaleNumber)
+
+    '        'Me.BeginInvoke(DirectCast(Sub() lblSerialNumberDisplay.Text = Microsoft.VisualBasic.Right(LAST_BARCODE, 10), System.Windows.Forms.MethodInvoker))
+
+    '        LAST_SERIAL = Microsoft.VisualBasic.Right(LAST_BARCODE, 10)
+
+    '    Catch ex As Exception
+    '        WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
+    '    End Try
+
+    'End Sub
+    'Private Function BuildLabelContentGrinding(ByVal nLBS As Single, ByVal iBoxCount As Integer) As String
+
+    '    Dim sReturn As String = ""
+
+    '    Try
+    '        Dim tempProductInfo As New ProductInfo
+    '        tempProductInfo = DatabaseHandling.LookupSpecificProduct(lblProductCode.Text, ProductList)
+
+
+    '        'If setweight <> 0 Then nLBS = setweight
+    '        'lblProductWeight.Text = FormatNumber(nLBS, 1) & " LBS   Tare " & Math.Round(LastGrossWeight - nLBS, 2)
+
+    '        Dim GradeToUse As Integer = IIf(OVERRIDE_GRADE_VALUE = 0, GRADE, OVERRIDE_GRADE_VALUE)
+
+    '        Dim nKGS As Single = nLBS * CSng(AppSettings("KiloConversionRate"))
+    '        'Dim tLBSHundred As String = Microsoft.VisualBasic.Right("000000" & FormatNumber(nLBS * 100, 0, TriState.UseDefault, TriState.UseDefault, TriState.False), 6)
+    '        ' Lop off the "last digit"
+    '        Dim wrkNumber As String = FormatNumber((Math.Round(nLBS, 1)) * 100, 0, TriState.UseDefault, TriState.UseDefault, TriState.False)
+    '        Dim tLBSHundred As String = Microsoft.VisualBasic.Right("000000" & wrkNumber.Substring(0, wrkNumber.Length - 1), 6)
+    '        Dim tBoxCount As String
+    '        If tempProductInfo.Lot <> 0 Then
+    '            tBoxCount = Microsoft.VisualBasic.Right("0000" & iBoxCount, 4) & "-" & MachineInstance.ScaleNumber & IIf(IsKickoutBox(tempProductInfo), "+", "") & "  Lot " & tempProductInfo.Lot
+    '        Else
+    '            tBoxCount = Microsoft.VisualBasic.Right("0000" & iBoxCount, 4) & "-" & MachineInstance.ScaleNumber & IIf(IsKickoutBox(tempProductInfo), "+", "")
+    '        End If
+
+
+    '        Dim tGradePad As String = Microsoft.VisualBasic.Right("00" & GradeToUse, 1)
+    '        If GradeToUse = 8 Then tGradePad = "0"
+    '        Dim tGradeAndProduct As String = tGradePad & Microsoft.VisualBasic.Right("0000" & tGradePad & lblProductCode.Text, 4)
+
+    '        'Dim tBarcode As String = tGradePad & tGradeAndProduct & tLBSHundred
+    '        Dim tmpSerialNumber As String = DatabaseHandling.GetNextSerialNumber(MachineInstance.ScaleNumber)
+    '        tmpSerialNumber = tmpSerialNumber.ToString().PadLeft(9, "0")
+
+    '        '   Dim tBarcodeText As String = "0190630308" & tGradeAndProduct & GetCheckDigitGTIN_13("90630308" & tGradeAndProduct) & "3201" & tLBSHundred & "11" & Now.ToString("yyMMdd") & "21" & ProductionLineNumber & tmpSerialNumber
+    '        '  Dim tBarcodeFooter As String = "(01)90630308" & tGradeAndProduct & GetCheckDigitGTIN_13("90630308" & tGradeAndProduct) & "(3201)" & tLBSHundred & "(11)" & Now.ToString("yyMMdd") & "(21)" & ProductionLineNumber & tmpSerialNumber
+
+    '        ' Debug.Print(tBarcodeText)
+
+    '        Dim tBarcodeText As String = "019630308" & tGradeAndProduct & GetCheckDigitGTIN_13("9630308" & tGradeAndProduct) & "3201" & tLBSHundred & "11" & PROD_DATE_TO_USE.ToString("yyMMdd") & "21" & MachineInstance.ScaleNumber & tmpSerialNumber
+    '        Dim tBarcodeFooter As String = "(01)9630308" & tGradeAndProduct & GetCheckDigitGTIN_13("9630308" & tGradeAndProduct) & "(3201)" & tLBSHundred & "(11)" & PROD_DATE_TO_USE.ToString("yyMMdd") & "(21)" & MachineInstance.ScaleNumber & tmpSerialNumber
+
+    '        'Dim tBarcodeText As String = "019630308" & "009272" & GetCheckDigitGTIN_13("90630308" & tGradeAndProduct) & "3201" & tLBSHundred & "11" & Now.ToString("yyMMdd") & "21" & MachineInstance.ScaleNumber & tmpSerialNumber
+    '        'Dim tBarcodeFooter As String = "019630308" & "009272" & GetCheckDigitGTIN_13("90630308" & tGradeAndProduct) & "3201" & tLBSHundred & "11" & Now.ToString("yyMMdd") & "21" & MachineInstance.ScaleNumber & tmpSerialNumber
+    '        'Dim tBarcodeText As String = "0190630308" & "123456" & GetCheckDigitGTIN_13("90630308" & tGradeAndProduct) & "3201" & tLBSHundred & "11" & Now.ToString("yyMMdd") & "21" & "101234567"
+    '        'Dim tBarcodeFooter As String = "0190630308" & "123456" & GetCheckDigitGTIN_13("90630308" & tGradeAndProduct) & "3201" & tLBSHundred & "11" & Now.ToString("yyMMdd") & "21" & "101234567"
+    '        LAST_BARCODE = tBarcodeText
+
+    '        sReturn = System.IO.File.ReadAllText(Environment.CurrentDirectory & AppSettings("PrintTemplateLocation_Grinding"))    'PrintTemplate
+    '        Dim tstspc As Integer = Math.Round((55 - Len(tempProductInfo.ProductDescription)) / 1.5, 0)
+    '        Dim currenttestnohold As String = tempProductInfo.ProductDescription
+    '        If tstspc > 1 Then
+    '            currenttestnohold = tempProductInfo.ProductDescription
+    '            For x = 1 To tstspc
+    '                tempProductInfo.ProductDescription = " " & tempProductInfo.ProductDescription
+    '            Next
+    '        End If
+    '        sReturn = sReturn.Replace("<<proddesc>>", tempProductInfo.ProductDescription)
+    '        tempProductInfo.ProductDescription = currenttestnohold
+
+    '        sReturn = sReturn.Replace("<<HEADER_WEIGHT_KGS>>", FormatNumber(nKGS, 2, TriState.UseDefault, TriState.UseDefault, TriState.False))
+    '        sReturn = sReturn.Replace("<<HEADER_WEIGHT_LBS>>", FormatNumber(nLBS, 2, TriState.UseDefault, TriState.UseDefault, TriState.False))
+
+    '        If GradeToUse = 8 Then
+    '            sReturn = sReturn.Replace("<<BIG_GRADE>>", "")
+    '        Else
+    '            sReturn = sReturn.Replace("<<BIG_GRADE>>", GradeToUse)
+    '        End If
+
+    '        If CURRENT_TEST_NO = "0" And GradeToUse = 1 Then
+    '            CURRENT_TEST_NO = "   BEEF USDA CERTIFIED ANGUS"
+    '        End If
+    '        If CURRENT_TEST_NO = "0" And GradeToUse = 2 Then
+    '            CURRENT_TEST_NO = "  BEEF USDA SELECT "
+    '        End If
+    '        If CURRENT_TEST_NO = "0" And GradeToUse = 3 Then
+    '            CURRENT_TEST_NO = "  BEEF USDA CHOICE "
+    '        End If
+    '        If CURRENT_TEST_NO = "0" And GradeToUse = 5 Then
+    '            CURRENT_TEST_NO = "  BEEF USDA PRIME "
+    '        End If
+    '        If CURRENT_TEST_NO = "0" And GradeToUse = 6 Then
+    '            CURRENT_TEST_NO = "  BEEF USDA CERTIFIED HERFORD "
+    '        End If
+
+
+    '        If CURRENT_TEST_NO = "0" Then CURRENT_TEST_NO = ""
+    '        tstspc = Math.Round((32 - Len(CURRENT_TEST_NO)) / 1.5, 0)
+    '        currenttestnohold = CURRENT_TEST_NO
+    '        If tstspc > 1 Then
+    '            currenttestnohold = CURRENT_TEST_NO
+    '            For x = 1 To tstspc
+    '                CURRENT_TEST_NO = " " & CURRENT_TEST_NO
+    '            Next
+    '        End If
+    '        sReturn = sReturn.Replace("<<Testno>>", CURRENT_TEST_NO)
+    '        CURRENT_TEST_NO = currenttestnohold
+
+    '        sReturn = sReturn.Replace("<<BOX_COUNT>>", tBoxCount)
+    '        sReturn = sReturn.Replace("<<MMDDYY>>", CheckString(PROD_DATE_TO_USE.ToString("MMddyy")))
+    '        sReturn = sReturn.Replace("<<PRINT_TIME>>", PROD_DATE_TO_USE.ToString("hmmt"))
+    '        'If productionact <> 0 Then
+    '        sReturn = sReturn.Replace("<<BARCODE_TEXT>>", tBarcodeText)
+    '        'Else
+    '        'LabelOutput = LabelOutput.Replace("<<BARCODE_TEXT>>", "")
+    '        'End If
+    '        sReturn = sReturn.Replace("<<BARCODE_FOOTER>>", tBarcodeFooter)
+    '        sReturn = sReturn.Replace("<<PRODUCT_CODE>>", tempProductInfo.ProductCode)
+
+    '        'BuildLabelContent = BuildLabelContent.Replace("<<BARCODE_GRADE>>", tGradePad)
+    '        'BuildLabelContent = BuildLabelContent.Replace("<<BARCODE_GRADE_AND_PRODUCT_CODE>>", tGradeAndProduct)
+    '        'BuildLabelContent = BuildLabelContent.Replace("<<BARCODE_PRODUCT_WEIGHT>>", tLBSHundred)
+
+    '        ' Gross is the net plus the weight of the packaging....
+    '        Dim tGrossLBS As String = FormatNumber(LAST_GROSS_WEIGHT, 1)
+    '        Dim tGrossKGS As String = FormatNumber(LAST_GROSS_WEIGHT * CSng(System.Configuration.ConfigurationManager.AppSettings("KiloConversionRate")), 1)
+    '        sReturn = sReturn.Replace("<<TOP_MINI_GROSS_LBS>>", tGrossLBS)
+    '        sReturn = sReturn.Replace("<<TOP_MINI_GROSS_KGS>>", tGrossKGS)
+
+    '        'LastBarCodeText = tBarcodeText
+
+    '    Catch ex As Exception
+    '        WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
+    '    Finally
+    '    End Try
+
+    '    Return sReturn
+
+    'End Function
     Private Sub AddTransactionToDB()
 
         Try
