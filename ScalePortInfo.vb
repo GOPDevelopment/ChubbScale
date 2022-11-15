@@ -5,7 +5,7 @@ Public Class ScalePortInfo
 
     Public WithEvents ScalePort As New SerialPort
     Public EntireScaleMessage As String = ""
-    Public ScaleWeightEndText As String = "lb GROSS"
+    'Public ScaleWeightEndText As String = "lb GROSS"
     Public Property CurrentScaleRead As String = "0"
 
     Public Sub New(comPort As String)

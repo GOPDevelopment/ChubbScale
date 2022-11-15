@@ -7,11 +7,16 @@ Imports System.Configuration.ConfigurationManager
 
 Public Class frmCredentials
 
-
     Public Event AuthenticateUser(sender As Object, e As EventArgs)
     Private Sub btnOK_Click(sender As System.Object, e As System.EventArgs) Handles btnOK.Click
-        'Raise the event that a message is being sent from this form.
-        RaiseEvent AuthenticateUser(Me, EventArgs.Empty)
+        Try
+            'Raise the event that a message is being sent from this form.
+            RaiseEvent AuthenticateUser(Me, EventArgs.Empty)
+
+
+        Catch ex As Exception
+            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, "")
+        End Try
         Me.Close()
     End Sub
 
@@ -21,9 +26,7 @@ Public Class frmCredentials
 
     Public ReadOnly Property WinUserName() As String
         Get
-            'Return txtUsername.Text.Trim
             Return cmbUsers.SelectedItem.ToString
-
         End Get
     End Property
     Public ReadOnly Property WinPassword() As String
@@ -34,35 +37,39 @@ Public Class frmCredentials
 
     Private Sub frmCredentials_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Dim userType As String = ""
-        If Login.rdoTech.Checked Then userType = "TECH"
-        If Login.rdoSupervisor.Checked Then userType = "SUP"
+        If Login.rdoTech.Checked Then userType = "IT"
+        If Login.rdoSupervisor.Checked Then userType = "FabSupervisors"
 
         Me.CenterToParent()
 
         If userType <> "" Then
-            Dim oConn As New SqlConnection
-            oConn = DatabaseHandling.ConnectSQL(AppSettings("ConnectionString"))
-            Dim cmd As New SqlCommand
-            cmd = New SqlClient.SqlCommand("SELECT * FROM UsernamesForDropdown WHERE UserType = '" & userType & "' order by UserLogin", oConn)
-            Dim dataReader As SqlDataReader
-            dataReader = cmd.ExecuteReader()
-            While dataReader.Read
-                ' Write code to insert an Item into dropdownlist
-                cmbUsers.Items.Add(dataReader("UserLogin").ToString())
-            End While
-            dataReader.Close()
+            'Dim oConn As New SqlConnection
+            'oConn = DatabaseHandling.ConnectSQL(AppSettings("ConnectionString"))
+            'Dim cmd As New SqlCommand
+            'cmd = New SqlClient.SqlCommand("SELECT * FROM UsernamesForDropdown WHERE UserType = '" & userType & "' order by UserLogin", oConn)
+            'Dim dataReader As SqlDataReader
+            'dataReader = cmd.ExecuteReader()
+            'While dataReader.Read
+            '    ' Write code to insert an Item into dropdownlist
+            '    cmbUsers.Items.Add(dataReader("UserLogin").ToString())
+            'End While
+            'dataReader.Close()
+
+
+            Dim UsersInGroup As New List(Of String)
+            UsersInGroup = GetUsersAndGroups(userType)
+            For Each item In UsersInGroup
+                cmbUsers.Items.Add(item)
+            Next
         End If
 
-    End Sub
 
-    Private Sub txtPassword_TextChanged(sender As Object, e As EventArgs) Handles txtPassword.GotFocus
 
 
     End Sub
 
     Private Sub txtPassword_DoubleClick(sender As Object, e As EventArgs) Handles txtPassword.DoubleClick
         If txtPassword.Text = "" Then
-            ' Get product code
             Dim frmKeyboard As New frmKeyboardEntryOnly
             frmKeyboard.ShowDialog()
             If frmKeyboard.KeyboardEntry = "" Then
@@ -74,7 +81,7 @@ Public Class frmCredentials
             End If
             frmKeyboard.Close()
             frmKeyboard.Dispose()
-
         End If
     End Sub
+
 End Class

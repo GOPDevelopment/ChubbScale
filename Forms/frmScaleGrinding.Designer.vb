@@ -379,9 +379,9 @@ Partial Class frmScaleGrinding
         'btnMakeFavorite
         '
         Me.btnMakeFavorite.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnMakeFavorite.Location = New System.Drawing.Point(785, 232)
+        Me.btnMakeFavorite.Location = New System.Drawing.Point(795, 232)
         Me.btnMakeFavorite.Name = "btnMakeFavorite"
-        Me.btnMakeFavorite.Size = New System.Drawing.Size(198, 41)
+        Me.btnMakeFavorite.Size = New System.Drawing.Size(186, 41)
         Me.btnMakeFavorite.TabIndex = 316
         Me.btnMakeFavorite.Text = "Make Favorite"
         Me.btnMakeFavorite.UseVisualStyleBackColor = True
@@ -390,9 +390,9 @@ Partial Class frmScaleGrinding
         '
         Me.lblProductCode.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.lblProductCode.Font = New System.Drawing.Font("Tahoma", 20.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblProductCode.Location = New System.Drawing.Point(232, 231)
+        Me.lblProductCode.Location = New System.Drawing.Point(201, 231)
         Me.lblProductCode.Name = "lblProductCode"
-        Me.lblProductCode.Size = New System.Drawing.Size(86, 41)
+        Me.lblProductCode.Size = New System.Drawing.Size(130, 41)
         Me.lblProductCode.TabIndex = 315
         '
         'lblProductDesc
@@ -400,9 +400,9 @@ Partial Class frmScaleGrinding
         Me.lblProductDesc.BackColor = System.Drawing.SystemColors.Control
         Me.lblProductDesc.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.lblProductDesc.Font = New System.Drawing.Font("Tahoma", 20.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblProductDesc.Location = New System.Drawing.Point(339, 232)
+        Me.lblProductDesc.Location = New System.Drawing.Point(342, 232)
         Me.lblProductDesc.Name = "lblProductDesc"
-        Me.lblProductDesc.Size = New System.Drawing.Size(433, 41)
+        Me.lblProductDesc.Size = New System.Drawing.Size(442, 41)
         Me.lblProductDesc.TabIndex = 314
         '
         'btnProductLookup
@@ -410,7 +410,7 @@ Partial Class frmScaleGrinding
         Me.btnProductLookup.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.btnProductLookup.Location = New System.Drawing.Point(44, 231)
         Me.btnProductLookup.Name = "btnProductLookup"
-        Me.btnProductLookup.Size = New System.Drawing.Size(173, 41)
+        Me.btnProductLookup.Size = New System.Drawing.Size(146, 41)
         Me.btnProductLookup.TabIndex = 313
         Me.btnProductLookup.Text = "Product Lookup"
         Me.btnProductLookup.UseVisualStyleBackColor = True

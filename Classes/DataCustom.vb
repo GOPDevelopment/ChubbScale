@@ -41,57 +41,70 @@ Public Class ProductInfo
     Public Property IsFlexible As Boolean
 
 End Class
-
 Public Class LabelVariables
-    Public Property ProductDesc As String
-    Public Property SP As String
-    Public Property Time As String
-    Public Property ShiftID As String
-    Public Property GradeWP As String
-    Public Property GradeDis As String
-    Public Property Description3 As String
-    Public Property Description2 As String
-    Public Property Description As String
-    Public Property Barcode_ProdID As String
-    Public Property GTIN As String
-    Public Property Box_High As String
-    Public Property TickerUpdate As String
-    Public Property Barcode As String
-    Public Property DescDis As String
-    Public Property SKU_Trim As String
-    Public Property TickerStation As String
-    Public Property ProductLine As String   'Product-Line
-    Public Property JulianDate As String
-    Public Property TickerCount As String
-    Public Property OrderNo As String
-    Public Property BC_DATE As String
-    Public Property Ticker As String
-    Public Property PackDateDis As String
-    Public Property DailyTicker As String
-    Public Property NetKG As String
-    Public Property PlantID As String
-    Public Property NetLB As String
-    Public Property C128_1 As String
-    Public Property Box_Low As String
-    Public Property Product_ID As String
-    Public Property TrimmedWeight As String
-    Public Property TimeDis As String
-    Public Property Line1Dis As String
-    Public Property ScaleData As String
-    Public Property DateDisStr As String
-    Public Property Serial As String
-    Public Property ItemCountPerBox As String
-    Public Property SetWeight As String
-    Public Property LineStationID As String
-    Public Property DateCode As String
-    Public Property BC_Weight As String
-    Public Property Manufact_ID As String
-    Public Property SKU0 As String
-    Public Property GrossKG As String
-    Public Property GrossLB As String
-    Public Property Tare_Box As String
-    Public Property ProductCode As String
-    Public Property Product_Type_SKUNAME As String
+
+    Public Property ShiftID As String = ""  '1
+    Public Property Description As String = ""    'Tastyfood
+    Public Property Barcode_ProdID As String = ""    '622333
+    Public Property GTIN As String = ""    '630308680123
+    Public Property barcode As String = ""    '00213225622333
+    Public Property Pack_Time As String = ""    '9:45
+    Public Property DescDis As String = ""    'Tastyfood
+    Public Property SKU_Trim As String = ""    '622333
+    Public Property BC_Date As String = ""    '221108
+    Public Property GradDis As String = ""    '62
+    Public Property Packdatedis As String = ""    '110822
+    Public Property NetKG As String = ""    '28.12 KG
+    Public Property boxcount As String = ""    '0036
+    Public Property C128_1 As String = ""    '{CODE C}0196303086801231320100064511221108{CODE B}211400000001
+    Public Property NetLB As String = ""    '61.99 LBS
+    Public Property Product_ID As String = ""    '680123
+    Public Property Clear As String = ""    '*
+    Public Property TimeDis As String = ""    '9:45
+    Public Property TrimmedWeight As String = ""    '64.49
+    Public Property DateDisStr As String = ""    'PACK Date: 110822
+    Public Property scaledata As String = ""    '64.49
+    Public Property Serial As String = ""    '1400000001
+    Public Property LineStationID As String = ""    '12
+    Public Property BC_Weight As String = ""    '645
+    Public Property Tare_Box As String = ""    '2.5
+    Public Property GrossLB As String = ""    'GROSS 64.49 LB
+    Public Property GrossKG As String = ""    'GROSS 29.25 KG
+
+End Class
+
+Public Class LabelVariableAssignment
+    Public Property ProductWeightKG As Integer = 0
+    Public Property BarcodeReadable As Integer = 0
+    Public Property UseFreezeDate As Integer = 0
+    Public Property GradeNumber As Integer = 0
+    Public Property PackDate As Integer = 0
+    Public Property ProductDescription2 As Integer = 0
+    Public Property ScaleNumber As Integer = 0
+    Public Property ProductWeightLB As Integer = 0
+    Public Property BoxCount As Integer = 0
+    Public Property Barcode128 As Integer = 0
+    Public Property PrintTime As Integer = 0
+    Public Property ProductDescription As Integer = 0
+    Public Property Lot As Integer = 0
+    Public Property ProductCode As Integer = 0
+End Class
+
+Public Class LabelVariableString
+    Public Property ProductWeightKG As String = "ProductWeightKG"
+    Public Property BarcodeReadable As String = "BarcodeReadable"
+    Public Property UseFreezeDate As String = "UseFreezeDate"
+    Public Property GradeNumber As String = "GradeNumber"
+    Public Property PackDate As String = "PackDate"
+    Public Property ProductDescription2 As String = "ProductDescription2"
+    Public Property ScaleNumber As String = "ScaleNumber"
+    Public Property ProductWeightLB As String = "ProductWeightLB"
+    Public Property BoxCount As String = "BoxCount"
+    Public Property Barcode128 As String = "Barcode128"
+    Public Property PrintTime As String = "PrintTime"
+    Public Property ProductDescription As String = "ProductDescription"
+    Public Property Lot As String = "Lot"
+    Public Property ProductCode As String = "ProductCode"
 End Class
 
 Public Class MachineInfo

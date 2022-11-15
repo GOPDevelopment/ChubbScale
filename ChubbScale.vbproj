@@ -21,7 +21,7 @@
     <DebugType>full</DebugType>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\_compiled\ChubScale\</OutputPath>
     <DocumentationFile>ChubbScale.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
@@ -51,10 +51,10 @@
     <Reference Include="BarcodeLib.BarcodeReader">
       <HintPath>DLLs\BarcodeLib.BarcodeReader.dll</HintPath>
     </Reference>
-    <Reference Include="Interop.LabelManager2, Version=19.0.0.0, Culture=neutral, PublicKeyToken=1904804c83c4f22a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
+    <Reference Include="Interop.LabelManager2, Version=18.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>DLLs\Interop.LabelManager2.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="RawPrinterHelper">
       <HintPath>DLLs\RawPrinterHelper.dll</HintPath>
@@ -203,7 +203,9 @@
       <CustomToolNamespace>My</CustomToolNamespace>
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\logo.png" />

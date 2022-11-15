@@ -88,7 +88,16 @@ Module CommonStuff
         Next
         Return sReturn
     End Function
+    Public Function TrimToLength(iLength As Integer, sOriginalString As String) As String
+        Dim sReturn As String = ""
+        sReturn = sOriginalString
 
+        If sOriginalString.Length > iLength Then
+            sReturn = sOriginalString.Substring(0, iLength)
+        End If
+
+        Return sReturn
+    End Function
     Public Function GetWindowsUserName() As String
         Dim temp As String
         temp = System.Security.Principal.WindowsIdentity.GetCurrent().Name.Split("\"c)(1) 'Name comes as "DOMAIN-OR-COMPUTERNAME\Username"
@@ -285,7 +294,7 @@ Module CommonStuff
                     File.Delete(ThisFile)
                 End If
             Catch ex As Exception
-                WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, machineInfo)
+                WriteToErrorLog("ERROR", ex.Message, ex.StackTrace & "    " & ThisFile, machineInfo)
             End Try
         Next
     End Sub

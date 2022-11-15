@@ -1,4 +1,5 @@
 ﻿Imports LabelManager2
+Imports System.Configuration.ConfigurationManager
 'Imports System.Drawing
 'Imports System.Drawing.Drawing2D
 Imports System.Drawing.Printing
@@ -47,7 +48,8 @@ Module PrinterInfo
         Dim docToPrint As New PrintDocument
         Dim dlg As New PrintDialog
 
-        docToPrint.DocumentName = "C:\Code\ChubScale\ChubScale\Labels\Box Line 4.5x3.lab_18_teresa.lab"
+        'docToPrint.DocumentName = "C:\Code\ChubScale\ChubScale\Labels\Box Line 4.5x3.lab_18_teresa.lab"
+        docToPrint.DocumentName = Environment.CurrentDirectory & AppSettings("PrintTemplateLocation_Chubb")
         'dlg.PrinterSettings.PrinterName = "\\PRDPRINTAPPW01.GOPACK.LOCAL\FO4515C-Lowerlevel-01"
         dlg.PrinterSettings.PrinterName = "SATO S86-ex 305dpi"
         dlg.Document = docToPrint
