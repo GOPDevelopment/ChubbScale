@@ -39,6 +39,7 @@ Partial Class Login
         Me.Label1 = New System.Windows.Forms.Label()
         Me.GroupBox2 = New System.Windows.Forms.GroupBox()
         Me.grpSupTechOptions = New System.Windows.Forms.GroupBox()
+        Me.DateTimePicker1 = New System.Windows.Forms.DateTimePicker()
         Me.Label14 = New System.Windows.Forms.Label()
         Me.lblDayDescription = New System.Windows.Forms.Label()
         Me.Panel2 = New System.Windows.Forms.Panel()
@@ -54,7 +55,6 @@ Partial Class Login
         Me.btnAccept = New System.Windows.Forms.Button()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
-        Me.DateTimePicker1 = New System.Windows.Forms.DateTimePicker()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         Me.grpSupTechOptions.SuspendLayout()
@@ -219,7 +219,7 @@ Partial Class Login
         Me.GroupBox2.Margin = New System.Windows.Forms.Padding(7)
         Me.GroupBox2.Name = "GroupBox2"
         Me.GroupBox2.Padding = New System.Windows.Forms.Padding(7)
-        Me.GroupBox2.Size = New System.Drawing.Size(633, 364)
+        Me.GroupBox2.Size = New System.Drawing.Size(633, 317)
         Me.GroupBox2.TabIndex = 1
         Me.GroupBox2.TabStop = False
         Me.GroupBox2.Text = "Login"
@@ -232,10 +232,18 @@ Partial Class Login
         Me.grpSupTechOptions.Font = New System.Drawing.Font("Tahoma", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.grpSupTechOptions.Location = New System.Drawing.Point(32, 187)
         Me.grpSupTechOptions.Name = "grpSupTechOptions"
-        Me.grpSupTechOptions.Size = New System.Drawing.Size(543, 123)
+        Me.grpSupTechOptions.Size = New System.Drawing.Size(543, 101)
         Me.grpSupTechOptions.TabIndex = 21
         Me.grpSupTechOptions.TabStop = False
         Me.grpSupTechOptions.Text = "Supervisor/Tech Options"
+        '
+        'DateTimePicker1
+        '
+        Me.DateTimePicker1.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
+        Me.DateTimePicker1.Location = New System.Drawing.Point(153, 47)
+        Me.DateTimePicker1.Name = "DateTimePicker1"
+        Me.DateTimePicker1.Size = New System.Drawing.Size(149, 30)
+        Me.DateTimePicker1.TabIndex = 22
         '
         'Label14
         '
@@ -353,7 +361,7 @@ Partial Class Login
         '
         'btnExit
         '
-        Me.btnExit.Location = New System.Drawing.Point(94, 689)
+        Me.btnExit.Location = New System.Drawing.Point(94, 656)
         Me.btnExit.Margin = New System.Windows.Forms.Padding(5)
         Me.btnExit.Name = "btnExit"
         Me.btnExit.Size = New System.Drawing.Size(201, 77)
@@ -363,7 +371,7 @@ Partial Class Login
         '
         'btnAccept
         '
-        Me.btnAccept.Location = New System.Drawing.Point(345, 690)
+        Me.btnAccept.Location = New System.Drawing.Point(345, 657)
         Me.btnAccept.Margin = New System.Windows.Forms.Padding(5)
         Me.btnAccept.Name = "btnAccept"
         Me.btnAccept.Size = New System.Drawing.Size(201, 77)
@@ -384,19 +392,11 @@ Partial Class Login
         'Timer1
         '
         '
-        'DateTimePicker1
-        '
-        Me.DateTimePicker1.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
-        Me.DateTimePicker1.Location = New System.Drawing.Point(153, 47)
-        Me.DateTimePicker1.Name = "DateTimePicker1"
-        Me.DateTimePicker1.Size = New System.Drawing.Size(149, 30)
-        Me.DateTimePicker1.TabIndex = 22
-        '
         'Login
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(15.0!, 33.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(685, 790)
+        Me.ClientSize = New System.Drawing.Size(685, 751)
         Me.Controls.Add(Me.PictureBox1)
         Me.Controls.Add(Me.btnAccept)
         Me.Controls.Add(Me.btnExit)

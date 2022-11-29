@@ -115,7 +115,7 @@ Public Class Login
         Me.Timer1.Start()
 
         Dim machineName As String = "13"
-        WriteToLog("Program Start", "", "Program Start", machineName)
+        WriteToLog("Program Start", Environment.MachineName, "Program Start", machineName)
 
         MachineInstance = DatabaseHandling.GetMachineInfo(machineName)
 

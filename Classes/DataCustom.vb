@@ -14,31 +14,31 @@ Public Class ProgramUser
 End Class
 Public Class ProductInfo
 
-    Public Property ProductDescription As String
-    Public Property ProductCode As String
-    Public Property SetWeight As Single
-    Public Property ProductGrade As Integer
-    Public Property Tare As Single
-    Public Property Tare2 As Single
-    Public Property KickoutCount As Integer
-    Public Property MinWeight As Single
-    Public Property MaxWeight As Single
-    Public Property ItemCountPerBox As Integer
-    Public Property ItemTareEach As Single
-    Public Property Lot As Integer
-    Public Property Type As String
-    Public Property AlphaDescription As String
-    Public Property ProductDescription2 As String
-    Public Property TestingDescription As String
+    Public Property ProductDescription As String = ""
+    Public Property ProductCode As String = ""
+    Public Property SetWeight As Single = 0
+    Public Property ProductGrade As Integer = 0
+    Public Property Tare As Single = 0
+    Public Property Tare2 As Single = 0
+    Public Property KickoutCount As Integer = 0
+    Public Property MinWeight As Single = 0
+    Public Property MaxWeight As Single = 0
+    Public Property ItemCountPerBox As Integer = 0
+    Public Property ItemTareEach As Single = 0
+    Public Property Lot As Integer = 0
+    Public Property Type As String = ""
+    Public Property AlphaDescription As String = ""
+    Public Property ProductDescription2 As String = ""
+    Public Property TestingDescription As String = ""
 
-    Public Property LabelTemplate As String
+    Public Property LabelTemplate As String = ""
     'Public Property PricePerLb As String
-    'Public Property SellByDate As Nullable(Of Date)
+    Public Property SellByDay As Integer = 0
     'Public Property KillDate As Nullable(Of Date)
     'Public Property DiscPerLb As String
-    Public Property NormalWeight As String
-    Public Property IsRigid As Boolean
-    Public Property IsFlexible As Boolean
+    Public Property NormalWeight As String = ""
+    Public Property IsRigid As Boolean = False
+    Public Property IsFlexible As Boolean = False
 
 End Class
 Public Class LabelVariables
@@ -88,6 +88,8 @@ Public Class LabelVariableAssignment
     Public Property ProductDescription As Integer = 0
     Public Property Lot As Integer = 0
     Public Property ProductCode As Integer = 0
+    Public Property ImageMiddleRightLocation As Integer = 0
+    Public Property ImageTopLeftLocation As Integer = 0
 End Class
 
 Public Class LabelVariableString
@@ -105,6 +107,8 @@ Public Class LabelVariableString
     Public Property ProductDescription As String = "ProductDescription"
     Public Property Lot As String = "Lot"
     Public Property ProductCode As String = "ProductCode"
+    Public Property ImageMiddleRightLocation As String = "ImageMiddleRightLocation"
+    Public Property ImageTopLeftLocation As String = "ImageTopLeftLocation"
 End Class
 
 Public Class MachineInfo

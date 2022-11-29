@@ -14,6 +14,21 @@
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -21,7 +36,7 @@
     <DebugType>full</DebugType>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <OutputPath>..\..\_compiled\ChubScale\</OutputPath>
+    <OutputPath>P:\GOPScales_Chub\</OutputPath>
     <DocumentationFile>ChubbScale.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
@@ -54,7 +69,7 @@
     <Reference Include="Interop.LabelManager2, Version=18.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>DLLs\Interop.LabelManager2.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="RawPrinterHelper">
       <HintPath>DLLs\RawPrinterHelper.dll</HintPath>
@@ -89,6 +104,7 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApplicationEvents.vb" />
     <Compile Include="Classes\DataCustom.vb" />
     <Compile Include="Classes\Lppx2.vb">
       <SubType>Form</SubType>
@@ -208,7 +224,127 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="PrintTemplates\GB5x3.LBL" />
+    <None Include="PrintTemplates\GB5x35D.LBL" />
+    <None Include="PrintTemplates\GB5x35D1.LBL" />
+    <None Include="PrintTemplates\GB5x3CAB.LBL" />
+    <None Include="PrintTemplates\GB5x3CHB.LBL" />
+    <None Include="PrintTemplates\GB5x3ONA.LBL" />
+    <None Include="PrintTemplates\GBOHB5D.LBL" />
+    <None Include="PrintTemplates\GOP.LBL" />
+    <None Include="PrintTemplates\GOP5D.LBL" />
+    <None Include="PrintTemplates\GOP5x3.LBL" />
+    <None Include="PrintTemplates\GOP5x3CAB.LBL" />
+    <None Include="PrintTemplates\GOP5x3OHB.LBL" />
+    <None Include="PrintTemplates\GOP5x3ONA.LBL" />
+    <None Include="PrintTemplates\GOP5x3test.LBL" />
+    <None Include="PrintTemplates\GOPlogoformat.LBL" />
+    <None Include="PrintTemplates\GOPold.LBL" />
+    <None Include="PrintTemplates\GOPtest.LBL" />
+    <None Include="PrintTemplates\LabelsOther\Box Line 4.5x3.lab_18_steve.lab" />
+    <None Include="PrintTemplates\LabelsOther\Box Line 4.5x3.lab_18_teresa - Copy.lab" />
+    <None Include="PrintTemplates\LabelsOther\Box Line 4.5x3.lab_18_teresa.lab" />
+    <None Include="PrintTemplates\LabelsOther\Chubline.lab_4.lab" />
+    <None Include="PrintTemplates\LabelsOther\GB5x3.LBL" />
+    <None Include="PrintTemplates\LabelsOther\GB5x35D.LBL" />
+    <None Include="PrintTemplates\LabelsOther\GB5x35D1.LBL" />
+    <None Include="PrintTemplates\LabelsOther\GB5x3CAB.LBL" />
+    <None Include="PrintTemplates\LabelsOther\GB5x3CHB.LBL" />
+    <None Include="PrintTemplates\LabelsOther\GB5x3ONA.LBL" />
+    <None Include="PrintTemplates\LabelsOther\GBOHB5D.LBL" />
+    <None Include="PrintTemplates\LabelsOther\GOP.LBL" />
+    <None Include="PrintTemplates\LabelsOther\GOP5D.LBL" />
+    <None Include="PrintTemplates\LabelsOther\GOP5x3.LBL" />
+    <None Include="PrintTemplates\LabelsOther\GOP5x3CAB.LBL" />
+    <None Include="PrintTemplates\LabelsOther\GOP5x3OHB.LBL" />
+    <None Include="PrintTemplates\LabelsOther\GOP5x3ONA.LBL" />
+    <None Include="PrintTemplates\LabelsOther\GOP5x3test.LBL" />
+    <None Include="PrintTemplates\LabelsOther\GOPlogoformat.LBL" />
+    <None Include="PrintTemplates\LabelsOther\GOPold.LBL" />
+    <None Include="PrintTemplates\LabelsOther\GOPtest.LBL" />
+    <None Include="PrintTemplates\LabelsOther\Lbl_Txt1.DB" />
+    <None Include="PrintTemplates\LabelsOther\Lbl_Txt1.PX" />
+    <None Include="PrintTemplates\LabelsOther\Lbl_Txt2.DB" />
+    <None Include="PrintTemplates\LabelsOther\Lbl_Txt2.PX" />
+    <None Include="PrintTemplates\LabelsOther\SATO.LBL" />
+    <None Include="PrintTemplates\LabelsOther\TeresaTest.lab" />
+    <None Include="PrintTemplates\LabelsOther\TeresaTest2.lab" />
+    <None Include="PrintTemplates\LabelsOther\TeresaTest3.lab" />
+    <None Include="PrintTemplates\LabelsOther\TeresaTest4.lab" />
+    <None Include="PrintTemplates\LabelsOther\TeresaTest5.lab" />
+    <None Include="PrintTemplates\LabelsOther\TeresaTest6.lab" />
+    <None Include="PrintTemplates\LabelsOther\tmp.lbl" />
+    <None Include="PrintTemplates\LabelsOther\Toys.Lab" />
+    <None Include="PrintTemplates\TeresaTest7.lab" />
+    <None Include="PrintTemplates\TeresaTest8.lab">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="PrintTemplates\TeresaTestImageSwap.lab">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.8">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.8 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="PrintTemplates\45834.BUG.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="PrintTemplates\960A.BUG.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="PrintTemplates\BEEF - Copy.BMP">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="PrintTemplates\BEEF.BMP" />
+    <Content Include="PrintTemplates\CAB - Copy.bmp" />
+    <Content Include="PrintTemplates\CAB.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="PrintTemplates\chub.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="PrintTemplates\classicherford.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="PrintTemplates\cowhead.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="PrintTemplates\herfgb.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="PrintTemplates\LabelsOther\45834.BUG.bmp" />
+    <Content Include="PrintTemplates\LabelsOther\960A.BUG.bmp" />
+    <Content Include="PrintTemplates\LabelsOther\BEEF - Copy.BMP" />
+    <Content Include="PrintTemplates\LabelsOther\BEEF.BMP" />
+    <Content Include="PrintTemplates\LabelsOther\CAB - Copy.bmp" />
+    <Content Include="PrintTemplates\LabelsOther\CAB.bmp" />
+    <Content Include="PrintTemplates\LabelsOther\chub.bmp" />
+    <Content Include="PrintTemplates\LabelsOther\classicherford.bmp" />
+    <Content Include="PrintTemplates\LabelsOther\cowhead.bmp" />
+    <Content Include="PrintTemplates\LabelsOther\herfgb.bmp" />
+    <Content Include="PrintTemplates\LabelsOther\newlogo.bmp" />
+    <Content Include="PrintTemplates\LabelsOther\onalogo.bmp" />
+    <Content Include="PrintTemplates\LabelsOther\PrinterR.txt" />
+    <Content Include="PrintTemplates\LabelsOther\PrinterS.txt" />
+    <Content Include="PrintTemplates\LabelsOther\wbona.bmp" />
+    <Content Include="PrintTemplates\newlogo.bmp" />
+    <Content Include="PrintTemplates\onalogo.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="PrintTemplates\wbona.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

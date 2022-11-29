@@ -240,9 +240,9 @@ Partial Class frmScaleGrinding
         'btnSetWeightPrint
         '
         Me.btnSetWeightPrint.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnSetWeightPrint.Location = New System.Drawing.Point(832, 457)
+        Me.btnSetWeightPrint.Location = New System.Drawing.Point(797, 293)
         Me.btnSetWeightPrint.Name = "btnSetWeightPrint"
-        Me.btnSetWeightPrint.Size = New System.Drawing.Size(154, 29)
+        Me.btnSetWeightPrint.Size = New System.Drawing.Size(184, 29)
         Me.btnSetWeightPrint.TabIndex = 287
         Me.btnSetWeightPrint.Text = "Test Print"
         Me.btnSetWeightPrint.UseVisualStyleBackColor = True
@@ -251,7 +251,7 @@ Partial Class frmScaleGrinding
         '
         Me.txtTare.Cursor = System.Windows.Forms.Cursors.No
         Me.txtTare.Font = New System.Drawing.Font("Tahoma", 24.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtTare.Location = New System.Drawing.Point(390, 162)
+        Me.txtTare.Location = New System.Drawing.Point(390, 147)
         Me.txtTare.MaxLength = 300
         Me.txtTare.Name = "txtTare"
         Me.txtTare.ReadOnly = True
@@ -263,7 +263,7 @@ Partial Class frmScaleGrinding
         '
         Me.txtNetWeight.Cursor = System.Windows.Forms.Cursors.No
         Me.txtNetWeight.Font = New System.Drawing.Font("Tahoma", 24.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtNetWeight.Location = New System.Drawing.Point(553, 162)
+        Me.txtNetWeight.Location = New System.Drawing.Point(553, 147)
         Me.txtNetWeight.MaxLength = 300
         Me.txtNetWeight.Name = "txtNetWeight"
         Me.txtNetWeight.ReadOnly = True
@@ -275,7 +275,7 @@ Partial Class frmScaleGrinding
         '
         Me.lblGrossWeight.AutoSize = True
         Me.lblGrossWeight.Font = New System.Drawing.Font("Tahoma", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblGrossWeight.Location = New System.Drawing.Point(46, 129)
+        Me.lblGrossWeight.Location = New System.Drawing.Point(46, 114)
         Me.lblGrossWeight.Name = "lblGrossWeight"
         Me.lblGrossWeight.Size = New System.Drawing.Size(128, 23)
         Me.lblGrossWeight.TabIndex = 310
@@ -285,7 +285,7 @@ Partial Class frmScaleGrinding
         '
         Me.lblNetWeight.AutoSize = True
         Me.lblNetWeight.Font = New System.Drawing.Font("Tahoma", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblNetWeight.Location = New System.Drawing.Point(554, 129)
+        Me.lblNetWeight.Location = New System.Drawing.Point(554, 114)
         Me.lblNetWeight.Name = "lblNetWeight"
         Me.lblNetWeight.Size = New System.Drawing.Size(111, 23)
         Me.lblNetWeight.TabIndex = 309
@@ -295,7 +295,7 @@ Partial Class frmScaleGrinding
         '
         Me.lblTare.AutoSize = True
         Me.lblTare.Font = New System.Drawing.Font("Tahoma", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblTare.Location = New System.Drawing.Point(416, 129)
+        Me.lblTare.Location = New System.Drawing.Point(416, 114)
         Me.lblTare.Name = "lblTare"
         Me.lblTare.Size = New System.Drawing.Size(55, 23)
         Me.lblTare.TabIndex = 308
@@ -305,7 +305,7 @@ Partial Class frmScaleGrinding
         '
         Me.lblMin.AutoSize = True
         Me.lblMin.Font = New System.Drawing.Font("Tahoma", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblMin.Location = New System.Drawing.Point(738, 129)
+        Me.lblMin.Location = New System.Drawing.Point(738, 114)
         Me.lblMin.Name = "lblMin"
         Me.lblMin.Size = New System.Drawing.Size(94, 23)
         Me.lblMin.TabIndex = 307
@@ -315,7 +315,7 @@ Partial Class frmScaleGrinding
         '
         Me.lblSetWeight.AutoSize = True
         Me.lblSetWeight.Font = New System.Drawing.Font("Tahoma", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblSetWeight.Location = New System.Drawing.Point(214, 129)
+        Me.lblSetWeight.Location = New System.Drawing.Point(214, 114)
         Me.lblSetWeight.Name = "lblSetWeight"
         Me.lblSetWeight.Size = New System.Drawing.Size(109, 23)
         Me.lblSetWeight.TabIndex = 306
@@ -325,7 +325,7 @@ Partial Class frmScaleGrinding
         '
         Me.lblMax.AutoSize = True
         Me.lblMax.Font = New System.Drawing.Font("Tahoma", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblMax.Location = New System.Drawing.Point(869, 129)
+        Me.lblMax.Location = New System.Drawing.Point(869, 114)
         Me.lblMax.Name = "lblMax"
         Me.lblMax.Size = New System.Drawing.Size(98, 23)
         Me.lblMax.TabIndex = 305
@@ -335,7 +335,7 @@ Partial Class frmScaleGrinding
         '
         Me.txtSetWeight.Cursor = System.Windows.Forms.Cursors.No
         Me.txtSetWeight.Font = New System.Drawing.Font("Tahoma", 24.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtSetWeight.Location = New System.Drawing.Point(218, 162)
+        Me.txtSetWeight.Location = New System.Drawing.Point(218, 147)
         Me.txtSetWeight.Name = "txtSetWeight"
         Me.txtSetWeight.ReadOnly = True
         Me.txtSetWeight.Size = New System.Drawing.Size(108, 46)
@@ -346,7 +346,7 @@ Partial Class frmScaleGrinding
         '
         Me.txtMaxWeight.Cursor = System.Windows.Forms.Cursors.No
         Me.txtMaxWeight.Font = New System.Drawing.Font("Tahoma", 24.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtMaxWeight.Location = New System.Drawing.Point(861, 162)
+        Me.txtMaxWeight.Location = New System.Drawing.Point(861, 147)
         Me.txtMaxWeight.Name = "txtMaxWeight"
         Me.txtMaxWeight.ReadOnly = True
         Me.txtMaxWeight.Size = New System.Drawing.Size(108, 46)
@@ -357,7 +357,7 @@ Partial Class frmScaleGrinding
         '
         Me.txtMinWeight.Cursor = System.Windows.Forms.Cursors.No
         Me.txtMinWeight.Font = New System.Drawing.Font("Tahoma", 24.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtMinWeight.Location = New System.Drawing.Point(731, 162)
+        Me.txtMinWeight.Location = New System.Drawing.Point(731, 147)
         Me.txtMinWeight.Name = "txtMinWeight"
         Me.txtMinWeight.ReadOnly = True
         Me.txtMinWeight.Size = New System.Drawing.Size(108, 46)
@@ -368,7 +368,7 @@ Partial Class frmScaleGrinding
         '
         Me.txtGrossWeight.Cursor = System.Windows.Forms.Cursors.No
         Me.txtGrossWeight.Font = New System.Drawing.Font("Tahoma", 24.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtGrossWeight.Location = New System.Drawing.Point(50, 162)
+        Me.txtGrossWeight.Location = New System.Drawing.Point(50, 147)
         Me.txtGrossWeight.MaxLength = 300
         Me.txtGrossWeight.Name = "txtGrossWeight"
         Me.txtGrossWeight.ReadOnly = True
@@ -379,7 +379,7 @@ Partial Class frmScaleGrinding
         'btnMakeFavorite
         '
         Me.btnMakeFavorite.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnMakeFavorite.Location = New System.Drawing.Point(795, 232)
+        Me.btnMakeFavorite.Location = New System.Drawing.Point(795, 215)
         Me.btnMakeFavorite.Name = "btnMakeFavorite"
         Me.btnMakeFavorite.Size = New System.Drawing.Size(186, 41)
         Me.btnMakeFavorite.TabIndex = 316
@@ -390,7 +390,7 @@ Partial Class frmScaleGrinding
         '
         Me.lblProductCode.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.lblProductCode.Font = New System.Drawing.Font("Tahoma", 20.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblProductCode.Location = New System.Drawing.Point(201, 231)
+        Me.lblProductCode.Location = New System.Drawing.Point(201, 214)
         Me.lblProductCode.Name = "lblProductCode"
         Me.lblProductCode.Size = New System.Drawing.Size(130, 41)
         Me.lblProductCode.TabIndex = 315
@@ -400,7 +400,7 @@ Partial Class frmScaleGrinding
         Me.lblProductDesc.BackColor = System.Drawing.SystemColors.Control
         Me.lblProductDesc.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.lblProductDesc.Font = New System.Drawing.Font("Tahoma", 20.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblProductDesc.Location = New System.Drawing.Point(342, 232)
+        Me.lblProductDesc.Location = New System.Drawing.Point(342, 215)
         Me.lblProductDesc.Name = "lblProductDesc"
         Me.lblProductDesc.Size = New System.Drawing.Size(442, 41)
         Me.lblProductDesc.TabIndex = 314
@@ -408,7 +408,7 @@ Partial Class frmScaleGrinding
         'btnProductLookup
         '
         Me.btnProductLookup.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnProductLookup.Location = New System.Drawing.Point(44, 231)
+        Me.btnProductLookup.Location = New System.Drawing.Point(44, 214)
         Me.btnProductLookup.Name = "btnProductLookup"
         Me.btnProductLookup.Size = New System.Drawing.Size(146, 41)
         Me.btnProductLookup.TabIndex = 313
@@ -429,9 +429,9 @@ Partial Class frmScaleGrinding
         Me.grpTotalsPerProduct.Controls.Add(Me.lblProductCountShift)
         Me.grpTotalsPerProduct.Controls.Add(Me.lblDailyTotal)
         Me.grpTotalsPerProduct.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.grpTotalsPerProduct.Location = New System.Drawing.Point(50, 302)
+        Me.grpTotalsPerProduct.Location = New System.Drawing.Point(50, 273)
         Me.grpTotalsPerProduct.Name = "grpTotalsPerProduct"
-        Me.grpTotalsPerProduct.Size = New System.Drawing.Size(402, 184)
+        Me.grpTotalsPerProduct.Size = New System.Drawing.Size(402, 166)
         Me.grpTotalsPerProduct.TabIndex = 317
         Me.grpTotalsPerProduct.TabStop = False
         Me.grpTotalsPerProduct.Text = "Totals Per Product:"
@@ -440,7 +440,7 @@ Partial Class frmScaleGrinding
         '
         Me.lblWeightTotal.Font = New System.Drawing.Font("Tahoma", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblWeightTotal.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-        Me.lblWeightTotal.Location = New System.Drawing.Point(12, 133)
+        Me.lblWeightTotal.Location = New System.Drawing.Point(12, 120)
         Me.lblWeightTotal.Name = "lblWeightTotal"
         Me.lblWeightTotal.Size = New System.Drawing.Size(140, 19)
         Me.lblWeightTotal.TabIndex = 59
@@ -451,7 +451,7 @@ Partial Class frmScaleGrinding
         '
         Me.lblBoxesPerShift.Font = New System.Drawing.Font("Tahoma", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblBoxesPerShift.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-        Me.lblBoxesPerShift.Location = New System.Drawing.Point(6, 102)
+        Me.lblBoxesPerShift.Location = New System.Drawing.Point(6, 89)
         Me.lblBoxesPerShift.Name = "lblBoxesPerShift"
         Me.lblBoxesPerShift.Size = New System.Drawing.Size(145, 19)
         Me.lblBoxesPerShift.TabIndex = 58
@@ -462,7 +462,7 @@ Partial Class frmScaleGrinding
         '
         Me.lblProductCount.Font = New System.Drawing.Font("Tahoma", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblProductCount.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-        Me.lblProductCount.Location = New System.Drawing.Point(9, 71)
+        Me.lblProductCount.Location = New System.Drawing.Point(9, 58)
         Me.lblProductCount.Name = "lblProductCount"
         Me.lblProductCount.Size = New System.Drawing.Size(145, 19)
         Me.lblProductCount.TabIndex = 56
@@ -473,7 +473,7 @@ Partial Class frmScaleGrinding
         '
         Me.lblProductCountDaily.AutoSize = True
         Me.lblProductCountDaily.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.lblProductCountDaily.Location = New System.Drawing.Point(319, 71)
+        Me.lblProductCountDaily.Location = New System.Drawing.Point(319, 58)
         Me.lblProductCountDaily.Name = "lblProductCountDaily"
         Me.lblProductCountDaily.Size = New System.Drawing.Size(20, 21)
         Me.lblProductCountDaily.TabIndex = 11
@@ -483,7 +483,7 @@ Partial Class frmScaleGrinding
         '
         Me.lblWeightTotalShift.AutoSize = True
         Me.lblWeightTotalShift.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.lblWeightTotalShift.Location = New System.Drawing.Point(177, 131)
+        Me.lblWeightTotalShift.Location = New System.Drawing.Point(177, 118)
         Me.lblWeightTotalShift.Name = "lblWeightTotalShift"
         Me.lblWeightTotalShift.Size = New System.Drawing.Size(20, 21)
         Me.lblWeightTotalShift.TabIndex = 22
@@ -493,7 +493,7 @@ Partial Class frmScaleGrinding
         '
         Me.lblBoxTotalShift.AutoSize = True
         Me.lblBoxTotalShift.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.lblBoxTotalShift.Location = New System.Drawing.Point(177, 101)
+        Me.lblBoxTotalShift.Location = New System.Drawing.Point(177, 88)
         Me.lblBoxTotalShift.Name = "lblBoxTotalShift"
         Me.lblBoxTotalShift.Size = New System.Drawing.Size(20, 21)
         Me.lblBoxTotalShift.TabIndex = 23
@@ -503,7 +503,7 @@ Partial Class frmScaleGrinding
         '
         Me.lblCurrentShift.AutoSize = True
         Me.lblCurrentShift.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblCurrentShift.Location = New System.Drawing.Point(138, 32)
+        Me.lblCurrentShift.Location = New System.Drawing.Point(138, 27)
         Me.lblCurrentShift.Name = "lblCurrentShift"
         Me.lblCurrentShift.Size = New System.Drawing.Size(114, 19)
         Me.lblCurrentShift.TabIndex = 55
@@ -513,7 +513,7 @@ Partial Class frmScaleGrinding
         '
         Me.lblBoxTotalDaily.AutoSize = True
         Me.lblBoxTotalDaily.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.lblBoxTotalDaily.Location = New System.Drawing.Point(319, 102)
+        Me.lblBoxTotalDaily.Location = New System.Drawing.Point(319, 89)
         Me.lblBoxTotalDaily.Name = "lblBoxTotalDaily"
         Me.lblBoxTotalDaily.Size = New System.Drawing.Size(20, 21)
         Me.lblBoxTotalDaily.TabIndex = 12
@@ -523,7 +523,7 @@ Partial Class frmScaleGrinding
         '
         Me.lblWeightTotalDaily.AutoSize = True
         Me.lblWeightTotalDaily.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.lblWeightTotalDaily.Location = New System.Drawing.Point(319, 133)
+        Me.lblWeightTotalDaily.Location = New System.Drawing.Point(319, 120)
         Me.lblWeightTotalDaily.Name = "lblWeightTotalDaily"
         Me.lblWeightTotalDaily.Size = New System.Drawing.Size(20, 21)
         Me.lblWeightTotalDaily.TabIndex = 21
@@ -533,7 +533,7 @@ Partial Class frmScaleGrinding
         '
         Me.lblProductCountShift.AutoSize = True
         Me.lblProductCountShift.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.lblProductCountShift.Location = New System.Drawing.Point(177, 71)
+        Me.lblProductCountShift.Location = New System.Drawing.Point(177, 58)
         Me.lblProductCountShift.Name = "lblProductCountShift"
         Me.lblProductCountShift.Size = New System.Drawing.Size(20, 21)
         Me.lblProductCountShift.TabIndex = 25
@@ -543,7 +543,7 @@ Partial Class frmScaleGrinding
         '
         Me.lblDailyTotal.AutoSize = True
         Me.lblDailyTotal.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblDailyTotal.Location = New System.Drawing.Point(280, 30)
+        Me.lblDailyTotal.Location = New System.Drawing.Point(280, 25)
         Me.lblDailyTotal.Name = "lblDailyTotal"
         Me.lblDailyTotal.Size = New System.Drawing.Size(98, 19)
         Me.lblDailyTotal.TabIndex = 37
@@ -551,8 +551,8 @@ Partial Class frmScaleGrinding
         '
         'lblSerial
         '
-        Me.lblSerial.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblSerial.Location = New System.Drawing.Point(502, 313)
+        Me.lblSerial.Font = New System.Drawing.Font("Tahoma", 14.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblSerial.Location = New System.Drawing.Point(469, 293)
         Me.lblSerial.Name = "lblSerial"
         Me.lblSerial.Size = New System.Drawing.Size(82, 19)
         Me.lblSerial.TabIndex = 319
@@ -563,16 +563,16 @@ Partial Class frmScaleGrinding
         '
         Me.lblSerialNumberDisplay.BackColor = System.Drawing.SystemColors.Control
         Me.lblSerialNumberDisplay.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.lblSerialNumberDisplay.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblSerialNumberDisplay.Location = New System.Drawing.Point(590, 313)
+        Me.lblSerialNumberDisplay.Font = New System.Drawing.Font("Tahoma", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblSerialNumberDisplay.Location = New System.Drawing.Point(553, 290)
         Me.lblSerialNumberDisplay.Name = "lblSerialNumberDisplay"
-        Me.lblSerialNumberDisplay.Size = New System.Drawing.Size(182, 22)
+        Me.lblSerialNumberDisplay.Size = New System.Drawing.Size(231, 29)
         Me.lblSerialNumberDisplay.TabIndex = 318
         '
         'btnToggleLanguage
         '
         Me.btnToggleLanguage.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnToggleLanguage.Location = New System.Drawing.Point(830, 618)
+        Me.btnToggleLanguage.Location = New System.Drawing.Point(822, 558)
         Me.btnToggleLanguage.Name = "btnToggleLanguage"
         Me.btnToggleLanguage.Size = New System.Drawing.Size(157, 65)
         Me.btnToggleLanguage.TabIndex = 327
@@ -583,7 +583,7 @@ Partial Class frmScaleGrinding
         '
         Me.btnProdActive.BackColor = System.Drawing.SystemColors.ControlDark
         Me.btnProdActive.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnProdActive.Location = New System.Drawing.Point(830, 529)
+        Me.btnProdActive.Location = New System.Drawing.Point(822, 469)
         Me.btnProdActive.Name = "btnProdActive"
         Me.btnProdActive.Size = New System.Drawing.Size(159, 69)
         Me.btnProdActive.TabIndex = 326
@@ -605,9 +605,9 @@ Partial Class frmScaleGrinding
         Me.grpFavorites.Controls.Add(Me.btnF4Fave)
         Me.grpFavorites.Controls.Add(Me.btnF5Fave)
         Me.grpFavorites.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.grpFavorites.Location = New System.Drawing.Point(50, 507)
+        Me.grpFavorites.Location = New System.Drawing.Point(50, 452)
         Me.grpFavorites.Name = "grpFavorites"
-        Me.grpFavorites.Size = New System.Drawing.Size(747, 271)
+        Me.grpFavorites.Size = New System.Drawing.Size(747, 256)
         Me.grpFavorites.TabIndex = 325
         Me.grpFavorites.TabStop = False
         Me.grpFavorites.Text = "Favorites"
@@ -616,7 +616,7 @@ Partial Class frmScaleGrinding
         '
         Me.btnF12Fave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
         Me.btnF12Fave.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnF12Fave.Location = New System.Drawing.Point(620, 155)
+        Me.btnF12Fave.Location = New System.Drawing.Point(620, 146)
         Me.btnF12Fave.Name = "btnF12Fave"
         Me.btnF12Fave.Size = New System.Drawing.Size(90, 85)
         Me.btnF12Fave.TabIndex = 60
@@ -626,7 +626,7 @@ Partial Class frmScaleGrinding
         '
         Me.btnF11Fave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
         Me.btnF11Fave.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnF11Fave.Location = New System.Drawing.Point(500, 155)
+        Me.btnF11Fave.Location = New System.Drawing.Point(500, 146)
         Me.btnF11Fave.Name = "btnF11Fave"
         Me.btnF11Fave.Size = New System.Drawing.Size(90, 85)
         Me.btnF11Fave.TabIndex = 59
@@ -636,7 +636,7 @@ Partial Class frmScaleGrinding
         '
         Me.btnF10Fave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
         Me.btnF10Fave.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnF10Fave.Location = New System.Drawing.Point(380, 155)
+        Me.btnF10Fave.Location = New System.Drawing.Point(380, 146)
         Me.btnF10Fave.Name = "btnF10Fave"
         Me.btnF10Fave.Size = New System.Drawing.Size(90, 85)
         Me.btnF10Fave.TabIndex = 58
@@ -646,7 +646,7 @@ Partial Class frmScaleGrinding
         '
         Me.btnF9Fave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
         Me.btnF9Fave.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnF9Fave.Location = New System.Drawing.Point(260, 155)
+        Me.btnF9Fave.Location = New System.Drawing.Point(260, 146)
         Me.btnF9Fave.Name = "btnF9Fave"
         Me.btnF9Fave.Size = New System.Drawing.Size(90, 85)
         Me.btnF9Fave.TabIndex = 57
@@ -656,7 +656,7 @@ Partial Class frmScaleGrinding
         '
         Me.btnF8Fave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
         Me.btnF8Fave.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnF8Fave.Location = New System.Drawing.Point(140, 155)
+        Me.btnF8Fave.Location = New System.Drawing.Point(140, 146)
         Me.btnF8Fave.Name = "btnF8Fave"
         Me.btnF8Fave.Size = New System.Drawing.Size(90, 85)
         Me.btnF8Fave.TabIndex = 56
@@ -666,7 +666,7 @@ Partial Class frmScaleGrinding
         '
         Me.btnF7Fave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
         Me.btnF7Fave.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnF7Fave.Location = New System.Drawing.Point(20, 155)
+        Me.btnF7Fave.Location = New System.Drawing.Point(20, 146)
         Me.btnF7Fave.Name = "btnF7Fave"
         Me.btnF7Fave.Size = New System.Drawing.Size(90, 85)
         Me.btnF7Fave.TabIndex = 55
@@ -676,7 +676,7 @@ Partial Class frmScaleGrinding
         '
         Me.btnF6Fave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
         Me.btnF6Fave.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnF6Fave.Location = New System.Drawing.Point(620, 45)
+        Me.btnF6Fave.Location = New System.Drawing.Point(620, 36)
         Me.btnF6Fave.Name = "btnF6Fave"
         Me.btnF6Fave.Size = New System.Drawing.Size(90, 85)
         Me.btnF6Fave.TabIndex = 82
@@ -687,7 +687,7 @@ Partial Class frmScaleGrinding
         Me.btnF1Fave.BackColor = System.Drawing.SystemColors.Control
         Me.btnF1Fave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
         Me.btnF1Fave.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnF1Fave.Location = New System.Drawing.Point(20, 45)
+        Me.btnF1Fave.Location = New System.Drawing.Point(20, 36)
         Me.btnF1Fave.Name = "btnF1Fave"
         Me.btnF1Fave.Size = New System.Drawing.Size(90, 85)
         Me.btnF1Fave.TabIndex = 77
@@ -697,7 +697,7 @@ Partial Class frmScaleGrinding
         '
         Me.btnF2Fave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
         Me.btnF2Fave.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnF2Fave.Location = New System.Drawing.Point(140, 45)
+        Me.btnF2Fave.Location = New System.Drawing.Point(140, 36)
         Me.btnF2Fave.Name = "btnF2Fave"
         Me.btnF2Fave.Size = New System.Drawing.Size(90, 85)
         Me.btnF2Fave.TabIndex = 78
@@ -707,7 +707,7 @@ Partial Class frmScaleGrinding
         '
         Me.btnF3Fave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
         Me.btnF3Fave.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnF3Fave.Location = New System.Drawing.Point(260, 45)
+        Me.btnF3Fave.Location = New System.Drawing.Point(260, 36)
         Me.btnF3Fave.Name = "btnF3Fave"
         Me.btnF3Fave.Size = New System.Drawing.Size(90, 85)
         Me.btnF3Fave.TabIndex = 79
@@ -717,7 +717,7 @@ Partial Class frmScaleGrinding
         '
         Me.btnF4Fave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
         Me.btnF4Fave.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnF4Fave.Location = New System.Drawing.Point(380, 45)
+        Me.btnF4Fave.Location = New System.Drawing.Point(380, 36)
         Me.btnF4Fave.Name = "btnF4Fave"
         Me.btnF4Fave.Size = New System.Drawing.Size(90, 85)
         Me.btnF4Fave.TabIndex = 80
@@ -727,7 +727,7 @@ Partial Class frmScaleGrinding
         '
         Me.btnF5Fave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
         Me.btnF5Fave.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnF5Fave.Location = New System.Drawing.Point(500, 45)
+        Me.btnF5Fave.Location = New System.Drawing.Point(500, 36)
         Me.btnF5Fave.Name = "btnF5Fave"
         Me.btnF5Fave.Size = New System.Drawing.Size(90, 85)
         Me.btnF5Fave.TabIndex = 81
@@ -736,7 +736,7 @@ Partial Class frmScaleGrinding
         'btnExit
         '
         Me.btnExit.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnExit.Location = New System.Drawing.Point(832, 707)
+        Me.btnExit.Location = New System.Drawing.Point(824, 647)
         Me.btnExit.Name = "btnExit"
         Me.btnExit.Size = New System.Drawing.Size(157, 61)
         Me.btnExit.TabIndex = 324
@@ -747,7 +747,7 @@ Partial Class frmScaleGrinding
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1049, 799)
+        Me.ClientSize = New System.Drawing.Size(1049, 724)
         Me.Controls.Add(Me.btnToggleLanguage)
         Me.Controls.Add(Me.btnProdActive)
         Me.Controls.Add(Me.grpFavorites)

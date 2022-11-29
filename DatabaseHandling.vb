@@ -133,6 +133,8 @@ Public Class DatabaseHandling
                 tempProductInfo.TestingDescription = FixNull(rdr("TestingDesc"))
                 tempProductInfo.LabelTemplate = FixNull(rdr("Label"))
                 tempProductInfo.NormalWeight = FixNullDecimal(rdr("NormalWeight"))
+                tempProductInfo.SellByDay = FixNullInteger(rdr("SellByDay"))
+
 
                 tempList.Add(tempProductInfo)
             End While
@@ -234,6 +236,18 @@ Public Class DatabaseHandling
         Next
 
         Return tempProductInfo
+
+    End Function
+
+    Public Shared Function DoesProductCodeExist(ProductCode As String, ProductList As List(Of ProductInfo)) As Boolean
+        Dim bExists As Boolean = False
+
+        Dim query = From temp In ProductList Where temp.ProductCode = ProductCode
+        For Each result In query
+            bExists = True
+        Next
+
+        Return bExists
 
     End Function
     'Public Shared Sub ResetCount(ProductCode As String)
