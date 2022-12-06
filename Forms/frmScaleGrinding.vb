@@ -38,7 +38,7 @@ Public Class frmScaleGrinding
     Private Property LAST_BARCODE As String = ""
     Private Property LAST_SERIAL As String = ""
     Private Property CURRENT_PRODUCT_LABEL_NET_WEIGHT As Single = 0
-
+    Private Property VALID_PRODUCTCODE As Boolean = True
 
     Friend WithEvents SerialPortA As New System.IO.Ports.SerialPort
     Friend WithEvents SerialPortB As New System.IO.Ports.SerialPort
@@ -231,6 +231,9 @@ Public Class frmScaleGrinding
                     'for logging purposes only
                     If Not DatabaseHandling.DoesProductCodeExist(EntireQRMessage, ProductList) Then
                         WriteToLog(EntireQRMessage, "", "Product Code doesn't exist in database", MachineInstance.ScaleNumber)
+                        VALID_PRODUCTCODE = False
+                    Else
+                        VALID_PRODUCTCODE = True
                     End If
 
                     SetDisplay(EntireQRMessage)
@@ -241,7 +244,13 @@ Public Class frmScaleGrinding
                         Dim random As New Random
                         txtGrossWeight.Text = random.Next(7, 100)
                         CURRENT_PRODUCT_LABEL_NET_WEIGHT = CSng(txtGrossWeight.Text)
-                        HandleAllPrinting(CURRENT_PRODUCT_LABEL_NET_WEIGHT)
+                        If VALID_PRODUCTCODE Then
+                            HandleAllPrinting(CURRENT_PRODUCT_LABEL_NET_WEIGHT)
+                        Else
+                            PrintLabelBlank()
+                        End If
+
+                        VALID_PRODUCTCODE = False   'JUST TO RESET AFTER A PRINT
                     End If
                 End If
 
@@ -261,8 +270,13 @@ Public Class frmScaleGrinding
                     txtGrossWeight.Text = EntireScaleMessage
 
                     CURRENT_PRODUCT_LABEL_NET_WEIGHT = CSng(txtGrossWeight.Text)
+                    If VALID_PRODUCTCODE Then
+                        HandleAllPrinting(CURRENT_PRODUCT_LABEL_NET_WEIGHT)
+                    Else
+                        PrintLabelBlank()
+                    End If
 
-                    HandleAllPrinting(CURRENT_PRODUCT_LABEL_NET_WEIGHT)
+                    VALID_PRODUCTCODE = False   'JUST TO RESET AFTER A PRINT
 
                     EntireScaleMessage = ""
                 End If
@@ -340,11 +354,11 @@ Public Class frmScaleGrinding
             lblBoxTotalDaily.Text = BOX_TOTAL_DAILY
 
 
-            If txtGrossWeight.Text <> "0" And txtGrossWeight.Text <> "" Then
-                txtWarnings.Text = GetWarnings(tempProductInfo)
-            Else
-                txtWarnings.Text = ""
-            End If
+            'If txtGrossWeight.Text <> "0" And txtGrossWeight.Text <> "" Then
+            '    txtWarnings.Text = GetWarnings(tempProductInfo)
+            'Else
+            '    txtWarnings.Text = ""
+            'End If
 
             If FavoriteProductList.Contains(tempProductInfo.ProductCode) Then
                 btnMakeFavorite.Text = "Remove Favorite"
@@ -356,38 +370,38 @@ Public Class frmScaleGrinding
 
 
     End Sub
-    Private Function GetWarnings(tempProductInfo As ProductInfo) As String
-        Dim warningReturn As String = ""
-        If txtGrossWeight.Text <> "" And txtGrossWeight.Text <> "0" Then
-            If txtMaxWeight.Text <> "" And txtMaxWeight.Text <> "0" Then
-                If FixNullInteger(txtGrossWeight.Text - txtTare.Text) > FixNullInteger(txtMaxWeight.Text) Then
-                    warningReturn = "OVER MAX WEIGHT"
-                    WriteToLog("Weight over ", txtGrossWeight.Text, txtMaxWeight.Text, MachineInstance.ScaleNumber)
-                End If
-            End If
+    'Private Function GetWarnings(tempProductInfo As ProductInfo) As String
+    '    Dim warningReturn As String = ""
+    '    If txtGrossWeight.Text <> "" And txtGrossWeight.Text <> "0" Then
+    '        If txtMaxWeight.Text <> "" And txtMaxWeight.Text <> "0" Then
+    '            If FixNullInteger(txtGrossWeight.Text - txtTare.Text) > FixNullInteger(txtMaxWeight.Text) Then
+    '                warningReturn = "OVER MAX WEIGHT"
+    '                WriteToLog("Weight over ", txtGrossWeight.Text, txtMaxWeight.Text, MachineInstance.ScaleNumber)
+    '            End If
+    '        End If
 
-            If txtMinWeight.Text <> "" And txtMinWeight.Text <> "0" Then
-                If FixNullInteger(txtGrossWeight.Text - txtTare.Text) < FixNullInteger(txtMinWeight.Text) Then
-                    warningReturn = "UNDER MIN WEIGHT"
-                    WriteToLog("Weight under ", txtGrossWeight.Text, txtMinWeight.Text, MachineInstance.ScaleNumber)
-                End If
-            End If
+    '        If txtMinWeight.Text <> "" And txtMinWeight.Text <> "0" Then
+    '            If FixNullInteger(txtGrossWeight.Text - txtTare.Text) < FixNullInteger(txtMinWeight.Text) Then
+    '                warningReturn = "UNDER MIN WEIGHT"
+    '                WriteToLog("Weight under ", txtGrossWeight.Text, txtMinWeight.Text, MachineInstance.ScaleNumber)
+    '            End If
+    '        End If
 
-            If FixNullInteger(txtGrossWeight.Text - txtTare.Text) < 0 Then
-                warningReturn = "UNDER 0 LBS"
-                WriteToLog("Weight over 0 ", txtGrossWeight.Text, "", MachineInstance.ScaleNumber)
-            End If
-        End If
+    '        If FixNullInteger(txtGrossWeight.Text - txtTare.Text) < 0 Then
+    '            warningReturn = "UNDER 0 LBS"
+    '            WriteToLog("Weight over 0 ", txtGrossWeight.Text, "", MachineInstance.ScaleNumber)
+    '        End If
+    '    End If
 
 
-        'If BOX_COUNT_LOT > tempProductInfo.KickoutCount And tempProductInfo.KickoutCount > 0 Then
-        If IsKickoutBox(tempProductInfo) Then
-            warningReturn = "KICKOUT BOX COUNT MET AT " & tempProductInfo.KickoutCount
-            WriteToLog("Kickout Count met at ", BOX_COUNT_LOT, tempProductInfo.KickoutCount, MachineInstance.ScaleNumber)
-        End If
+    '    'If BOX_COUNT_LOT > tempProductInfo.KickoutCount And tempProductInfo.KickoutCount > 0 Then
+    '    If IsKickoutBox(tempProductInfo) Then
+    '        warningReturn = "KICKOUT BOX COUNT MET AT " & tempProductInfo.KickoutCount
+    '        WriteToLog("Kickout Count met at ", BOX_COUNT_LOT, tempProductInfo.KickoutCount, MachineInstance.ScaleNumber)
+    '    End If
 
-        Return warningReturn
-    End Function
+    '    Return warningReturn
+    'End Function
     Private Sub btnProdActive_Click(sender As Object, e As EventArgs) Handles btnProdActive.Click
         If btnToggleLanguage.Text = "English" Then
             'if it says English then the screen is in spanish
@@ -553,9 +567,10 @@ Public Class frmScaleGrinding
 
             If tempProductInfo.SetWeight <> 0 Then LAST_GROSS_WEIGHT = tempProductInfo.SetWeight + tempProductInfo.Tare
             If tempProductInfo.SetWeight <> 0 Then nLBS = tempProductInfo.SetWeight
+            If nLBS < 0 Then nLBS = 0
             CURRENT_PRODUCT_LABEL_NET_WEIGHT = nLBS
 
-            Dim GradeToUse As Integer = IIf(OVERRIDE_GRADE_VALUE = 0, GRADE, OVERRIDE_GRADE_VALUE)
+
 
             Dim nKGS As Single = nLBS * CSng(AppSettings("KiloConversionRate"))
 
@@ -570,7 +585,8 @@ Public Class frmScaleGrinding
             'End If
             tBoxCount = Microsoft.VisualBasic.Right("0000" & BOX_COUNT_LOT, 4)
 
-
+            'Dim GradeToUse As Integer = IIf(OVERRIDE_GRADE_VALUE = 0, GRADE, OVERRIDE_GRADE_VALUE)
+            Dim Gradetouse As String = "0"
             Dim tGradePad As String = Microsoft.VisualBasic.Right("00" & GradeToUse, 1)
             If GradeToUse = 8 Then tGradePad = "0"
             Dim tGradeAndProduct As String = tGradePad & Microsoft.VisualBasic.Right("0000" & tGradePad & lblProductCode.Text, 4)
@@ -583,55 +599,13 @@ Public Class frmScaleGrinding
             Dim tBarcodeFooter As String = "(01)9630308" & tGradeAndProduct & GetCheckDigitGTIN_13("9630308" & tGradeAndProduct) & "(3201)" & tLBSHundred & "(11)" & PROD_DATE_TO_USE.ToString("yyMMdd") & "(21)" & MachineInstance.ScaleNumber & tmpSerialNumber
 
             LAST_BARCODE = tBarcodeText
-
-            'sReturn = System.IO.File.ReadAllText(Environment.CurrentDirectory & AppSettings("PrintTemplateLocation_Grinding"))    'PrintTemplate
-            'Dim tstspc As Integer = Math.Round((55 - Len(tempProductInfo.ProductDescription)) / 1.5, 0)
-            'Dim currenttestnohold As String = tempProductInfo.ProductDescription
-            'If tstspc > 1 Then
-            '    currenttestnohold = tempProductInfo.ProductDescription
-            '    For x = 1 To tstspc
-            '        tempProductInfo.ProductDescription = " " & tempProductInfo.ProductDescription
-            '    Next
-            'End If
-            ''sReturn = sReturn.Replace("<<proddesc>>", tempProductInfo.ProductDescription)
-            'tempProductInfo.ProductDescription = currenttestnohold
-
-            'sReturn = sReturn.Replace("<<HEADER_WEIGHT_KGS>>", FormatNumber(nKGS, 2, TriState.UseDefault, TriState.UseDefault, TriState.False))
-            'sReturn = sReturn.Replace("<<HEADER_WEIGHT_LBS>>", FormatNumber(nLBS, 2, TriState.UseDefault, TriState.UseDefault, TriState.False))
-
-            'If GradeToUse = 8 Then
-            ' sReturn = sReturn.Replace("<<BIG_GRADE>>", "")
-            'Else
-            'sReturn = sReturn.Replace("<<BIG_GRADE>>", GradeToUse)
-            'End If
-
-            'Dim GradeName As String = ""
-            'If GradeToUse = 1 Then GradeName = "   BEEF USDA CERTIFIED ANGUS"
-            'If GradeToUse = 2 Then GradeName = "  BEEF USDA SELECT "
-            'If GradeToUse = 3 Then GradeName = "  BEEF USDA CHOICE "
-            'If GradeToUse = 5 Then GradeName = "  BEEF USDA PRIME "
-            'If GradeToUse = 6 Then GradeName = "  BEEF USDA CERTIFIED HERFORD "
-            'If GradeName = "0" Then GradeName = ""
-
-            'sReturn = sReturn.Replace("<<BOX_COUNT>>", tBoxCount)
-            'sReturn = sReturn.Replace("<<MMDDYY>>", CheckString(PROD_DATE_TO_USE.ToString("MMddyy")))
-            'sReturn = sReturn.Replace("<<PRINT_TIME>>", PROD_DATE_TO_USE.ToString("hmmt"))
-            'sReturn = sReturn.Replace("<<BARCODE_TEXT>>", tBarcodeText)
-            'sReturn = sReturn.Replace("<<BARCODE_FOOTER>>", tBarcodeFooter)
-            'sReturn = sReturn.Replace("<<PRODUCT_CODE>>", tempProductInfo.ProductCode)
-
-            ' Gross is the net plus the weight of the packaging....
-            'Dim tGrossLBS As String = FormatNumber(LAST_GROSS_WEIGHT, 1)
-            'Dim tGrossKGS As String = FormatNumber(LAST_GROSS_WEIGHT * CSng(System.Configuration.ConfigurationManager.AppSettings("KiloConversionRate")), 1)
-
-            'LastBarCodeText = tBarcodeText
             LAST_SERIAL = Microsoft.VisualBasic.Right(LAST_BARCODE, 10)
 
 
             varTab(1)(availableVariableAssignment.ProductWeightKG) = FormatNumber(nKGS, 2, TriState.UseDefault, TriState.UseDefault, TriState.False)
             varTab(1)(availableVariableAssignment.BarcodeReadable) = tBarcodeFooter
             varTab(1)(availableVariableAssignment.UseFreezeDate) = IIf(tempProductInfo.SellByDay > 0, PROD_DATE_TO_USE.AddDays(tempProductInfo.SellByDay).ToString("MMddyy"), "")
-            varTab(1)(availableVariableAssignment.GradeNumber) = GradeToUse
+            varTab(1)(availableVariableAssignment.GradeNumber) = ""     'GradeToUse
             varTab(1)(availableVariableAssignment.PackDate) = PROD_DATE_TO_USE.ToString("MMddyy")
             varTab(1)(availableVariableAssignment.ProductDescription2) = TrimToLength(25, tempProductInfo.ProductDescription2)
             varTab(1)(availableVariableAssignment.ScaleNumber) = MachineInstance.ScaleNumber
@@ -771,16 +745,95 @@ Public Class frmScaleGrinding
         Marshal.ReleaseComObject(variables)
 
     End Sub
+    Private Sub PrintLabelBlank()
+
+
+        Try
+
+            If (Not (ActiveLabelDocument Is Nothing)) Then
+                ActiveLabelDocument.Close(False)
+                Marshal.ReleaseComObject(ActiveLabelDocument)
+                ActiveLabelDocument = Nothing
+            End If
+
+            'copy template file to new file and open
+            Dim templateFile As String = Environment.CurrentDirectory & "\PrintTemplates\NOCODE.lab"
+            If System.IO.File.Exists(templateFile) Then
+
+                Dim csDocuments As LabelManager2.Documents = MyCsApp.Documents
+                ActiveLabelDocument = csDocuments.Open(templateFile, False)
+                Marshal.ReleaseComObject(csDocuments)
+                'Else
+                '    MessageBox.Show("No template file", "Stop", MessageBoxButtons.OK)
+            End If
+
+
+            If (ActiveLabelDocument Is Nothing) Then
+                'MessageBox.Show("A document must be opened To print!")
+                WriteToErrorLog("Error", "No open document", "", "")
+                Exit Sub
+            End If
+
+
+            'Dim csDialogs As LabelManager2.Dialogs = MyCsApp.Dialogs
+            'Dim csDialog As LabelManager2.Dialog = csDialogs.Item(LabelManager2.enumDialogType.lppxPrinterSelectDialog)
+            'csDialog.Show(Me.Handle)
+            'Me.Text = MyCsApp.ActivePrinterName
+            'Marshal.ReleaseComObject(csDialogs)
+            'Marshal.ReleaseComObject(csDialog)
+
+            'AddPrintingHandlers()
+            'ActiveLabelDocument.Printer.FullName = ""
+            'ActiveLabelDocument.Printer.InitialPrinterName = ""
+            'ActiveLabelDocument.Printer.ModelName = "SATO S84-ex (305 dpi)"
+            ActiveLabelDocument.Printer.Name = "SATO S84-ex (305 dpi)"
+
+            Dim iSuccess As Integer = ActiveLabelDocument.PrintDocument(1)
+            WriteToLog("after print", iSuccess, templateFile, MachineInstance.ScaleNumber)
+
+
+
+            'If Not (_BeginPrintingEventRes Is Nothing) Then
+            '    listBoxEvents.EndInvoke(_BeginPrintingEventRes)
+            '    _BeginPrintingEventRes = Nothing
+            'End If
+
+            'If Not (_EndPrintingEventRes Is Nothing) Then
+            '    listBoxEvents.EndInvoke(_EndPrintingEventRes)
+            '    _EndPrintingEventRes = Nothing
+            'End If
+
+            'RemovePrintingHandlers()
+
+            'these don't work....
+            'Dim sSuccess As Short = ActiveLabelDocument.SaveAs(outfile)
+            'sSuccess = ActiveLabelDocument.Save
+            'sSuccess = ActiveLabelDocument.SaveAs("testfile.lab")
+
+
+            'saves as an image!!! yay!!
+            'Dim strSuccess As String = ActiveLabelDocument.CopyImageToFile(8, "BMP", 0, 100, outfile)
+            Dim strSuccess As String = ActiveLabelDocument.CopyImageToFile(8, "JPG", 0, 100, templateFile)
+            WriteToLog("after save", strSuccess, templateFile, MachineInstance.ScaleNumber)
+
+
+        Catch ex As Exception
+            WriteToErrorLog("Error", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
+        Finally
+        End Try
+
+    End Sub
 
     Private Sub PrintLabel(outfile As String)
 
-        If (ActiveLabelDocument Is Nothing) Then
-            'MessageBox.Show("A document must be opened To print!")
-            WriteToErrorLog("Error", "No open document", "", "")
-            Exit Sub
-        End If
 
         Try
+            If (ActiveLabelDocument Is Nothing) Then
+                'MessageBox.Show("A document must be opened To print!")
+                WriteToErrorLog("Error", "No open document", "", "")
+                Exit Sub
+            End If
+
 
             'Dim csDialogs As LabelManager2.Dialogs = MyCsApp.Dialogs
             'Dim csDialog As LabelManager2.Dialog = csDialogs.Item(LabelManager2.enumDialogType.lppxPrinterSelectDialog)
@@ -887,12 +940,12 @@ Public Class frmScaleGrinding
     '    'End Using
 
     'End Sub
-    Private Function IsKickoutBox(tempProductInfo As ProductInfo) As Boolean
-        IsKickoutBox = False
-        If tempProductInfo.KickoutCount > 0 And BOX_COUNT_LOT > 0 Then
-            If (BOX_COUNT_LOT Mod tempProductInfo.KickoutCount) = 0 Then IsKickoutBox = True
-        End If
-    End Function
+    'Private Function IsKickoutBox(tempProductInfo As ProductInfo) As Boolean
+    '    IsKickoutBox = False
+    '    If tempProductInfo.KickoutCount > 0 And BOX_COUNT_LOT > 0 Then
+    '        If (BOX_COUNT_LOT Mod tempProductInfo.KickoutCount) = 0 Then IsKickoutBox = True
+    '    End If
+    'End Function
     Private Sub btnSetWeightPrint_Click(sender As Object, e As EventArgs) Handles btnSetWeightPrint.Click
         'button only available in testing mode
         If AppSettings("InTest") = "TRUE" Then
@@ -900,6 +953,8 @@ Public Class frmScaleGrinding
             txtGrossWeight.Text = random.Next(7, 100)
             WriteToLog("Print button hit", txtGrossWeight.Text, "", MachineInstance.ScaleNumber)
         End If
+
+        PrintLabelBlank()
 
         HandleAllPrinting(txtGrossWeight.Text)
     End Sub
@@ -1054,8 +1109,6 @@ Public Class frmScaleGrinding
         Return iReturn
 
     End Function
-
-
     Private Sub btnProductLookup_Click(sender As Object, e As EventArgs) Handles btnProductLookup.Click
         Dim KeyboardLookup As frmKeyboard = New frmKeyboard
         KeyboardLookup.SetProductList(ProductList)
