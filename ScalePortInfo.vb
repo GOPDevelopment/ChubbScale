@@ -1,6 +1,7 @@
 ﻿Imports System.IO
 Imports System.IO.Ports
 
+
 Public Class ScalePortInfo
 
     Public WithEvents ScalePort As New SerialPort
@@ -39,4 +40,7 @@ Public Class ScalePortInfo
     Protected Overrides Sub Finalize()
         MyBase.Finalize()
     End Sub
+
+
+
 End Class

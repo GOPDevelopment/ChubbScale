@@ -46,7 +46,7 @@
     <DefineDebug>false</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
-    <OutputPath>P:\GOPScales_Chub\</OutputPath>
+    <OutputPath>P:\GOPScales_ChubLine\</OutputPath>
     <DocumentationFile>ChubbScale.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
@@ -224,64 +224,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="PrintTemplates\GB5x3.LBL" />
-    <None Include="PrintTemplates\GB5x35D.LBL" />
-    <None Include="PrintTemplates\GB5x35D1.LBL" />
-    <None Include="PrintTemplates\GB5x3CAB.LBL" />
-    <None Include="PrintTemplates\GB5x3CHB.LBL" />
-    <None Include="PrintTemplates\GB5x3ONA.LBL" />
-    <None Include="PrintTemplates\GBOHB5D.LBL" />
-    <None Include="PrintTemplates\GOP.LBL" />
-    <None Include="PrintTemplates\GOP5D.LBL" />
-    <None Include="PrintTemplates\GOP5x3.LBL" />
-    <None Include="PrintTemplates\GOP5x3CAB.LBL" />
-    <None Include="PrintTemplates\GOP5x3OHB.LBL" />
-    <None Include="PrintTemplates\GOP5x3ONA.LBL" />
-    <None Include="PrintTemplates\GOP5x3test.LBL" />
-    <None Include="PrintTemplates\GOPlogoformat.LBL" />
-    <None Include="PrintTemplates\GOPold.LBL" />
-    <None Include="PrintTemplates\GOPtest.LBL" />
-    <None Include="PrintTemplates\LabelsOther\Box Line 4.5x3.lab_18_steve.lab" />
-    <None Include="PrintTemplates\LabelsOther\Box Line 4.5x3.lab_18_teresa - Copy.lab" />
-    <None Include="PrintTemplates\LabelsOther\Box Line 4.5x3.lab_18_teresa.lab" />
-    <None Include="PrintTemplates\LabelsOther\Chubline.lab_4.lab" />
-    <None Include="PrintTemplates\LabelsOther\GB5x3.LBL" />
-    <None Include="PrintTemplates\LabelsOther\GB5x35D.LBL" />
-    <None Include="PrintTemplates\LabelsOther\GB5x35D1.LBL" />
-    <None Include="PrintTemplates\LabelsOther\GB5x3CAB.LBL" />
-    <None Include="PrintTemplates\LabelsOther\GB5x3CHB.LBL" />
-    <None Include="PrintTemplates\LabelsOther\GB5x3ONA.LBL" />
-    <None Include="PrintTemplates\LabelsOther\GBOHB5D.LBL" />
-    <None Include="PrintTemplates\LabelsOther\GOP.LBL" />
-    <None Include="PrintTemplates\LabelsOther\GOP5D.LBL" />
-    <None Include="PrintTemplates\LabelsOther\GOP5x3.LBL" />
-    <None Include="PrintTemplates\LabelsOther\GOP5x3CAB.LBL" />
-    <None Include="PrintTemplates\LabelsOther\GOP5x3OHB.LBL" />
-    <None Include="PrintTemplates\LabelsOther\GOP5x3ONA.LBL" />
-    <None Include="PrintTemplates\LabelsOther\GOP5x3test.LBL" />
-    <None Include="PrintTemplates\LabelsOther\GOPlogoformat.LBL" />
-    <None Include="PrintTemplates\LabelsOther\GOPold.LBL" />
-    <None Include="PrintTemplates\LabelsOther\GOPtest.LBL" />
-    <None Include="PrintTemplates\LabelsOther\Lbl_Txt1.DB" />
-    <None Include="PrintTemplates\LabelsOther\Lbl_Txt1.PX" />
-    <None Include="PrintTemplates\LabelsOther\Lbl_Txt2.DB" />
-    <None Include="PrintTemplates\LabelsOther\Lbl_Txt2.PX" />
+    <None Include="PrintTemplates\ChublineTemplate.lab">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="PrintTemplates\LabelsOther\SATO.LBL" />
-    <None Include="PrintTemplates\LabelsOther\TeresaTest.lab" />
-    <None Include="PrintTemplates\LabelsOther\TeresaTest2.lab" />
-    <None Include="PrintTemplates\LabelsOther\TeresaTest3.lab" />
-    <None Include="PrintTemplates\LabelsOther\TeresaTest4.lab" />
-    <None Include="PrintTemplates\LabelsOther\TeresaTest5.lab" />
-    <None Include="PrintTemplates\LabelsOther\TeresaTest6.lab" />
-    <None Include="PrintTemplates\LabelsOther\tmp.lbl" />
-    <None Include="PrintTemplates\LabelsOther\Toys.Lab" />
-    <None Include="PrintTemplates\TeresaTest7.lab" />
-    <None Include="PrintTemplates\TeresaTest8.lab">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="PrintTemplates\TeresaTestImageSwap.lab">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Include="PrintTemplates\NOCODE.lab" />
     <None Include="Resources\logo.png" />
   </ItemGroup>
   <ItemGroup>
@@ -303,11 +250,7 @@
     <Content Include="PrintTemplates\960A.BUG.bmp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="PrintTemplates\BEEF - Copy.BMP">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="PrintTemplates\BEEF.BMP" />
-    <Content Include="PrintTemplates\CAB - Copy.bmp" />
     <Content Include="PrintTemplates\CAB.bmp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -335,8 +278,6 @@
     <Content Include="PrintTemplates\LabelsOther\herfgb.bmp" />
     <Content Include="PrintTemplates\LabelsOther\newlogo.bmp" />
     <Content Include="PrintTemplates\LabelsOther\onalogo.bmp" />
-    <Content Include="PrintTemplates\LabelsOther\PrinterR.txt" />
-    <Content Include="PrintTemplates\LabelsOther\PrinterS.txt" />
     <Content Include="PrintTemplates\LabelsOther\wbona.bmp" />
     <Content Include="PrintTemplates\newlogo.bmp" />
     <Content Include="PrintTemplates\onalogo.bmp">

@@ -19,8 +19,8 @@ Public Class frmScaleGrinding
     Private Property SCALE_NAME As String = "GRINDING"
     Private Property PROD_LINE As String = "11"
     Private Property GRADE As String = "3"
-    Private Property CUSTOMER As String = "00"
-    Private Property OVERRIDE_GRADE_VALUE As Integer = 4
+    'Private Property CUSTOMER As String = "00"
+    'Private Property OVERRIDE_GRADE_VALUE As Integer = 4
 
     Private Property ProductList As New List(Of ProductInfo)
     Private Property FavoriteProductList As New List(Of String)
@@ -39,6 +39,7 @@ Public Class frmScaleGrinding
     Private Property LAST_SERIAL As String = ""
     Private Property CURRENT_PRODUCT_LABEL_NET_WEIGHT As Single = 0
     Private Property VALID_PRODUCTCODE As Boolean = True
+    Private Property MANUAL_PRODUCT_RUN = False
 
     Friend WithEvents SerialPortA As New System.IO.Ports.SerialPort
     Friend WithEvents SerialPortB As New System.IO.Ports.SerialPort
@@ -138,7 +139,7 @@ Public Class frmScaleGrinding
             'set intial display fields
             SetDisplay("000000")
             btnMakeFavorite.Text = "Remove Favorite"
-
+            rdoAuto.Checked = True      'default to auto read to sta
 
             If AppSettings("InTest") = "TRUE" Then
                 btnSetWeightPrint.Visible = True
@@ -159,19 +160,23 @@ Public Class frmScaleGrinding
             portString.Add(myPort(i).ToString)
         Next
 
-        'WriteToLog(portString, "", "Available Ports", MachineInstance.ScaleNumber)
+        WriteToLog(myPort.Count, "", "Available Ports", MachineInstance.ScaleNumber)
         Dim z As Integer = 1
         For Each portInstance In portString
             Dim scalePort As New ScalePortInfo(portInstance)
             Select Case z
                 Case 1
                     SerialPortA = scalePort.ScalePort
+                    WriteToLog(portInstance, "", "case 1", MachineInstance.ScaleNumber)
                 Case 2
                     SerialPortB = scalePort.ScalePort
+                    WriteToLog(portInstance, "", "case 2", MachineInstance.ScaleNumber)
                 Case 3
                     SerialPortC = scalePort.ScalePort
+                    WriteToLog(portInstance, "", "case 3", MachineInstance.ScaleNumber)
                 Case 4
                     SerialPortD = scalePort.ScalePort
+                    WriteToLog(portInstance, "", "case 4", MachineInstance.ScaleNumber)
             End Select
             z += 1
         Next
@@ -186,7 +191,7 @@ Public Class frmScaleGrinding
         'System.Threading.Thread.Sleep(15000)
         Dim sRead As String = SerialPortA.ReadExisting()
         WriteToLog(sRead, SerialPortA.PortName, "A Port Reading", MachineInstance.ScaleNumber)
-        'Console.WriteLine(SerialPortA.PortName & " - " & sRead)
+        Console.WriteLine(SerialPortA.PortName & " - " & sRead)
 
         HandleInput(sRead, SerialPortA.PortName)
 
@@ -213,7 +218,6 @@ Public Class frmScaleGrinding
 
         HandleInput(sRead, SerialPortD.PortName)
     End Sub
-
     Private Sub HandleInput(inputSent As String, comPort As String)
         Try
 
@@ -240,21 +244,22 @@ Public Class frmScaleGrinding
 
                     EntireQRMessage = ""
 
-                    If AppSettings("InTest") = "TRUE" Then
-                        Dim random As New Random
-                        txtGrossWeight.Text = random.Next(7, 100)
-                        CURRENT_PRODUCT_LABEL_NET_WEIGHT = CSng(txtGrossWeight.Text)
-                        If VALID_PRODUCTCODE Then
-                            HandleAllPrinting(CURRENT_PRODUCT_LABEL_NET_WEIGHT)
-                        Else
-                            PrintLabelBlank()
-                        End If
+                    'If AppSettings("InTest") = "TRUE" Then
+                    '    Dim random As New Random
+                    '    txtGrossWeight.Text = random.Next(7, 100)
+                    '    CURRENT_PRODUCT_LABEL_NET_WEIGHT = CSng(txtGrossWeight.Text)
+                    '    If VALID_PRODUCTCODE Then
+                    '        HandleAllPrinting(CURRENT_PRODUCT_LABEL_NET_WEIGHT)
+                    '    Else
+                    '        PrintLabelBlank()
+                    '    End If
 
-                        VALID_PRODUCTCODE = False   'JUST TO RESET AFTER A PRINT
-                    End If
+                    '    VALID_PRODUCTCODE = False   'JUST TO RESET AFTER A PRINT
+                    'End If
                 End If
 
             End If
+
 
 
             If comPort = AppSettings("ScaleComPort") Then
@@ -265,6 +270,9 @@ Public Class frmScaleGrinding
                     WriteToLog(EntireScaleMessage, SerialPortB.PortName, "Entire Scale message", MachineInstance.ScaleNumber)
                     'Dim random As New Random
                     'txtGrossWeight.Text = random.Next(7, 100)
+
+                    If MANUAL_PRODUCT_RUN Then VALID_PRODUCTCODE = True     'run whatever is selected for the product code
+
 
                     EntireScaleMessage = RemoveAllAlphas(EntireScaleMessage)
                     txtGrossWeight.Text = EntireScaleMessage
@@ -288,7 +296,6 @@ Public Class frmScaleGrinding
         End Try
 
     End Sub
-
     Private Sub SetDisplay(ProductCodePassed As String)
         'load initial or passed lookup
 
@@ -436,7 +443,6 @@ Public Class frmScaleGrinding
         End If
 
     End Sub
-
     Private Sub HandleAllPrinting(weight As Single)
 
         Try
@@ -481,34 +487,6 @@ Public Class frmScaleGrinding
             WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
         End Try
     End Sub
-    'Private Sub BuildFileAndPrint(ByVal nLBS As Single)
-
-    '    Try
-    '        Dim outFile As String = Environment.CurrentDirectory & AppSettings("TempWorkFolder") & MachineInstance.ScaleName & "_" & System.Guid.NewGuid.ToString & ".lab"
-
-    '        'copy original label file to new file and update
-    '        OpenLabelFile(outFile)
-
-    '        UpdateLabelFields(nLBS)
-
-    '        WriteToLog("before print", outFile, MachineInstance.PrinterName, MachineInstance.ScaleNumber)
-
-    '        PrintLabel(outFile)
-
-    '        WriteToLog("after print", outFile, MachineInstance.PrinterPort, MachineInstance.ScaleNumber)
-
-    '        'close label file
-    '        If (Not (ActiveLabelDocument Is Nothing)) Then
-    '            ActiveLabelDocument.Close(False)
-    '            Marshal.ReleaseComObject(ActiveLabelDocument)
-    '            ActiveLabelDocument = Nothing
-    '        End If
-
-    '    Catch ex As Exception
-    '        WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
-    '    End Try
-
-    'End Sub
     Private Sub OpenLabelFile(outFile As String)
 
         Try
@@ -585,15 +563,30 @@ Public Class frmScaleGrinding
             'End If
             tBoxCount = Microsoft.VisualBasic.Right("0000" & BOX_COUNT_LOT, 4)
 
-            'Dim GradeToUse As Integer = IIf(OVERRIDE_GRADE_VALUE = 0, GRADE, OVERRIDE_GRADE_VALUE)
-            Dim Gradetouse As String = "0"
-            Dim tGradePad As String = Microsoft.VisualBasic.Right("00" & GradeToUse, 1)
-            If GradeToUse = 8 Then tGradePad = "0"
-            Dim tGradeAndProduct As String = tGradePad & Microsoft.VisualBasic.Right("0000" & tGradePad & lblProductCode.Text, 4)
+            ''Dim GradeToUse As Integer = IIf(OVERRIDE_GRADE_VALUE = 0, GRADE, OVERRIDE_GRADE_VALUE)
+            'Dim Gradetouse As String = "0"
+            'Dim tGradePad As String = Microsoft.VisualBasic.Right("00" & GradeToUse, 1)
+            'If GradeToUse = 8 Then tGradePad = "0"
+            'Dim tGradeAndProduct As String = tGradePad & Microsoft.VisualBasic.Right("0000" & tGradePad & lblProductCode.Text, 4)
+
+            Dim GradeToUse As Integer = GRADE
+            Dim tGradePad As String = Microsoft.VisualBasic.Right("00" & GradeToUse, 2)
+            If Gradetouse = 8 Then tGradePad = "00"
+            Dim tProductCodePad As String = Microsoft.VisualBasic.Right("000000" & lblProductCode.Text, 6)
+            If tProductCodePad.Length > 6 Then tProductCodePad = tProductCodePad.Substring(tProductCodePad.Length - 1, 6)
+            Dim tGradeAndProduct As String = tGradePad & tProductCodePad
+            If tGradeAndProduct.Length > 6 Then tGradeAndProduct = tGradeAndProduct.Substring(tGradeAndProduct.Length - 6, 6)
 
             'Dim tBarcode As String = tGradePad & tGradeAndProduct & tLBSHundred
             Dim tmpSerialNumber As String = DatabaseHandling.GetNextSerialNumber(MachineInstance.ScaleNumber)
             tmpSerialNumber = tmpSerialNumber.ToString().PadLeft(8, "0")
+
+            '            New system 263081 
+            '019630308 030811 3201 000045 11 221221 21 1300000308
+
+            'Old System 463081
+            '019630308 4630819 3201 000601 11 220921 21 1226484308
+
 
             Dim tBarcodeText As String = "019630308" & tGradeAndProduct & GetCheckDigitGTIN_13("9630308" & tGradeAndProduct) & "3201" & tLBSHundred & "11" & PROD_DATE_TO_USE.ToString("yyMMdd") & "21" & MachineInstance.ScaleNumber & tmpSerialNumber
             Dim tBarcodeFooter As String = "(01)9630308" & tGradeAndProduct & GetCheckDigitGTIN_13("9630308" & tGradeAndProduct) & "(3201)" & tLBSHundred & "(11)" & PROD_DATE_TO_USE.ToString("yyMMdd") & "(21)" & MachineInstance.ScaleNumber & tmpSerialNumber
@@ -607,7 +600,7 @@ Public Class frmScaleGrinding
             varTab(1)(availableVariableAssignment.UseFreezeDate) = IIf(tempProductInfo.SellByDay > 0, PROD_DATE_TO_USE.AddDays(tempProductInfo.SellByDay).ToString("MMddyy"), "")
             varTab(1)(availableVariableAssignment.GradeNumber) = ""     'GradeToUse
             varTab(1)(availableVariableAssignment.PackDate) = PROD_DATE_TO_USE.ToString("MMddyy")
-            varTab(1)(availableVariableAssignment.ProductDescription2) = TrimToLength(25, tempProductInfo.ProductDescription2)
+            varTab(1)(availableVariableAssignment.ProductDescription2) = TrimToLength(25, tempProductInfo.TestingDescription)
             varTab(1)(availableVariableAssignment.ScaleNumber) = MachineInstance.ScaleNumber
             varTab(1)(availableVariableAssignment.ProductWeightLB) = FormatNumber(nLBS, 2, TriState.UseDefault, TriState.UseDefault, TriState.False)
             varTab(1)(availableVariableAssignment.BoxCount) = tBoxCount
@@ -747,16 +740,13 @@ Public Class frmScaleGrinding
     End Sub
     Private Sub PrintLabelBlank()
 
-
         Try
-
             If (Not (ActiveLabelDocument Is Nothing)) Then
                 ActiveLabelDocument.Close(False)
                 Marshal.ReleaseComObject(ActiveLabelDocument)
                 ActiveLabelDocument = Nothing
             End If
 
-            'copy template file to new file and open
             Dim templateFile As String = Environment.CurrentDirectory & "\PrintTemplates\NOCODE.lab"
             If System.IO.File.Exists(templateFile) Then
 
@@ -767,53 +757,25 @@ Public Class frmScaleGrinding
                 '    MessageBox.Show("No template file", "Stop", MessageBoxButtons.OK)
             End If
 
-
             If (ActiveLabelDocument Is Nothing) Then
                 'MessageBox.Show("A document must be opened To print!")
                 WriteToErrorLog("Error", "No open document", "", "")
                 Exit Sub
             End If
 
-
-            'Dim csDialogs As LabelManager2.Dialogs = MyCsApp.Dialogs
-            'Dim csDialog As LabelManager2.Dialog = csDialogs.Item(LabelManager2.enumDialogType.lppxPrinterSelectDialog)
-            'csDialog.Show(Me.Handle)
-            'Me.Text = MyCsApp.ActivePrinterName
-            'Marshal.ReleaseComObject(csDialogs)
-            'Marshal.ReleaseComObject(csDialog)
-
             'AddPrintingHandlers()
             'ActiveLabelDocument.Printer.FullName = ""
             'ActiveLabelDocument.Printer.InitialPrinterName = ""
             'ActiveLabelDocument.Printer.ModelName = "SATO S84-ex (305 dpi)"
-            ActiveLabelDocument.Printer.Name = "SATO S84-ex (305 dpi)"
+            'ActiveLabelDocument.Printer.Name = "SATO S84-ex (305 dpi)"
 
             Dim iSuccess As Integer = ActiveLabelDocument.PrintDocument(1)
             WriteToLog("after print", iSuccess, templateFile, MachineInstance.ScaleNumber)
 
-
-
-            'If Not (_BeginPrintingEventRes Is Nothing) Then
-            '    listBoxEvents.EndInvoke(_BeginPrintingEventRes)
-            '    _BeginPrintingEventRes = Nothing
-            'End If
-
-            'If Not (_EndPrintingEventRes Is Nothing) Then
-            '    listBoxEvents.EndInvoke(_EndPrintingEventRes)
-            '    _EndPrintingEventRes = Nothing
-            'End If
-
-            'RemovePrintingHandlers()
-
-            'these don't work....
-            'Dim sSuccess As Short = ActiveLabelDocument.SaveAs(outfile)
-            'sSuccess = ActiveLabelDocument.Save
-            'sSuccess = ActiveLabelDocument.SaveAs("testfile.lab")
-
-
+            Dim outFile As String = Environment.CurrentDirectory & AppSettings("TempWorkFolder") & MachineInstance.ScaleName & "_" & System.Guid.NewGuid.ToString
             'saves as an image!!! yay!!
             'Dim strSuccess As String = ActiveLabelDocument.CopyImageToFile(8, "BMP", 0, 100, outfile)
-            Dim strSuccess As String = ActiveLabelDocument.CopyImageToFile(8, "JPG", 0, 100, templateFile)
+            Dim strSuccess As String = ActiveLabelDocument.CopyImageToFile(8, "JPG", 0, 100, outFile)
             WriteToLog("after save", strSuccess, templateFile, MachineInstance.ScaleNumber)
 
 
@@ -823,7 +785,6 @@ Public Class frmScaleGrinding
         End Try
 
     End Sub
-
     Private Sub PrintLabel(outfile As String)
 
 
@@ -846,12 +807,10 @@ Public Class frmScaleGrinding
             'ActiveLabelDocument.Printer.FullName = ""
             'ActiveLabelDocument.Printer.InitialPrinterName = ""
             'ActiveLabelDocument.Printer.ModelName = "SATO S84-ex (305 dpi)"
-            ActiveLabelDocument.Printer.Name = "SATO S84-ex (305 dpi)"
+            'ActiveLabelDocument.Printer.Name = "SATO S84-ex (305 dpi)"
 
             Dim iSuccess As Integer = ActiveLabelDocument.PrintDocument(1)
             WriteToLog("after print", iSuccess, outfile, MachineInstance.ScaleNumber)
-
-
 
             'If Not (_BeginPrintingEventRes Is Nothing) Then
             '    listBoxEvents.EndInvoke(_BeginPrintingEventRes)
@@ -883,7 +842,6 @@ Public Class frmScaleGrinding
         End Try
 
     End Sub
-
     Private Sub AddTransactionToDB()
 
         Try
@@ -954,7 +912,7 @@ Public Class frmScaleGrinding
             WriteToLog("Print button hit", txtGrossWeight.Text, "", MachineInstance.ScaleNumber)
         End If
 
-        PrintLabelBlank()
+        'PrintLabelBlank()
 
         HandleAllPrinting(txtGrossWeight.Text)
     End Sub
@@ -1337,13 +1295,24 @@ Public Class frmScaleGrinding
         'txtWarnings.AppendText(
         'String.Format("down '{0}' '{1}' '{2}' '{3}' {4}", e.Modifiers, e.KeyValue, e.KeyData, e.KeyCode, Environment.NewLine))
     End Sub
-
     Private Sub btnExit_Click(sender As Object, e As EventArgs) Handles btnExit.Click
         Me.Close()
     End Sub
-
     Private Sub frmScaleGrinding_Closed(sender As Object, e As EventArgs) Handles Me.Closed
         WriteToLog("Program End", Environment.MachineName, "Program End", MachineInstance.ScaleNumber)
         WriteToLog("", "", "", MachineInstance.ScaleNumber)
     End Sub
+
+
+    Private Sub rdoAuto_CheckedChanged(sender As Object, e As EventArgs) Handles rdoAuto.CheckedChanged
+        MANUAL_PRODUCT_RUN = False
+        grpManualAuto.BackColor = Color.Yellow
+    End Sub
+
+    Private Sub rdoManual_CheckedChanged(sender As Object, e As EventArgs) Handles rdoManual.CheckedChanged
+        'allows process to manually select a product to run
+        MANUAL_PRODUCT_RUN = True
+        grpManualAuto.BackColor = Color.Red
+    End Sub
+
 End Class

@@ -87,8 +87,12 @@ Partial Class frmScaleGrinding
         Me.btnF4Fave = New System.Windows.Forms.Button()
         Me.btnF5Fave = New System.Windows.Forms.Button()
         Me.btnExit = New System.Windows.Forms.Button()
+        Me.grpManualAuto = New System.Windows.Forms.GroupBox()
+        Me.rdoAuto = New System.Windows.Forms.RadioButton()
+        Me.rdoManual = New System.Windows.Forms.RadioButton()
         Me.grpTotalsPerProduct.SuspendLayout()
         Me.grpFavorites.SuspendLayout()
+        Me.grpManualAuto.SuspendLayout()
         Me.SuspendLayout()
         '
         'Timer1
@@ -240,7 +244,7 @@ Partial Class frmScaleGrinding
         'btnSetWeightPrint
         '
         Me.btnSetWeightPrint.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnSetWeightPrint.Location = New System.Drawing.Point(797, 293)
+        Me.btnSetWeightPrint.Location = New System.Drawing.Point(797, 290)
         Me.btnSetWeightPrint.Name = "btnSetWeightPrint"
         Me.btnSetWeightPrint.Size = New System.Drawing.Size(184, 29)
         Me.btnSetWeightPrint.TabIndex = 287
@@ -743,11 +747,48 @@ Partial Class frmScaleGrinding
         Me.btnExit.Text = "Exit"
         Me.btnExit.UseVisualStyleBackColor = True
         '
+        'grpManualAuto
+        '
+        Me.grpManualAuto.Controls.Add(Me.rdoAuto)
+        Me.grpManualAuto.Controls.Add(Me.rdoManual)
+        Me.grpManualAuto.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.grpManualAuto.Location = New System.Drawing.Point(487, 339)
+        Me.grpManualAuto.Name = "grpManualAuto"
+        Me.grpManualAuto.Size = New System.Drawing.Size(492, 100)
+        Me.grpManualAuto.TabIndex = 328
+        Me.grpManualAuto.TabStop = False
+        Me.grpManualAuto.Text = "Product Code Input "
+        '
+        'rdoAuto
+        '
+        Me.rdoAuto.AutoSize = True
+        Me.rdoAuto.Font = New System.Drawing.Font("Tahoma", 14.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.rdoAuto.Location = New System.Drawing.Point(271, 46)
+        Me.rdoAuto.Name = "rdoAuto"
+        Me.rdoAuto.Size = New System.Drawing.Size(185, 27)
+        Me.rdoAuto.TabIndex = 1
+        Me.rdoAuto.TabStop = True
+        Me.rdoAuto.Text = "Auto Read Mode"
+        Me.rdoAuto.UseVisualStyleBackColor = True
+        '
+        'rdoManual
+        '
+        Me.rdoManual.AutoSize = True
+        Me.rdoManual.Font = New System.Drawing.Font("Tahoma", 14.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.rdoManual.Location = New System.Drawing.Point(27, 46)
+        Me.rdoManual.Name = "rdoManual"
+        Me.rdoManual.Size = New System.Drawing.Size(209, 27)
+        Me.rdoManual.TabIndex = 0
+        Me.rdoManual.TabStop = True
+        Me.rdoManual.Text = "Manual Read Mode"
+        Me.rdoManual.UseVisualStyleBackColor = True
+        '
         'frmScaleGrinding
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1049, 724)
+        Me.Controls.Add(Me.grpManualAuto)
         Me.Controls.Add(Me.btnToggleLanguage)
         Me.Controls.Add(Me.btnProdActive)
         Me.Controls.Add(Me.grpFavorites)
@@ -792,6 +833,8 @@ Partial Class frmScaleGrinding
         Me.grpTotalsPerProduct.ResumeLayout(False)
         Me.grpTotalsPerProduct.PerformLayout()
         Me.grpFavorites.ResumeLayout(False)
+        Me.grpManualAuto.ResumeLayout(False)
+        Me.grpManualAuto.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -859,4 +902,7 @@ Partial Class frmScaleGrinding
     Friend WithEvents btnF4Fave As Button
     Friend WithEvents btnF5Fave As Button
     Friend WithEvents btnExit As Button
+    Friend WithEvents grpManualAuto As GroupBox
+    Friend WithEvents rdoAuto As RadioButton
+    Friend WithEvents rdoManual As RadioButton
 End Class
