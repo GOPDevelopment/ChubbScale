@@ -228,7 +228,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="PrintTemplates\LabelsOther\SATO.LBL" />
-    <None Include="PrintTemplates\NOCODE.lab" />
+    <None Include="PrintTemplates\NOCODE.lab">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\logo.png" />
   </ItemGroup>
   <ItemGroup>

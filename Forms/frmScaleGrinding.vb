@@ -17,7 +17,7 @@ Imports LabelManager2
 Public Class frmScaleGrinding
 
     Private Property SCALE_NAME As String = "GRINDING"
-    Private Property PROD_LINE As String = "11"
+    Private Property PROD_LINE As String = "13"
     Private Property GRADE As String = "3"
     'Private Property CUSTOMER As String = "00"
     'Private Property OVERRIDE_GRADE_VALUE As Integer = 4
@@ -45,7 +45,6 @@ Public Class frmScaleGrinding
     Friend WithEvents SerialPortB As New System.IO.Ports.SerialPort
     Friend WithEvents SerialPortC As New System.IO.Ports.SerialPort
     Friend WithEvents SerialPortD As New System.IO.Ports.SerialPort
-    'Private WithEvents ScaleInstance As New SerialPort
     Private Property UserInfo As ProgramUser
     Private Property MachineInstance As MachineInfo
     Private Property EntireScaleMessage As String = ""
@@ -57,14 +56,6 @@ Public Class frmScaleGrinding
 
     ' Need to have a WithEvents object to manage events at the ActiveDocument level
     Private WithEvents ActiveLabelDocument As LabelManager2.Document = Nothing
-    'Private WithEvents ActiveLabelDocument As New LabelManager2.Document
-
-
-    'Private _IsPrinting As Boolean = False
-    'Private picDefW As System.Int32
-    'Private picDefH As System.Int32
-    'Private currentImage As Drawing.Image
-    'Private myCallback As Drawing.Image.GetThumbnailImageAbort
 
     Dim varTab As String()() = New String(2)() {}
 
@@ -332,7 +323,7 @@ Public Class frmScaleGrinding
             'from database
             lblSerialNumberDisplay.Text = LAST_SERIAL
 
-            lblProductDesc.Text = tempProductInfo.ProductDescription
+            lblProductDesc.Text = tempProductInfo.ProductDescription & " " & tempProductInfo.ProductDescription2
             txtTare.Text = tempProductInfo.Tare
             txtMaxWeight.Text = tempProductInfo.MaxWeight
             txtSetWeight.Text = tempProductInfo.SetWeight
@@ -525,7 +516,7 @@ Public Class frmScaleGrinding
     End Sub
     Private Sub UpdateLabelFields(ByVal nLBS As Single)
 
-        Dim currentLabelVariables As New LabelVariables
+        'Dim currentLabelVariables As New LabelVariables
         Dim availableVariableAssignment As New LabelVariableAssignment
 
         availableVariableAssignment = FillVariablesTabFromActiveLabel()
@@ -600,13 +591,14 @@ Public Class frmScaleGrinding
             varTab(1)(availableVariableAssignment.UseFreezeDate) = IIf(tempProductInfo.SellByDay > 0, PROD_DATE_TO_USE.AddDays(tempProductInfo.SellByDay).ToString("MMddyy"), "")
             varTab(1)(availableVariableAssignment.GradeNumber) = ""     'GradeToUse
             varTab(1)(availableVariableAssignment.PackDate) = PROD_DATE_TO_USE.ToString("MMddyy")
-            varTab(1)(availableVariableAssignment.ProductDescription2) = TrimToLength(25, tempProductInfo.TestingDescription)
             varTab(1)(availableVariableAssignment.ScaleNumber) = MachineInstance.ScaleNumber
             varTab(1)(availableVariableAssignment.ProductWeightLB) = FormatNumber(nLBS, 2, TriState.UseDefault, TriState.UseDefault, TriState.False)
             varTab(1)(availableVariableAssignment.BoxCount) = tBoxCount
             varTab(1)(availableVariableAssignment.Barcode128) = tBarcodeText
             varTab(1)(availableVariableAssignment.PrintTime) = PROD_DATE_TO_USE.ToString("hmmt")
-            varTab(1)(availableVariableAssignment.ProductDescription) = TrimToLength(30, tempProductInfo.ProductDescription)
+            varTab(1)(availableVariableAssignment.ProductDescription) = tempProductInfo.ProductDescription
+            varTab(1)(availableVariableAssignment.ProductDescription2) = tempProductInfo.ProductDescription2
+            varTab(1)(availableVariableAssignment.ProductDescriptionTop) = tempProductInfo.TestingDescription
             varTab(1)(availableVariableAssignment.Lot) = CURRENT_LOT
             varTab(1)(availableVariableAssignment.ProductCode) = tempProductInfo.ProductCode
 
@@ -697,6 +689,8 @@ Public Class frmScaleGrinding
                         availableVariableAssignment.ImageMiddleRightLocation = i - 1
                     Case availableVariables.ImageTopLeftLocation
                         availableVariableAssignment.ImageTopLeftLocation = i - 1
+                    Case availableVariables.ProductDescriptionTop
+                        availableVariableAssignment.ProductDescriptionTop = i - 1
                     Case Else
                         WriteToLog("LabelVariables item Not found", item.Name, "", MachineInstance.ScaleNumber)
                 End Select

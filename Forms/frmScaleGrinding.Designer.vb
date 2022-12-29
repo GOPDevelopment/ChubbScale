@@ -234,7 +234,7 @@ Partial Class frmScaleGrinding
         Me.txtWarnings.BorderStyle = System.Windows.Forms.BorderStyle.None
         Me.txtWarnings.Font = New System.Drawing.Font("Tahoma", 21.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtWarnings.ForeColor = System.Drawing.Color.Red
-        Me.txtWarnings.Location = New System.Drawing.Point(276, 21)
+        Me.txtWarnings.Location = New System.Drawing.Point(279, 12)
         Me.txtWarnings.Multiline = True
         Me.txtWarnings.Name = "txtWarnings"
         Me.txtWarnings.Size = New System.Drawing.Size(476, 85)
@@ -244,9 +244,9 @@ Partial Class frmScaleGrinding
         'btnSetWeightPrint
         '
         Me.btnSetWeightPrint.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnSetWeightPrint.Location = New System.Drawing.Point(797, 290)
+        Me.btnSetWeightPrint.Location = New System.Drawing.Point(808, 320)
         Me.btnSetWeightPrint.Name = "btnSetWeightPrint"
-        Me.btnSetWeightPrint.Size = New System.Drawing.Size(184, 29)
+        Me.btnSetWeightPrint.Size = New System.Drawing.Size(159, 37)
         Me.btnSetWeightPrint.TabIndex = 287
         Me.btnSetWeightPrint.Text = "Test Print"
         Me.btnSetWeightPrint.UseVisualStyleBackColor = True
@@ -383,9 +383,9 @@ Partial Class frmScaleGrinding
         'btnMakeFavorite
         '
         Me.btnMakeFavorite.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnMakeFavorite.Location = New System.Drawing.Point(795, 215)
+        Me.btnMakeFavorite.Location = New System.Drawing.Point(810, 273)
         Me.btnMakeFavorite.Name = "btnMakeFavorite"
-        Me.btnMakeFavorite.Size = New System.Drawing.Size(186, 41)
+        Me.btnMakeFavorite.Size = New System.Drawing.Size(159, 41)
         Me.btnMakeFavorite.TabIndex = 316
         Me.btnMakeFavorite.Text = "Make Favorite"
         Me.btnMakeFavorite.UseVisualStyleBackColor = True
@@ -394,9 +394,9 @@ Partial Class frmScaleGrinding
         '
         Me.lblProductCode.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.lblProductCode.Font = New System.Drawing.Font("Tahoma", 20.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblProductCode.Location = New System.Drawing.Point(201, 214)
+        Me.lblProductCode.Location = New System.Drawing.Point(198, 214)
         Me.lblProductCode.Name = "lblProductCode"
-        Me.lblProductCode.Size = New System.Drawing.Size(130, 41)
+        Me.lblProductCode.Size = New System.Drawing.Size(111, 41)
         Me.lblProductCode.TabIndex = 315
         '
         'lblProductDesc
@@ -404,9 +404,9 @@ Partial Class frmScaleGrinding
         Me.lblProductDesc.BackColor = System.Drawing.SystemColors.Control
         Me.lblProductDesc.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.lblProductDesc.Font = New System.Drawing.Font("Tahoma", 20.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblProductDesc.Location = New System.Drawing.Point(342, 215)
+        Me.lblProductDesc.Location = New System.Drawing.Point(318, 213)
         Me.lblProductDesc.Name = "lblProductDesc"
-        Me.lblProductDesc.Size = New System.Drawing.Size(442, 41)
+        Me.lblProductDesc.Size = New System.Drawing.Size(651, 41)
         Me.lblProductDesc.TabIndex = 314
         '
         'btnProductLookup
@@ -435,7 +435,7 @@ Partial Class frmScaleGrinding
         Me.grpTotalsPerProduct.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.grpTotalsPerProduct.Location = New System.Drawing.Point(50, 273)
         Me.grpTotalsPerProduct.Name = "grpTotalsPerProduct"
-        Me.grpTotalsPerProduct.Size = New System.Drawing.Size(402, 166)
+        Me.grpTotalsPerProduct.Size = New System.Drawing.Size(386, 166)
         Me.grpTotalsPerProduct.TabIndex = 317
         Me.grpTotalsPerProduct.TabStop = False
         Me.grpTotalsPerProduct.Text = "Totals Per Product:"
@@ -477,7 +477,7 @@ Partial Class frmScaleGrinding
         '
         Me.lblProductCountDaily.AutoSize = True
         Me.lblProductCountDaily.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.lblProductCountDaily.Location = New System.Drawing.Point(319, 58)
+        Me.lblProductCountDaily.Location = New System.Drawing.Point(299, 58)
         Me.lblProductCountDaily.Name = "lblProductCountDaily"
         Me.lblProductCountDaily.Size = New System.Drawing.Size(20, 21)
         Me.lblProductCountDaily.TabIndex = 11
@@ -517,7 +517,7 @@ Partial Class frmScaleGrinding
         '
         Me.lblBoxTotalDaily.AutoSize = True
         Me.lblBoxTotalDaily.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.lblBoxTotalDaily.Location = New System.Drawing.Point(319, 89)
+        Me.lblBoxTotalDaily.Location = New System.Drawing.Point(299, 89)
         Me.lblBoxTotalDaily.Name = "lblBoxTotalDaily"
         Me.lblBoxTotalDaily.Size = New System.Drawing.Size(20, 21)
         Me.lblBoxTotalDaily.TabIndex = 12
@@ -527,7 +527,7 @@ Partial Class frmScaleGrinding
         '
         Me.lblWeightTotalDaily.AutoSize = True
         Me.lblWeightTotalDaily.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.lblWeightTotalDaily.Location = New System.Drawing.Point(319, 120)
+        Me.lblWeightTotalDaily.Location = New System.Drawing.Point(299, 120)
         Me.lblWeightTotalDaily.Name = "lblWeightTotalDaily"
         Me.lblWeightTotalDaily.Size = New System.Drawing.Size(20, 21)
         Me.lblWeightTotalDaily.TabIndex = 21
@@ -547,7 +547,7 @@ Partial Class frmScaleGrinding
         '
         Me.lblDailyTotal.AutoSize = True
         Me.lblDailyTotal.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblDailyTotal.Location = New System.Drawing.Point(280, 25)
+        Me.lblDailyTotal.Location = New System.Drawing.Point(260, 25)
         Me.lblDailyTotal.Name = "lblDailyTotal"
         Me.lblDailyTotal.Size = New System.Drawing.Size(98, 19)
         Me.lblDailyTotal.TabIndex = 37
@@ -556,7 +556,7 @@ Partial Class frmScaleGrinding
         'lblSerial
         '
         Me.lblSerial.Font = New System.Drawing.Font("Tahoma", 14.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblSerial.Location = New System.Drawing.Point(469, 293)
+        Me.lblSerial.Location = New System.Drawing.Point(462, 283)
         Me.lblSerial.Name = "lblSerial"
         Me.lblSerial.Size = New System.Drawing.Size(82, 19)
         Me.lblSerial.TabIndex = 319
@@ -568,7 +568,7 @@ Partial Class frmScaleGrinding
         Me.lblSerialNumberDisplay.BackColor = System.Drawing.SystemColors.Control
         Me.lblSerialNumberDisplay.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.lblSerialNumberDisplay.Font = New System.Drawing.Font("Tahoma", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblSerialNumberDisplay.Location = New System.Drawing.Point(553, 290)
+        Me.lblSerialNumberDisplay.Location = New System.Drawing.Point(546, 280)
         Me.lblSerialNumberDisplay.Name = "lblSerialNumberDisplay"
         Me.lblSerialNumberDisplay.Size = New System.Drawing.Size(231, 29)
         Me.lblSerialNumberDisplay.TabIndex = 318
@@ -752,9 +752,9 @@ Partial Class frmScaleGrinding
         Me.grpManualAuto.Controls.Add(Me.rdoAuto)
         Me.grpManualAuto.Controls.Add(Me.rdoManual)
         Me.grpManualAuto.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.grpManualAuto.Location = New System.Drawing.Point(487, 339)
+        Me.grpManualAuto.Location = New System.Drawing.Point(475, 361)
         Me.grpManualAuto.Name = "grpManualAuto"
-        Me.grpManualAuto.Size = New System.Drawing.Size(492, 100)
+        Me.grpManualAuto.Size = New System.Drawing.Size(492, 75)
         Me.grpManualAuto.TabIndex = 328
         Me.grpManualAuto.TabStop = False
         Me.grpManualAuto.Text = "Product Code Input "
@@ -763,7 +763,7 @@ Partial Class frmScaleGrinding
         '
         Me.rdoAuto.AutoSize = True
         Me.rdoAuto.Font = New System.Drawing.Font("Tahoma", 14.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.rdoAuto.Location = New System.Drawing.Point(271, 46)
+        Me.rdoAuto.Location = New System.Drawing.Point(271, 31)
         Me.rdoAuto.Name = "rdoAuto"
         Me.rdoAuto.Size = New System.Drawing.Size(185, 27)
         Me.rdoAuto.TabIndex = 1
@@ -775,7 +775,7 @@ Partial Class frmScaleGrinding
         '
         Me.rdoManual.AutoSize = True
         Me.rdoManual.Font = New System.Drawing.Font("Tahoma", 14.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.rdoManual.Location = New System.Drawing.Point(27, 46)
+        Me.rdoManual.Location = New System.Drawing.Point(27, 31)
         Me.rdoManual.Name = "rdoManual"
         Me.rdoManual.Size = New System.Drawing.Size(209, 27)
         Me.rdoManual.TabIndex = 0
