@@ -231,6 +231,9 @@
     <None Include="PrintTemplates\NOCODE.lab">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="PrintTemplates\PrintHeadTest.lab">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\logo.png" />
   </ItemGroup>
   <ItemGroup>
@@ -252,7 +255,9 @@
     <Content Include="PrintTemplates\960A.BUG.bmp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="PrintTemplates\BEEF.BMP" />
+    <Content Include="PrintTemplates\BEEF.BMP">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="PrintTemplates\CAB.bmp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

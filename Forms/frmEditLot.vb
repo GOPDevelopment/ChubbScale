@@ -16,15 +16,19 @@
     Private Sub frmEditLot_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.TopMost = True
         Me.CenterToParent()
-        If UserInfo.isSupervisor Or UserInfo.isTech Then
-            nudBoxCount.Enabled = True
-        Else
-            nudBoxCount.Enabled = False
-        End If
+        'If UserInfo.isSupervisor Or UserInfo.isTech Then
+        '    nudBoxCount.Enabled = True
+        'Else
+        '    nudBoxCount.Enabled = False
+        'End If
+        txtEntry.Text = "0" 'default to 0
     End Sub
 
     Private Sub btnCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnCancel.Click
         Me.Close()
+        SetBoxCount = -1
+        SetLot = -1
+
     End Sub
 
     Private Sub btnSelect_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btnSelect.Click
@@ -38,13 +42,17 @@
         'Else
         '    MsgBox("Invalid numeric value entered.", MsgBoxStyle.Exclamation Or MsgBoxStyle.OkOnly, "Manual Weight")
         'End If
-        SetLot = txtEntry.Text
-        If nudBoxCount.Enabled Then
-            SetBoxCount = nudBoxCount.Value
-        Else
+        If IsNumeric(txtEntry.Text) Then
+            SetLot = txtEntry.Text
+            'If nudBoxCount.Enabled Then
+            'SetBoxCount = nudBoxCount.Value
+            'Else
             SetBoxCount = 0
+            'End If
+            Me.Close()
+        Else
+            MsgBox("Please enter a numeric value.", MsgBoxStyle.Exclamation Or MsgBoxStyle.OkOnly, "Manual Weight")
         End If
-        Me.Close()
 
     End Sub
 

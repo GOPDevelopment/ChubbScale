@@ -90,6 +90,9 @@ Partial Class frmScaleGrinding
         Me.grpManualAuto = New System.Windows.Forms.GroupBox()
         Me.rdoAuto = New System.Windows.Forms.RadioButton()
         Me.rdoManual = New System.Windows.Forms.RadioButton()
+        Me.lblLot = New System.Windows.Forms.Label()
+        Me.lblLotDisplay = New System.Windows.Forms.Label()
+        Me.btnChangeLot = New System.Windows.Forms.Button()
         Me.grpTotalsPerProduct.SuspendLayout()
         Me.grpFavorites.SuspendLayout()
         Me.grpManualAuto.SuspendLayout()
@@ -578,7 +581,7 @@ Partial Class frmScaleGrinding
         Me.btnToggleLanguage.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.btnToggleLanguage.Location = New System.Drawing.Point(822, 558)
         Me.btnToggleLanguage.Name = "btnToggleLanguage"
-        Me.btnToggleLanguage.Size = New System.Drawing.Size(157, 65)
+        Me.btnToggleLanguage.Size = New System.Drawing.Size(147, 65)
         Me.btnToggleLanguage.TabIndex = 327
         Me.btnToggleLanguage.Text = "Español"
         Me.btnToggleLanguage.UseVisualStyleBackColor = True
@@ -589,7 +592,7 @@ Partial Class frmScaleGrinding
         Me.btnProdActive.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.btnProdActive.Location = New System.Drawing.Point(822, 469)
         Me.btnProdActive.Name = "btnProdActive"
-        Me.btnProdActive.Size = New System.Drawing.Size(159, 69)
+        Me.btnProdActive.Size = New System.Drawing.Size(147, 69)
         Me.btnProdActive.TabIndex = 326
         Me.btnProdActive.Text = "Production Active"
         Me.btnProdActive.UseVisualStyleBackColor = False
@@ -742,7 +745,7 @@ Partial Class frmScaleGrinding
         Me.btnExit.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.btnExit.Location = New System.Drawing.Point(824, 647)
         Me.btnExit.Name = "btnExit"
-        Me.btnExit.Size = New System.Drawing.Size(157, 61)
+        Me.btnExit.Size = New System.Drawing.Size(145, 61)
         Me.btnExit.TabIndex = 324
         Me.btnExit.Text = "Exit"
         Me.btnExit.UseVisualStyleBackColor = True
@@ -752,9 +755,9 @@ Partial Class frmScaleGrinding
         Me.grpManualAuto.Controls.Add(Me.rdoAuto)
         Me.grpManualAuto.Controls.Add(Me.rdoManual)
         Me.grpManualAuto.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.grpManualAuto.Location = New System.Drawing.Point(475, 361)
+        Me.grpManualAuto.Location = New System.Drawing.Point(475, 363)
         Me.grpManualAuto.Name = "grpManualAuto"
-        Me.grpManualAuto.Size = New System.Drawing.Size(492, 75)
+        Me.grpManualAuto.Size = New System.Drawing.Size(492, 73)
         Me.grpManualAuto.TabIndex = 328
         Me.grpManualAuto.TabStop = False
         Me.grpManualAuto.Text = "Product Code Input "
@@ -783,11 +786,44 @@ Partial Class frmScaleGrinding
         Me.rdoManual.Text = "Manual Read Mode"
         Me.rdoManual.UseVisualStyleBackColor = True
         '
+        'lblLot
+        '
+        Me.lblLot.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblLot.Location = New System.Drawing.Point(460, 326)
+        Me.lblLot.Name = "lblLot"
+        Me.lblLot.Size = New System.Drawing.Size(80, 19)
+        Me.lblLot.TabIndex = 330
+        Me.lblLot.Text = "Lot:"
+        Me.lblLot.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'lblLotDisplay
+        '
+        Me.lblLotDisplay.BackColor = System.Drawing.SystemColors.Control
+        Me.lblLotDisplay.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.lblLotDisplay.Font = New System.Drawing.Font("Tahoma", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblLotDisplay.Location = New System.Drawing.Point(546, 320)
+        Me.lblLotDisplay.Name = "lblLotDisplay"
+        Me.lblLotDisplay.Size = New System.Drawing.Size(77, 30)
+        Me.lblLotDisplay.TabIndex = 329
+        '
+        'btnChangeLot
+        '
+        Me.btnChangeLot.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnChangeLot.Location = New System.Drawing.Point(643, 320)
+        Me.btnChangeLot.Name = "btnChangeLot"
+        Me.btnChangeLot.Size = New System.Drawing.Size(134, 30)
+        Me.btnChangeLot.TabIndex = 331
+        Me.btnChangeLot.Text = "Change Lot"
+        Me.btnChangeLot.UseVisualStyleBackColor = True
+        '
         'frmScaleGrinding
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1049, 724)
+        Me.Controls.Add(Me.btnChangeLot)
+        Me.Controls.Add(Me.lblLot)
+        Me.Controls.Add(Me.lblLotDisplay)
         Me.Controls.Add(Me.grpManualAuto)
         Me.Controls.Add(Me.btnToggleLanguage)
         Me.Controls.Add(Me.btnProdActive)
@@ -905,4 +941,7 @@ Partial Class frmScaleGrinding
     Friend WithEvents grpManualAuto As GroupBox
     Friend WithEvents rdoAuto As RadioButton
     Friend WithEvents rdoManual As RadioButton
+    Friend WithEvents lblLot As Label
+    Friend WithEvents lblLotDisplay As Label
+    Friend WithEvents btnChangeLot As Button
 End Class

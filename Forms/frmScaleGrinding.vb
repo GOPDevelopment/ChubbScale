@@ -40,6 +40,7 @@ Public Class frmScaleGrinding
     Private Property CURRENT_PRODUCT_LABEL_NET_WEIGHT As Single = 0
     Private Property VALID_PRODUCTCODE As Boolean = True
     Private Property MANUAL_PRODUCT_RUN = False
+    Private Property PRINT_HEAD_TEST = False
 
     Friend WithEvents SerialPortA As New System.IO.Ports.SerialPort
     Friend WithEvents SerialPortB As New System.IO.Ports.SerialPort
@@ -263,13 +264,13 @@ Public Class frmScaleGrinding
                     'txtGrossWeight.Text = random.Next(7, 100)
 
                     If MANUAL_PRODUCT_RUN Then VALID_PRODUCTCODE = True     'run whatever is selected for the product code
-
+                    If lblProductCode.Text = "999999" Then PRINT_HEAD_TEST = True Else PRINT_HEAD_TEST = False
 
                     EntireScaleMessage = RemoveAllAlphas(EntireScaleMessage)
                     txtGrossWeight.Text = EntireScaleMessage
 
                     CURRENT_PRODUCT_LABEL_NET_WEIGHT = CSng(txtGrossWeight.Text)
-                    If VALID_PRODUCTCODE Then
+                    If VALID_PRODUCTCODE And Not PRINT_HEAD_TEST Then
                         HandleAllPrinting(CURRENT_PRODUCT_LABEL_NET_WEIGHT)
                     Else
                         PrintLabelBlank()
@@ -308,7 +309,7 @@ Public Class frmScaleGrinding
             lblBoxTotalDaily.Text = ""
             lblWeightTotalDaily.Text = ""
             lblProductCountShift.Text = ""
-            'lblLotDisplay.Text = CURRENT_LOT
+            lblLotDisplay.Text = 0
             'lblBoxesInLotDisplay.Text = ""
             btnMakeFavorite.Text = "Make Favorite"
         Else
@@ -336,6 +337,7 @@ Public Class frmScaleGrinding
 
             'get current totals by database queries
             BOX_COUNT_LOT = GetLotBoxCountCurrent()
+            lblLotDisplay.Text = CURRENT_LOT
 
             GRADE = tempProductInfo.ProductGrade
 
@@ -437,7 +439,7 @@ Public Class frmScaleGrinding
     Private Sub HandleAllPrinting(weight As Single)
 
         Try
-            CURRENT_LOT = 0
+            'CURRENT_LOT = 0
             BOX_COUNT_LOT = GetLotBoxCountCurrent()
             BOX_COUNT_LOT = BOX_COUNT_LOT + 1
 
@@ -742,6 +744,8 @@ Public Class frmScaleGrinding
             End If
 
             Dim templateFile As String = Environment.CurrentDirectory & "\PrintTemplates\NOCODE.lab"
+            If PRINT_HEAD_TEST Then templateFile = Environment.CurrentDirectory & "\PrintTemplates\PrintHeadTest.lab"
+
             If System.IO.File.Exists(templateFile) Then
 
                 Dim csDocuments As LabelManager2.Documents = MyCsApp.Documents
@@ -906,9 +910,12 @@ Public Class frmScaleGrinding
             WriteToLog("Print button hit", txtGrossWeight.Text, "", MachineInstance.ScaleNumber)
         End If
 
-        'PrintLabelBlank()
-
-        HandleAllPrinting(txtGrossWeight.Text)
+        If lblProductCode.Text = "999999" Then PRINT_HEAD_TEST = True Else PRINT_HEAD_TEST = False
+        If PRINT_HEAD_TEST Then
+            PrintLabelBlank()
+        Else
+            HandleAllPrinting(txtGrossWeight.Text)
+        End If
     End Sub
     Private Sub btnMakeFavorite_Click(sender As Object, e As EventArgs) Handles btnMakeFavorite.Click
         If btnMakeFavorite.Text.Contains("Make Favorite") Or btnMakeFavorite.Text.Contains("Hacer Favorito") Then
@@ -1300,13 +1307,35 @@ Public Class frmScaleGrinding
 
     Private Sub rdoAuto_CheckedChanged(sender As Object, e As EventArgs) Handles rdoAuto.CheckedChanged
         MANUAL_PRODUCT_RUN = False
-        grpManualAuto.BackColor = Color.Yellow
+        'grpManualAuto.BackColor = Color.Yellow
+        rdoAuto.BackColor = Color.Yellow
+        rdoManual.BackColor = SystemColors.Control
     End Sub
 
     Private Sub rdoManual_CheckedChanged(sender As Object, e As EventArgs) Handles rdoManual.CheckedChanged
         'allows process to manually select a product to run
         MANUAL_PRODUCT_RUN = True
-        grpManualAuto.BackColor = Color.Red
+        'grpManualAuto.BackColor = Color.Red
+        rdoManual.BackColor = Color.Red
+        rdoAuto.BackColor = SystemColors.Control
     End Sub
 
+    Private Sub btnChangeLot_Click(sender As Object, e As EventArgs) Handles btnChangeLot.Click
+        Dim ChangeLot As frmEditLot = New frmEditLot(UserInfo)
+        ChangeLot.ShowDialog()
+
+        If ChangeLot.SetBoxCount = -1 Or ChangeLot.SetLot = -1 Then
+            'do nothing, change nothing
+        Else
+            'BOX_LOT_COUNT_CHANGED = True
+
+            'BOX_COUNT_LOT = FixNullInteger(ChangeLot.SetBoxCount)
+            'lblBoxesInLotDisplay.Text = BOX_COUNT_LOT
+
+
+            Dim newLot As String = ChangeLot.SetLot
+            lblLotDisplay.Text = newLot
+            CURRENT_LOT = newLot
+        End If
+    End Sub
 End Class
