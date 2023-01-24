@@ -131,7 +131,7 @@ Public Class frmScaleGrinding
             'set intial display fields
             SetDisplay("000000")
             btnMakeFavorite.Text = "Remove Favorite"
-            rdoAuto.Checked = True      'default to auto read to sta
+            rdoManual.Checked = True      'default to manual read
 
             If AppSettings("InTest") = "TRUE" Then
                 btnSetWeightPrint.Visible = True
@@ -276,6 +276,8 @@ Public Class frmScaleGrinding
                         PrintLabelBlank()
                     End If
 
+                    SetDisplay(lblProductCode.Text)
+
                     VALID_PRODUCTCODE = False   'JUST TO RESET AFTER A PRINT
 
                     EntireScaleMessage = ""
@@ -284,6 +286,7 @@ Public Class frmScaleGrinding
             End If
 
         Catch ex As Exception
+            EntireScaleMessage = ""
             WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
         End Try
 
@@ -852,7 +855,7 @@ Public Class frmScaleGrinding
 
 
             Dim oConn As New SqlConnection
-            oConn = DatabaseHandling.ConnectSQL(AppSettings("ConnectionString"))
+            oConn = DatabaseHandling.ConnectSQL(AppSettings("ConnectionStringLocal"))
 
             Dim cmd As New SqlCommand
             cmd = New SqlClient.SqlCommand(sSql, oConn)
@@ -909,6 +912,9 @@ Public Class frmScaleGrinding
             txtGrossWeight.Text = random.Next(7, 100)
             WriteToLog("Print button hit", txtGrossWeight.Text, "", MachineInstance.ScaleNumber)
         End If
+
+        'Dim sString As String = "63.4lb"
+        'sString = RemoveAllAlphas(sString)
 
         If lblProductCode.Text = "999999" Then PRINT_HEAD_TEST = True Else PRINT_HEAD_TEST = False
         If PRINT_HEAD_TEST Then
@@ -998,7 +1004,7 @@ Public Class frmScaleGrinding
         Dim oConn As New SqlConnection
 
         Try
-            oConn = DatabaseHandling.ConnectSQL(AppSettings("ConnectionString"))
+            oConn = DatabaseHandling.ConnectSQL(AppSettings("ConnectionStringLocal"))
             Dim sSQL As String = ""
             Dim cmd As New SqlCommand
 
@@ -1046,7 +1052,7 @@ Public Class frmScaleGrinding
         Dim iReturn As Integer = 0
 
         Try
-            oConn = DatabaseHandling.ConnectSQL(AppSettings("ConnectionString"))
+            oConn = DatabaseHandling.ConnectSQL(AppSettings("ConnectionStringLocal"))
             Dim sSQL As String = ""
             Dim cmd As New SqlCommand
 

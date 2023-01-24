@@ -81,6 +81,18 @@ Module CommonStuff
     End Function
     Public Function RemoveAllAlphas(sValue As String) As String
         Dim sReturn As String = ""
+
+        'sometimes scale sends 2 or more lbs, use last of set
+        'Dim parts As String()
+        'sValue = sValue.Replace("lb", "+")
+        'parts = sValue.Split("+")
+        'For Each item In parts
+        '    If item <> "" Then
+        '        'just grabbing whatever is last
+        '        sValue = item
+        '    End If
+        'Next
+
         For i = 0 To sValue.Length - 1
             If IsNumeric(sValue(i)) Or sValue(i) = "." Then
                 sReturn += sValue(i)
