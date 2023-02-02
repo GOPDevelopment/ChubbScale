@@ -234,6 +234,9 @@
     <None Include="PrintTemplates\PrintHeadTest.lab">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="PrintTemplates\WeightIncorrect.lab">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\logo.png" />
   </ItemGroup>
   <ItemGroup>

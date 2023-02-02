@@ -214,7 +214,7 @@ Public Class frmScaleGrinding
         Try
 
 
-            If comPort = AppSettings("QRReaderComPort") Then
+            If comPort = AppSettings("QRReaderComPort") And MANUAL_PRODUCT_RUN = False Then
                 'this reads in the QR code - totally works!
                 'Dim datas() As String = BarcodeReader.read("c:/temp/qr-code.png", BarcodeReader.QRCODE)
 
@@ -270,6 +270,7 @@ Public Class frmScaleGrinding
                     txtGrossWeight.Text = EntireScaleMessage
 
                     CURRENT_PRODUCT_LABEL_NET_WEIGHT = CSng(txtGrossWeight.Text)
+                    'If VALID_PRODUCTCODE And Not PRINT_HEAD_TEST And Not IsOverUnderWeight() Then
                     If VALID_PRODUCTCODE And Not PRINT_HEAD_TEST Then
                         HandleAllPrinting(CURRENT_PRODUCT_LABEL_NET_WEIGHT)
                     Else
@@ -373,38 +374,38 @@ Public Class frmScaleGrinding
 
 
     End Sub
-    'Private Function GetWarnings(tempProductInfo As ProductInfo) As String
-    '    Dim warningReturn As String = ""
-    '    If txtGrossWeight.Text <> "" And txtGrossWeight.Text <> "0" Then
-    '        If txtMaxWeight.Text <> "" And txtMaxWeight.Text <> "0" Then
-    '            If FixNullInteger(txtGrossWeight.Text - txtTare.Text) > FixNullInteger(txtMaxWeight.Text) Then
-    '                warningReturn = "OVER MAX WEIGHT"
-    '                WriteToLog("Weight over ", txtGrossWeight.Text, txtMaxWeight.Text, MachineInstance.ScaleNumber)
-    '            End If
-    '        End If
+    Private Function IsOverUnderWeight() As Boolean
+        Dim bReturn As Boolean = False
+        Try
 
-    '        If txtMinWeight.Text <> "" And txtMinWeight.Text <> "0" Then
-    '            If FixNullInteger(txtGrossWeight.Text - txtTare.Text) < FixNullInteger(txtMinWeight.Text) Then
-    '                warningReturn = "UNDER MIN WEIGHT"
-    '                WriteToLog("Weight under ", txtGrossWeight.Text, txtMinWeight.Text, MachineInstance.ScaleNumber)
-    '            End If
-    '        End If
+            Dim tempProductInfo As New ProductInfo
+            tempProductInfo = DatabaseHandling.LookupSpecificProduct(lblProductCode.Text, ProductList)
 
-    '        If FixNullInteger(txtGrossWeight.Text - txtTare.Text) < 0 Then
-    '            warningReturn = "UNDER 0 LBS"
-    '            WriteToLog("Weight over 0 ", txtGrossWeight.Text, "", MachineInstance.ScaleNumber)
-    '        End If
-    '    End If
+            If txtGrossWeight.Text <> "" And txtGrossWeight.Text <> "0" Then
+                If tempProductInfo.MaxWeight <> 0 Then
+                    If FixNullInteger(CSng(txtGrossWeight.Text) - tempProductInfo.Tare - (tempProductInfo.ItemCountPerBox * tempProductInfo.ItemTareEach)) > FixNullInteger(tempProductInfo.MaxWeight) Then
+                        'warningReturn = "OVER MAX WEIGHT"
+                        bReturn = True
+                        WriteToLog("Weight over ", "  Gross = " & txtGrossWeight.Text, "  Max = " & tempProductInfo.MaxWeight, "  Tare = " & tempProductInfo.Tare - (tempProductInfo.ItemCountPerBox * tempProductInfo.ItemTareEach))
+                    End If
+                End If
 
+                If tempProductInfo.MinWeight <> 0 Then
+                    If FixNullInteger(CSng(txtGrossWeight.Text) - tempProductInfo.Tare - (tempProductInfo.ItemCountPerBox * tempProductInfo.ItemTareEach)) < FixNullInteger(tempProductInfo.MinWeight) Then
+                        'warningReturn = "UNDER MIN WEIGHT"
+                        bReturn = True
+                        WriteToLog("Weight under ", "  Gross = " & txtGrossWeight.Text, "  Max = " & tempProductInfo.MaxWeight, "  Tare = " & tempProductInfo.Tare - (tempProductInfo.ItemCountPerBox * tempProductInfo.ItemTareEach))
+                    End If
+                End If
+            End If
 
-    '    'If BOX_COUNT_LOT > tempProductInfo.KickoutCount And tempProductInfo.KickoutCount > 0 Then
-    '    If IsKickoutBox(tempProductInfo) Then
-    '        warningReturn = "KICKOUT BOX COUNT MET AT " & tempProductInfo.KickoutCount
-    '        WriteToLog("Kickout Count met at ", BOX_COUNT_LOT, tempProductInfo.KickoutCount, MachineInstance.ScaleNumber)
-    '    End If
+        Catch ex As Exception
+            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
+        End Try
 
-    '    Return warningReturn
-    'End Function
+        Return bReturn
+    End Function
+
     Private Sub btnProdActive_Click(sender As Object, e As EventArgs) Handles btnProdActive.Click
         If btnToggleLanguage.Text = "English" Then
             'if it says English then the screen is in spanish
@@ -748,6 +749,8 @@ Public Class frmScaleGrinding
 
             Dim templateFile As String = Environment.CurrentDirectory & "\PrintTemplates\NOCODE.lab"
             If PRINT_HEAD_TEST Then templateFile = Environment.CurrentDirectory & "\PrintTemplates\PrintHeadTest.lab"
+            'If IsOverUnderWeight() Then templateFile = Environment.CurrentDirectory & "\PrintTemplates\WeightIncorrect.lab"
+
 
             If System.IO.File.Exists(templateFile) Then
 

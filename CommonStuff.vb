@@ -302,7 +302,7 @@ Module CommonStuff
         Dim OldFiles() As String = Directory.GetFiles(Environment.CurrentDirectory & tempWorkFolder, "*.lab*")
         For Each ThisFile As String In OldFiles
             Try
-                If DateDiff(DateInterval.DayOfYear, File.GetLastWriteTime(ThisFile), Now) > 30 Then
+                If DateDiff(DateInterval.DayOfYear, File.GetLastWriteTime(ThisFile), Now) > 15 Then
                     File.Delete(ThisFile)
                 End If
             Catch ex As Exception
@@ -311,7 +311,7 @@ Module CommonStuff
         Next
     End Sub
 
-    Private Sub CleanErrLogFolder(ByVal machineInfo As String)
+    Sub CleanErrLogFolder(ByVal machineInfo As String)
 
         'clean out old err files
         Dim OldFiles() As String = Directory.GetFiles(Application.StartupPath & "\Errors\", "*.txt")

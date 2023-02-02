@@ -15,6 +15,7 @@ Public Class Login
         Dim bContinue As Boolean = True
 
         CleanWorkFolder(AppSettings("TempWorkFolder"), MachineInstance.ScaleNumber)
+        CleanErrLogFolder(MachineInstance.ScaleNumber)
 
         'shift validation
         'defaulted so something will always be selected.
