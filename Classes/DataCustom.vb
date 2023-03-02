@@ -117,10 +117,10 @@ Public Class MachineInfo
     Public Property ScaleName As String
     Public Property ScaleNumber As String
     Public Property PlantCode As String
-    Public Property PrinterPort As String
-    Public Property PrinterName As String
-    Public Property TemplateName As String
-    Public Property AlphaLogFileLocation As String
-    Public Property AlphaLogFileLocation2 As String
+    'Public Property PrinterPort As String
+    'Public Property PrinterName As String
+    'Public Property TemplateName As String
+    'Public Property AlphaLogFileLocation As String
+    'Public Property AlphaLogFileLocation2 As String
 End Class
 

@@ -33,11 +33,11 @@ Public Class DatabaseHandling
                 tempProductInfo.ScaleName = FixNull(rdr("ScaleName"))
                 tempProductInfo.ScaleNumber = FixNull(rdr("ScaleNumber"))
                 tempProductInfo.PlantCode = FixNull(rdr("PlantCode"))
-                tempProductInfo.PrinterPort = FixNull(rdr("PrinterPortInConfig"))
-                tempProductInfo.PrinterName = FixNull(rdr("PrinterNameInConfig"))
-                tempProductInfo.TemplateName = FixNull(rdr("TemplateName"))
-                tempProductInfo.AlphaLogFileLocation = FixNull(rdr("AlphaLogFileLocation"))
-                tempProductInfo.AlphaLogFileLocation2 = FixNull(rdr("AlphaLogFileLocation2"))
+                'tempProductInfo.PrinterPort = FixNull(rdr("PrinterPortInConfig"))
+                'tempProductInfo.PrinterName = FixNull(rdr("PrinterNameInConfig"))
+                'tempProductInfo.TemplateName = FixNull(rdr("TemplateName"))
+                'tempProductInfo.AlphaLogFileLocation = FixNull(rdr("AlphaLogFileLocation"))
+                'tempProductInfo.AlphaLogFileLocation2 = FixNull(rdr("AlphaLogFileLocation2"))
             End While
         End If
         cmd.Dispose()
@@ -241,8 +241,24 @@ Public Class DatabaseHandling
 
     Public Shared Function DoesProductCodeExist(ProductCode As String, ProductList As List(Of ProductInfo)) As Boolean
         Dim bExists As Boolean = False
+        Dim updatedProductCode As String = ProductCode
 
-        Dim query = From temp In ProductList Where temp.ProductCode = ProductCode
+        'remove leading 00 if not 000000 or 000001
+        'Select Case updatedProductCode
+        '    Case "000000", "000001"
+        '        'ignore
+        '    Case Else
+        '        If Len(ProductCode) = 6 Then
+        '            If updatedProductCode.StartsWith("00") Then
+        '                updatedProductCode = ProductCode.Substring(2, 4)
+        '            ElseIf updatedProductCode.StartsWith("0") Then
+        '                updatedProductCode = ProductCode.Substring(1, 5)
+        '            End If
+        '        End If
+        'End Select
+
+
+        Dim query = From temp In ProductList Where temp.ProductCode = updatedProductCode
         For Each result In query
             bExists = True
         Next

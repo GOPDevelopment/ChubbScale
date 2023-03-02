@@ -2,7 +2,8 @@
 Imports System.Security
 Imports System.Security.Principal
 Imports System.DirectoryServices
-
+Imports System.IO
+Imports System.Reflection
 
 Public Class Login
     Public UserInfo As New ProgramUser
@@ -114,6 +115,9 @@ Public Class Login
 
         Me.Timer1.Interval = 1000   'every second update
         Me.Timer1.Start()
+
+        Dim buildDate As DateTime = New FileInfo(Assembly.GetExecutingAssembly().Location).LastWriteTime
+        Me.Text = "GOP Version " & buildDate.ToString("yyyy.MMdd.HHmm")
 
         Dim machineName As String = "13"
         WriteToLog("Program Start", Environment.MachineName, "Program Start", machineName)

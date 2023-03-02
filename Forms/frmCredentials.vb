@@ -15,7 +15,7 @@ Public Class frmCredentials
 
 
         Catch ex As Exception
-            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, "")
+            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, "13")
         End Try
         Me.Close()
     End Sub
@@ -43,19 +43,6 @@ Public Class frmCredentials
         Me.CenterToParent()
 
         If userType <> "" Then
-            'Dim oConn As New SqlConnection
-            'oConn = DatabaseHandling.ConnectSQL(AppSettings("ConnectionString"))
-            'Dim cmd As New SqlCommand
-            'cmd = New SqlClient.SqlCommand("SELECT * FROM UsernamesForDropdown WHERE UserType = '" & userType & "' order by UserLogin", oConn)
-            'Dim dataReader As SqlDataReader
-            'dataReader = cmd.ExecuteReader()
-            'While dataReader.Read
-            '    ' Write code to insert an Item into dropdownlist
-            '    cmbUsers.Items.Add(dataReader("UserLogin").ToString())
-            'End While
-            'dataReader.Close()
-
-
             Dim UsersInGroup As New List(Of String)
             UsersInGroup = GetUsersAndGroups(userType)
             For Each item In UsersInGroup

@@ -219,20 +219,21 @@ Public Class frmScaleGrinding
                 'Dim datas() As String = BarcodeReader.read("c:/temp/qr-code.png", BarcodeReader.QRCODE)
 
                 EntireQRMessage = EntireQRMessage & inputSent
+                If EntireQRMessage.EndsWith(";") Then
 
-                If EntireQRMessage.Trim.Length = 6 Then
+                    'If EntireQRMessage.Trim.Length = 6 Then
                     WriteToLog(EntireQRMessage, comPort, "Entire QR message", MachineInstance.ScaleNumber)
-                    lblProductCode.Text = EntireQRMessage
 
-                    'for logging purposes only
-                    If Not DatabaseHandling.DoesProductCodeExist(EntireQRMessage, ProductList) Then
-                        WriteToLog(EntireQRMessage, "", "Product Code doesn't exist in database", MachineInstance.ScaleNumber)
+                    lblProductCode.Text = EntireQRMessage.Remove(";")
+
+                    If Not DatabaseHandling.DoesProductCodeExist(lblProductCode.Text, ProductList) Then
+                        WriteToLog(lblProductCode.Text, "", "Product Code doesn't exist in database", MachineInstance.ScaleNumber)
                         VALID_PRODUCTCODE = False
                     Else
                         VALID_PRODUCTCODE = True
                     End If
 
-                    SetDisplay(EntireQRMessage)
+                    SetDisplay(lblProductCode.Text)
 
                     EntireQRMessage = ""
 
@@ -270,21 +271,21 @@ Public Class frmScaleGrinding
                     txtGrossWeight.Text = EntireScaleMessage
 
                     CURRENT_PRODUCT_LABEL_NET_WEIGHT = CSng(txtGrossWeight.Text)
-                    'If VALID_PRODUCTCODE And Not PRINT_HEAD_TEST And Not IsOverUnderWeight() Then
-                    If VALID_PRODUCTCODE And Not PRINT_HEAD_TEST Then
+                    If VALID_PRODUCTCODE And Not PRINT_HEAD_TEST And Not IsOverUnderWeight() Then
+                        'If VALID_PRODUCTCODE And Not PRINT_HEAD_TEST Then
                         HandleAllPrinting(CURRENT_PRODUCT_LABEL_NET_WEIGHT)
-                    Else
-                        PrintLabelBlank()
+                        Else
+                            PrintLabelBlank()
+                        End If
+
+                        SetDisplay(lblProductCode.Text)
+
+                        VALID_PRODUCTCODE = False   'JUST TO RESET AFTER A PRINT
+
+                        EntireScaleMessage = ""
                     End If
 
-                    SetDisplay(lblProductCode.Text)
-
-                    VALID_PRODUCTCODE = False   'JUST TO RESET AFTER A PRINT
-
-                    EntireScaleMessage = ""
                 End If
-
-            End If
 
         Catch ex As Exception
             EntireScaleMessage = ""
@@ -386,7 +387,7 @@ Public Class frmScaleGrinding
                     If FixNullInteger(CSng(txtGrossWeight.Text) - tempProductInfo.Tare - (tempProductInfo.ItemCountPerBox * tempProductInfo.ItemTareEach)) > FixNullInteger(tempProductInfo.MaxWeight) Then
                         'warningReturn = "OVER MAX WEIGHT"
                         bReturn = True
-                        WriteToLog("Weight over ", "  Gross = " & txtGrossWeight.Text, "  Max = " & tempProductInfo.MaxWeight, "  Tare = " & tempProductInfo.Tare - (tempProductInfo.ItemCountPerBox * tempProductInfo.ItemTareEach))
+                        WriteToLog("Weight over ", "  Gross = " & txtGrossWeight.Text, "  Max = " & tempProductInfo.MaxWeight & "  Tare = " & tempProductInfo.Tare - (tempProductInfo.ItemCountPerBox * tempProductInfo.ItemTareEach), MachineInstance.ScaleNumber)
                     End If
                 End If
 
@@ -394,7 +395,7 @@ Public Class frmScaleGrinding
                     If FixNullInteger(CSng(txtGrossWeight.Text) - tempProductInfo.Tare - (tempProductInfo.ItemCountPerBox * tempProductInfo.ItemTareEach)) < FixNullInteger(tempProductInfo.MinWeight) Then
                         'warningReturn = "UNDER MIN WEIGHT"
                         bReturn = True
-                        WriteToLog("Weight under ", "  Gross = " & txtGrossWeight.Text, "  Max = " & tempProductInfo.MaxWeight, "  Tare = " & tempProductInfo.Tare - (tempProductInfo.ItemCountPerBox * tempProductInfo.ItemTareEach))
+                        WriteToLog("Weight under ", "  Gross = " & txtGrossWeight.Text, "  Max = " & tempProductInfo.MaxWeight & "  Tare = " & tempProductInfo.Tare - (tempProductInfo.ItemCountPerBox * tempProductInfo.ItemTareEach), MachineInstance.ScaleNumber)
                     End If
                 End If
             End If
@@ -608,25 +609,28 @@ Public Class frmScaleGrinding
             varTab(1)(availableVariableAssignment.Lot) = CURRENT_LOT
             varTab(1)(availableVariableAssignment.ProductCode) = tempProductInfo.ProductCode
 
-            Dim imageLeftTopLocation As String = Environment.CurrentDirectory & "\PrintTemplates\"
             Dim imageMiddleRightLocation As String = Environment.CurrentDirectory & "\PrintTemplates\"
+            'all use this one
+            imageMiddleRightLocation = imageMiddleRightLocation & "45834.BUG.bmp"
+
+            Dim imageLeftTopLocation As String = Environment.CurrentDirectory & "\PrintTemplates\"
             Select Case tempProductInfo.LabelTemplate
                 Case "GB5x3CAB.LBL"
                     imageLeftTopLocation = imageLeftTopLocation & "CAB.bmp"
-                    imageMiddleRightLocation = imageMiddleRightLocation & "45834.BUG.bmp"
+                    'imageMiddleRightLocation = imageMiddleRightLocation & "45834.BUG.bmp"
                 Case "GB5x3CHB.LBL"
                     imageLeftTopLocation = imageLeftTopLocation & "classicherford.bmp"
-                    imageMiddleRightLocation = imageMiddleRightLocation & "45834.BUG.bmp"
+                    'imageMiddleRightLocation = imageMiddleRightLocation & "45834.BUG.bmp"
                 Case "GB5x3ONA.LBL"
                     imageLeftTopLocation = imageLeftTopLocation & "onalogo.bmp"
-                    imageMiddleRightLocation = imageMiddleRightLocation & "960A.BUG.bmp"
-                Case "GBOHB5D.LBL"
-                    imageLeftTopLocation = imageLeftTopLocation & "herfgb.bmp"
-                    imageMiddleRightLocation = imageMiddleRightLocation & "960A.BUG.bmp"
+                    'imageMiddleRightLocation = imageMiddleRightLocation & "960A.BUG.bmp"
+                    'Case "GBOHB5D.LBL"
+                    '    imageLeftTopLocation = imageLeftTopLocation & "herfgb.bmp"
+                    '    imageMiddleRightLocation = imageMiddleRightLocation & "960A.BUG.bmp"
                 Case Else
                     'GB5x3.LBL
                     imageLeftTopLocation = imageLeftTopLocation & "chub.bmp"
-                    imageMiddleRightLocation = imageMiddleRightLocation & "45834.BUG.bmp"
+                    'imageMiddleRightLocation = imageMiddleRightLocation & "45834.BUG.bmp"
             End Select
 
             varTab(1)(availableVariableAssignment.ImageMiddleRightLocation) = imageMiddleRightLocation
@@ -749,7 +753,7 @@ Public Class frmScaleGrinding
 
             Dim templateFile As String = Environment.CurrentDirectory & "\PrintTemplates\NOCODE.lab"
             If PRINT_HEAD_TEST Then templateFile = Environment.CurrentDirectory & "\PrintTemplates\PrintHeadTest.lab"
-            'If IsOverUnderWeight() Then templateFile = Environment.CurrentDirectory & "\PrintTemplates\WeightIncorrect.lab"
+            If IsOverUnderWeight() Then templateFile = Environment.CurrentDirectory & "\PrintTemplates\WeightIncorrect.lab"
 
 
             If System.IO.File.Exists(templateFile) Then
@@ -763,7 +767,7 @@ Public Class frmScaleGrinding
 
             If (ActiveLabelDocument Is Nothing) Then
                 'MessageBox.Show("A document must be opened To print!")
-                WriteToErrorLog("Error", "No open document", "", "")
+                WriteToErrorLog("Error", "No open document", "", MachineInstance.ScaleNumber)
                 Exit Sub
             End If
 
@@ -795,7 +799,7 @@ Public Class frmScaleGrinding
         Try
             If (ActiveLabelDocument Is Nothing) Then
                 'MessageBox.Show("A document must be opened To print!")
-                WriteToErrorLog("Error", "No open document", "", "")
+                WriteToErrorLog("Error", "No open document", "", MachineInstance.ScaleNumber)
                 Exit Sub
             End If
 
@@ -916,8 +920,10 @@ Public Class frmScaleGrinding
             WriteToLog("Print button hit", txtGrossWeight.Text, "", MachineInstance.ScaleNumber)
         End If
 
-        'Dim sString As String = "63.4lb"
-        'sString = RemoveAllAlphas(sString)
+        'Dim sString As String = "068390"
+        'Dim bReturn As Boolean = False
+        ''sString = RemoveAllAlphas(sString)
+        'bReturn = DatabaseHandling.DoesProductCodeExist(sString, ProductList)
 
         If lblProductCode.Text = "999999" Then PRINT_HEAD_TEST = True Else PRINT_HEAD_TEST = False
         If PRINT_HEAD_TEST Then
