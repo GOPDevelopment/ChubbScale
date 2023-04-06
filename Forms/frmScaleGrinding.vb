@@ -77,6 +77,9 @@ Public Class frmScaleGrinding
 
             MyCsApp = New LabelManager2.Application
 
+            'MyCsApp.EnableEvents = True
+
+
 
         Catch ex As Exception
             WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
