@@ -835,16 +835,13 @@ Public Class frmScaleGrinding
 
             'RemovePrintingHandlers()
 
-            'these don't work....
-            'Dim sSuccess As Short = ActiveLabelDocument.SaveAs(outfile)
-            'sSuccess = ActiveLabelDocument.Save
-            'sSuccess = ActiveLabelDocument.SaveAs("testfile.lab")
-
-
             'saves as an image!!! yay!!
             'Dim strSuccess As String = ActiveLabelDocument.CopyImageToFile(8, "BMP", 0, 100, outfile)
+            'If inTest Then
+            'Else
             Dim strSuccess As String = ActiveLabelDocument.CopyImageToFile(8, "JPG", 0, 100, outfile)
-            WriteToLog("after save", strSuccess, outfile, MachineInstance.ScaleNumber)
+                WriteToLog("after save", strSuccess, outfile, MachineInstance.ScaleNumber)
+            'End If
 
 
         Catch ex As Exception
