@@ -130,18 +130,20 @@ Public Class frmScaleGrinding
 
             'initialize label printer
             'InitializePrinter(MachineInstance)     'commenting out for now as it's done above
-
-            'set intial display fields
-            SetDisplay("000000")
-            btnMakeFavorite.Text = "Remove Favorite"
-            rdoManual.Checked = True      'default to manual read
-
             If AppSettings("InTest") = "TRUE" Then
                 btnSetWeightPrint.Visible = True
                 btnProdActive.PerformClick()    'to make it inactive
             Else
                 btnSetWeightPrint.Visible = False
             End If
+
+
+            'set intial display fields
+            SetDisplay("000000")
+            btnMakeFavorite.Text = "Remove Favorite"
+            rdoManual.Checked = True      'default to manual read
+
+
 
         Catch ex As Exception
             WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
@@ -374,6 +376,16 @@ Public Class frmScaleGrinding
                 btnMakeFavorite.Text = "Make Favorite"
             End If
 
+            If tempProductInfo.ProductCode = "000000" Then
+                'forcing active no matter what so it's sent to inactive in button
+                If btnToggleLanguage.Text = "English" Then
+                    btnProdActive.Text = "Producción Activa"
+                Else
+                    btnProdActive.Text = "Production Active"
+                End If
+
+                btnProdActive.PerformClick()
+            End If
         End If
 
 
@@ -564,12 +576,6 @@ Public Class frmScaleGrinding
             'End If
             tBoxCount = Microsoft.VisualBasic.Right("0000" & BOX_COUNT_LOT, 4)
 
-            ''Dim GradeToUse As Integer = IIf(OVERRIDE_GRADE_VALUE = 0, GRADE, OVERRIDE_GRADE_VALUE)
-            'Dim Gradetouse As String = "0"
-            'Dim tGradePad As String = Microsoft.VisualBasic.Right("00" & GradeToUse, 1)
-            'If GradeToUse = 8 Then tGradePad = "0"
-            'Dim tGradeAndProduct As String = tGradePad & Microsoft.VisualBasic.Right("0000" & tGradePad & lblProductCode.Text, 4)
-
             Dim GradeToUse As Integer = GRADE
             Dim tGradePad As String = Microsoft.VisualBasic.Right("00" & GradeToUse, 2)
             If Gradetouse = 8 Then tGradePad = "00"
@@ -582,12 +588,10 @@ Public Class frmScaleGrinding
             Dim tmpSerialNumber As String = DatabaseHandling.GetNextSerialNumber(MachineInstance.ScaleNumber)
             tmpSerialNumber = tmpSerialNumber.ToString().PadLeft(8, "0")
 
-            '            New system 263081 
-            '019630308 030811 3201 000045 11 221221 21 1300000308
-
-            'Old System 463081
-            '019630308 4630819 3201 000601 11 220921 21 1226484308
-
+            If tmpSerialNumber.Contains("00000000") Then
+                MsgBox("Serial Number Invalid/Numero Invalido", vbOKOnly, "Invalid Serial Number")
+                WriteToLog("Serial Number Invalid", tmpSerialNumber, "", MachineInstance.ScaleNumber)
+            End If
 
             Dim tBarcodeText As String = "019630308" & tGradeAndProduct & GetCheckDigitGTIN_13("9630308" & tGradeAndProduct) & "3201" & tLBSHundred & "11" & PROD_DATE_TO_USE.ToString("yyMMdd") & "21" & MachineInstance.ScaleNumber & tmpSerialNumber
             Dim tBarcodeFooter As String = "(01)9630308" & tGradeAndProduct & GetCheckDigitGTIN_13("9630308" & tGradeAndProduct) & "(3201)" & tLBSHundred & "(11)" & PROD_DATE_TO_USE.ToString("yyMMdd") & "(21)" & MachineInstance.ScaleNumber & tmpSerialNumber
@@ -614,7 +618,8 @@ Public Class frmScaleGrinding
 
             Dim imageMiddleRightLocation As String = Environment.CurrentDirectory & "\PrintTemplates\"
             'all use this one
-            imageMiddleRightLocation = imageMiddleRightLocation & "45834.BUG.bmp"
+            'imageMiddleRightLocation = imageMiddleRightLocation & "45834.BUG.bmp"
+            imageMiddleRightLocation = imageMiddleRightLocation & "current.BUG.bmp"
 
             Dim imageLeftTopLocation As String = Environment.CurrentDirectory & "\PrintTemplates\"
             Select Case tempProductInfo.LabelTemplate
@@ -1353,4 +1358,6 @@ Public Class frmScaleGrinding
             CURRENT_LOT = newLot
         End If
     End Sub
+
+
 End Class

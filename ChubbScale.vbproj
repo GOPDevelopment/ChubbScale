@@ -273,6 +273,9 @@
     <Content Include="PrintTemplates\cowhead.bmp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="PrintTemplates\current.BUG.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="PrintTemplates\herfgb.bmp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -289,7 +292,9 @@
     <Content Include="PrintTemplates\LabelsOther\newlogo.bmp" />
     <Content Include="PrintTemplates\LabelsOther\onalogo.bmp" />
     <Content Include="PrintTemplates\LabelsOther\wbona.bmp" />
-    <Content Include="PrintTemplates\newlogo.bmp" />
+    <Content Include="PrintTemplates\newlogo.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="PrintTemplates\onalogo.bmp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
