@@ -263,6 +263,8 @@ Module CommonStuff
     End Function
     Function GetCheckDigitGTIN_13(ByVal szString As String) As String
         Try
+            szString = szString.Trim        'in case there are spaces
+
             ' String should be 13 characters
             ' First digit x 1, second digit x 3, next x 1, and so on.
             ' Subtract sum from "nearest" equal or higher multiple of ten, = check digit
@@ -281,28 +283,39 @@ Module CommonStuff
             End If
 
         Catch ex As Exception
-            'WriteToErrorLog("ERROR", ex.Message, ex.StackTrace)
+            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, "13")
             Return "-"
         End Try
     End Function
 
-    Function GetCheckDigitGS1_128(ByVal szString As String) As String
-        Dim checkDigit As Integer = 0
-        For i = 1 To Len(szString)
-            Dim e As Integer = Asc(Mid(szString, i, 1)) - 32
-            checkDigit = checkDigit + (e * i)
-        Next i
+    'Function GetCheckDigitGS1_128(ByVal szString As String) As String
+    '    Dim checkDigit As Integer = 0
+    '    For i = 1 To Len(szString)
+    '        Dim e As Integer = Asc(Mid(szString, i, 1)) - 32
+    '        checkDigit = checkDigit + (e * i)
+    '    Next i
 
-        checkDigit = checkDigit Mod 103
+    '    checkDigit = checkDigit Mod 103
 
-        Return checkDigit
-    End Function
+    '    Return checkDigit
+    'End Function
 
     Sub CleanWorkFolder(tempWorkFolder As String, ByVal machineInfo As String)
         Dim OldFiles() As String = Directory.GetFiles(Environment.CurrentDirectory & tempWorkFolder, "*.lab*")
         For Each ThisFile As String In OldFiles
             Try
-                If DateDiff(DateInterval.DayOfYear, File.GetLastWriteTime(ThisFile), Now) > 15 Then
+                If DateDiff(DateInterval.DayOfYear, File.GetLastWriteTime(ThisFile), Now) > 7 Then
+                    File.Delete(ThisFile)
+                End If
+            Catch ex As Exception
+                WriteToErrorLog("ERROR", ex.Message, ex.StackTrace & "    " & ThisFile, machineInfo)
+            End Try
+        Next
+
+        OldFiles = Directory.GetFiles(Environment.CurrentDirectory & tempWorkFolder, "*.jpg*")
+        For Each ThisFile As String In OldFiles
+            Try
+                If DateDiff(DateInterval.DayOfYear, File.GetLastWriteTime(ThisFile), Now) > 7 Then
                     File.Delete(ThisFile)
                 End If
             Catch ex As Exception

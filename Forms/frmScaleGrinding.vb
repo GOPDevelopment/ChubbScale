@@ -2,9 +2,13 @@
 Imports System.Data.SqlClient
 Imports BarcodeLib.BarcodeReader
 Imports System.Runtime.InteropServices
-Imports LabelManager2
+'Imports LabelManager2
 'Imports System.IO
 'Imports System.IO.Ports
+Imports Seagull.BarTender.Print
+Imports System.Reflection
+Imports System.Threading.Tasks
+
 
 
 'GB5x3.LBL
@@ -19,9 +23,6 @@ Public Class frmScaleGrinding
     Private Property SCALE_NAME As String = "GRINDING"
     Private Property PROD_LINE As String = "13"
     Private Property GRADE As String = "3"
-    'Private Property CUSTOMER As String = "00"
-    'Private Property OVERRIDE_GRADE_VALUE As Integer = 4
-
     Private Property ProductList As New List(Of ProductInfo)
     Private Property FavoriteProductList As New List(Of String)
     Private Property BOX_TOTAL_SHIFT As Integer = 0
@@ -34,7 +35,6 @@ Public Class frmScaleGrinding
     Private Property CURRENT_LOT As Integer = 0
     Private Property PROD_ACTIVE As Boolean = True
     Private Property LAST_GROSS_WEIGHT As Single = 0
-    'Private Property CURRENT_TEST_NO As String = ""
     Private Property LAST_BARCODE As String = ""
     Private Property LAST_SERIAL As String = ""
     Private Property CURRENT_PRODUCT_LABEL_NET_WEIGHT As Single = 0
@@ -52,13 +52,16 @@ Public Class frmScaleGrinding
     Private Property EntireQRMessage As String = ""
     Private Property PROD_DATE_TO_USE As Date
 
-    Private m_Lppx2Manager As Lppx2Manager = Nothing
-    Private WithEvents MyCsApp As LabelManager2.Application
+    'Public m_Lppx2Manager As Lppx2Manager = Nothing
+    'Public WithEvents MyCsApp As LabelManager2.Application
+    'Private WithEvents ActiveLabelDocument As LabelManager2.Document = Nothing
+    'Dim varTab As String()() = New String(2)() {}
 
-    ' Need to have a WithEvents object to manage events at the ActiveDocument level
-    Private WithEvents ActiveLabelDocument As LabelManager2.Document = Nothing
-
-    Dim varTab As String()() = New String(2)() {}
+    Public WithEvents MyBTApp As Engine
+    Public BTDocTemplate As LabelFormatDocument
+    Public BTNoCodeTemplate As LabelFormatDocument
+    Public BTWeightIncorrectTemplate As LabelFormatDocument
+    Public BTPrintHeadTestTemplate As LabelFormatDocument
 
 
     Public Sub New(ByVal PassedUserInfo As ProgramUser, ByVal PassedMachineInstance As MachineInfo, ByVal DateToUse As System.DateTime)
@@ -69,21 +72,12 @@ Public Class frmScaleGrinding
         UserInfo = PassedUserInfo
         MachineInstance = PassedMachineInstance
         PROD_DATE_TO_USE = DateToUse
-        Try
 
-            'm_Lppx2Manager = New Lppx2Manager
-            'MyCsApp = DirectCast(m_Lppx2Manager.GetApplication(), LabelManager2.Application)
-            'MyCsApp.PreloadUI()
-
-            MyCsApp = New LabelManager2.Application
-
-            'MyCsApp.EnableEvents = True
-
-
-
-        Catch ex As Exception
-            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
-        End Try
+        'Try
+        '    MyCsApp = New LabelManager2.Application
+        'Catch ex As Exception
+        '    WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
+        'End Try
 
     End Sub
     Private Sub Main_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
@@ -127,9 +121,11 @@ Public Class frmScaleGrinding
             'initialize scale ports
             InitializeScalePorts()
 
+            'set intial display fields
+            SetDisplay("000000")
+            btnMakeFavorite.Text = "Remove Favorite"
+            rdoManual.Checked = True      'default to manual read
 
-            'initialize label printer
-            'InitializePrinter(MachineInstance)     'commenting out for now as it's done above
             If AppSettings("InTest") = "TRUE" Then
                 btnSetWeightPrint.Visible = True
                 btnProdActive.PerformClick()    'to make it inactive
@@ -137,12 +133,28 @@ Public Class frmScaleGrinding
                 btnSetWeightPrint.Visible = False
             End If
 
+            Try
+                'MyCsApp = New LabelManager2.Application
+                'initialize BarTenderEngine and gather any errors before running
+                'WriteToLog("Before BT engine creation", DateTime.Now.ToString("HH:mm:ss"), "", MachineInstance.ScaleNumber)
+                MyBTApp = New Engine()
+                MyBTApp.Start()
+                'MyBTApp.Stop()
+                'WriteToLog("After engine creation", DateTime.Now.ToString("HH:mm:ss"), "", MachineInstance.ScaleNumber)
 
-            'set intial display fields
-            SetDisplay("000000")
-            btnMakeFavorite.Text = "Remove Favorite"
-            rdoManual.Checked = True      'default to manual read
+                BTDocTemplate = MyBTApp.Documents.Open(Environment.CurrentDirectory & AppSettings("PrintTemplateLocation_Chub"))
+                BTNoCodeTemplate = MyBTApp.Documents.Open(Environment.CurrentDirectory & "\PrintTemplates\NOCODE.btw")
+                BTWeightIncorrectTemplate = MyBTApp.Documents.Open(Environment.CurrentDirectory & "\PrintTemplates\WeightIncorrect.btw")
+                BTPrintHeadTestTemplate = MyBTApp.Documents.Open(Environment.CurrentDirectory & "\PrintTemplates\PrintHeadTest.btw")
 
+            Catch ex As Exception
+                WriteToErrorLog("ERROR WITH BARTENDER DLL", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
+            End Try
+
+
+            If Not System.IO.File.Exists(Environment.CurrentDirectory & AppSettings("PrintTemplateLocation_Chub")) Then
+                WriteToLog("Template File doesn't exist in " & Environment.CurrentDirectory & AppSettings("PrintTemplateLocation_Chub"), "", "", MachineInstance.ScaleNumber)
+            End If
 
 
         Catch ex As Exception
@@ -220,16 +232,12 @@ Public Class frmScaleGrinding
 
 
             If comPort = AppSettings("QRReaderComPort") And MANUAL_PRODUCT_RUN = False Then
-                'this reads in the QR code - totally works!
-                'Dim datas() As String = BarcodeReader.read("c:/temp/qr-code.png", BarcodeReader.QRCODE)
-
                 EntireQRMessage = EntireQRMessage & inputSent
-                If EntireQRMessage.EndsWith(";") Then
 
-                    'If EntireQRMessage.Trim.Length = 6 Then
+                If EntireQRMessage.EndsWith(";") Then
                     WriteToLog(EntireQRMessage, comPort, "Entire QR message", MachineInstance.ScaleNumber)
 
-                    lblProductCode.Text = EntireQRMessage.Remove(";")
+                    lblProductCode.Text = EntireQRMessage.Replace(";", "")
 
                     If Not DatabaseHandling.DoesProductCodeExist(lblProductCode.Text, ProductList) Then
                         WriteToLog(lblProductCode.Text, "", "Product Code doesn't exist in database", MachineInstance.ScaleNumber)
@@ -279,25 +287,37 @@ Public Class frmScaleGrinding
                     If VALID_PRODUCTCODE And Not PRINT_HEAD_TEST And Not IsOverUnderWeight() Then
                         'If VALID_PRODUCTCODE And Not PRINT_HEAD_TEST Then
                         HandleAllPrinting(CURRENT_PRODUCT_LABEL_NET_WEIGHT)
-                        Else
-                            PrintLabelBlank()
-                        End If
+                        'Await HandleAllPrinting(CURRENT_PRODUCT_LABEL_NET_WEIGHT)
 
-                        SetDisplay(lblProductCode.Text)
-
-                        VALID_PRODUCTCODE = False   'JUST TO RESET AFTER A PRINT
-
-                        EntireScaleMessage = ""
+                    Else
+                        PrintLabelBlank()
                     End If
 
+                    SetDisplay(lblProductCode.Text)
+
+                    VALID_PRODUCTCODE = False   'JUST TO RESET AFTER A PRINT
+
+                    EntireScaleMessage = ""
+                    EntireQRMessage = ""
                 End If
+
+            End If
 
         Catch ex As Exception
             EntireScaleMessage = ""
+            EntireQRMessage = ""
             WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
         End Try
 
     End Sub
+    Private Async Function PerformAsyncOperation() As Task
+        ' Simulate a time-consuming asynchronous operation
+        'Await Task.Delay(3000) ' 3 seconds delay
+
+        CURRENT_PRODUCT_LABEL_NET_WEIGHT = CSng(txtGrossWeight.Text)
+        'Await HandleAllPrinting(CURRENT_PRODUCT_LABEL_NET_WEIGHT)
+
+    End Function
     Private Sub SetDisplay(ProductCodePassed As String)
         'load initial or passed lookup
 
@@ -421,7 +441,6 @@ Public Class frmScaleGrinding
 
         Return bReturn
     End Function
-
     Private Sub btnProdActive_Click(sender As Object, e As EventArgs) Handles btnProdActive.Click
         If btnToggleLanguage.Text = "English" Then
             'if it says English then the screen is in spanish
@@ -467,81 +486,76 @@ Public Class frmScaleGrinding
             PROD_DATE_TO_USE = PROD_DATE_TO_USE.ToString("yyyy-MM-dd ") & System.DateTime.Now.ToString("HH:mm:ss tt")
 
             'BuildFileAndPrint(weight)
-            Dim outFile As String = Environment.CurrentDirectory & AppSettings("TempWorkFolder") & MachineInstance.ScaleName & "_" & System.Guid.NewGuid.ToString & ".lab"
-
+            'Dim outFile As String = Environment.CurrentDirectory & AppSettings("TempWorkFolder") & MachineInstance.ScaleName & "_" & System.Guid.NewGuid.ToString & ".lab"
             'copy original label file to new file and update
-            OpenLabelFile(outFile)
+            'OpenLabelFile(outFile)
 
             UpdateLabelFields(weight)
 
-            WriteToLog("before print", outFile, "", MachineInstance.ScaleNumber)
+            'WriteToLog("before print", outFile, "", MachineInstance.ScaleNumber)
 
-            PrintLabel(outFile)
+            'PrintLabel(outFile)
 
 
-            'close label file
-            If (Not (ActiveLabelDocument Is Nothing)) Then
-                ActiveLabelDocument.Close(False)
-                Marshal.ReleaseComObject(ActiveLabelDocument)
-                ActiveLabelDocument = Nothing
-            End If
+            ''close label file
+            'If (Not (ActiveLabelDocument Is Nothing)) Then
+            '    ActiveLabelDocument.Close(False)
+            '    Marshal.ReleaseComObject(ActiveLabelDocument)
+            '    ActiveLabelDocument = Nothing
+            'End If
 
             'add info for transaction
             AddTransactionToDB()
 
-            'If PROD_ACTIVE Then
-            '    CreateInfoForAlpha()
-            'End If
 
             'delete copied template file, not needed anymore
-            System.IO.File.Delete(outFile)
+            'System.IO.File.Delete(outFile)
 
         Catch ex As Exception
             WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
         End Try
     End Sub
-    Private Sub OpenLabelFile(outFile As String)
+    'Private Sub OpenLabelFile(outFile As String)
 
-        Try
+    '    Try
 
-            If (Not (ActiveLabelDocument Is Nothing)) Then
-                ActiveLabelDocument.Close(False)
-                Marshal.ReleaseComObject(ActiveLabelDocument)
-                ActiveLabelDocument = Nothing
-            End If
+    '        If (Not (ActiveLabelDocument Is Nothing)) Then
+    '            ActiveLabelDocument.Close(False)
+    '            Marshal.ReleaseComObject(ActiveLabelDocument)
+    '            ActiveLabelDocument = Nothing
+    '        End If
 
-            'copy template file to new file and open
-            Dim templateFile As String = Environment.CurrentDirectory & AppSettings("PrintTemplateLocation_Chubb")
-            If System.IO.File.Exists(templateFile) Then
-                System.IO.File.Copy(templateFile, outFile)
+    '        'copy template file to new file and open
+    '        Dim templateFile As String = Environment.CurrentDirectory & AppSettings("PrintTemplateLocation_Chubb")
+    '        If System.IO.File.Exists(templateFile) Then
+    '            System.IO.File.Copy(templateFile, outFile)
 
-                Dim fileDetail As IO.FileInfo = My.Computer.FileSystem.GetFileInfo(outFile)
-                fileDetail.IsReadOnly = False
+    '            Dim fileDetail As IO.FileInfo = My.Computer.FileSystem.GetFileInfo(outFile)
+    '            fileDetail.IsReadOnly = False
 
-                Dim csDocuments As LabelManager2.Documents = MyCsApp.Documents
-                ActiveLabelDocument = csDocuments.Open(outFile, False)
-                Marshal.ReleaseComObject(csDocuments)
-            Else
-                MessageBox.Show("No template file", "Stop", MessageBoxButtons.OK)
-            End If
-
-
-        Catch ex As Exception
-            WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
-            If ActiveLabelDocument IsNot Nothing Then
-                Marshal.ReleaseComObject(ActiveLabelDocument)
-                ActiveLabelDocument = Nothing
-            End If
-        End Try
+    '            Dim csDocuments As LabelManager2.Documents = MyCsApp.Documents
+    '            ActiveLabelDocument = csDocuments.Open(outFile, False)
+    '            Marshal.ReleaseComObject(csDocuments)
+    '        Else
+    '            MessageBox.Show("No template file", "Stop", MessageBoxButtons.OK)
+    '        End If
 
 
-    End Sub
+    '    Catch ex As Exception
+    '        WriteToErrorLog("ERROR", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
+    '        If ActiveLabelDocument IsNot Nothing Then
+    '            Marshal.ReleaseComObject(ActiveLabelDocument)
+    '            ActiveLabelDocument = Nothing
+    '        End If
+    '    End Try
+
+
+    'End Sub
     Private Sub UpdateLabelFields(ByVal nLBS As Single)
 
         'Dim currentLabelVariables As New LabelVariables
-        Dim availableVariableAssignment As New LabelVariableAssignment
-
-        availableVariableAssignment = FillVariablesTabFromActiveLabel()
+        'Dim availableVariableAssignment As New LabelVariableAssignment
+        'availableVariableAssignment = FillVariablesTabFromActiveLabel()
 
         Try
             Dim tempProductInfo As New ProductInfo
@@ -599,56 +613,103 @@ Public Class frmScaleGrinding
             LAST_BARCODE = tBarcodeText
             LAST_SERIAL = Microsoft.VisualBasic.Right(LAST_BARCODE, 10)
 
-
-            varTab(1)(availableVariableAssignment.ProductWeightKG) = FormatNumber(nKGS, 2, TriState.UseDefault, TriState.UseDefault, TriState.False)
-            varTab(1)(availableVariableAssignment.BarcodeReadable) = tBarcodeFooter
-            varTab(1)(availableVariableAssignment.UseFreezeDate) = IIf(tempProductInfo.SellByDay > 0, PROD_DATE_TO_USE.AddDays(tempProductInfo.SellByDay).ToString("MMddyy"), "")
-            varTab(1)(availableVariableAssignment.GradeNumber) = ""     'GradeToUse
-            varTab(1)(availableVariableAssignment.PackDate) = PROD_DATE_TO_USE.ToString("MMddyy")
-            varTab(1)(availableVariableAssignment.ScaleNumber) = MachineInstance.ScaleNumber
-            varTab(1)(availableVariableAssignment.ProductWeightLB) = FormatNumber(nLBS, 2, TriState.UseDefault, TriState.UseDefault, TriState.False)
-            varTab(1)(availableVariableAssignment.BoxCount) = tBoxCount
-            varTab(1)(availableVariableAssignment.Barcode128) = tBarcodeText
-            varTab(1)(availableVariableAssignment.PrintTime) = PROD_DATE_TO_USE.ToString("hmmt")
-            varTab(1)(availableVariableAssignment.ProductDescription) = tempProductInfo.ProductDescription
-            varTab(1)(availableVariableAssignment.ProductDescription2) = tempProductInfo.ProductDescription2
-            varTab(1)(availableVariableAssignment.ProductDescriptionTop) = tempProductInfo.TestingDescription
-            varTab(1)(availableVariableAssignment.Lot) = CURRENT_LOT
-            varTab(1)(availableVariableAssignment.ProductCode) = tempProductInfo.ProductCode
-
-            Dim imageMiddleRightLocation As String = Environment.CurrentDirectory & "\PrintTemplates\"
+            'Dim imageMiddleRightLocation As String = Environment.CurrentDirectory & "\PrintTemplates\"
             'all use this one
             'imageMiddleRightLocation = imageMiddleRightLocation & "45834.BUG.bmp"
-            imageMiddleRightLocation = imageMiddleRightLocation & "current.BUG.bmp"
+            'imageMiddleRightLocation = imageMiddleRightLocation & "current.BUG.bmp"
 
             Dim imageLeftTopLocation As String = Environment.CurrentDirectory & "\PrintTemplates\"
             Select Case tempProductInfo.LabelTemplate
                 Case "GB5x3CAB.LBL"
-                    imageLeftTopLocation = imageLeftTopLocation & "CAB.bmp"
-                    'imageMiddleRightLocation = imageMiddleRightLocation & "45834.BUG.bmp"
+                    'imageLeftTopLocation = imageLeftTopLocation & "CAB.bmp"
+                    imageLeftTopLocation = tempProductInfo.LabelTemplate
                 Case "GB5x3CHB.LBL"
-                    imageLeftTopLocation = imageLeftTopLocation & "classicherford.bmp"
-                    'imageMiddleRightLocation = imageMiddleRightLocation & "45834.BUG.bmp"
+                    'imageLeftTopLocation = imageLeftTopLocation & "classicherford.bmp"
+                    imageLeftTopLocation = tempProductInfo.LabelTemplate
                 Case "GB5x3ONA.LBL"
-                    imageLeftTopLocation = imageLeftTopLocation & "onalogo.bmp"
-                    'imageMiddleRightLocation = imageMiddleRightLocation & "960A.BUG.bmp"
-                    'Case "GBOHB5D.LBL"
-                    '    imageLeftTopLocation = imageLeftTopLocation & "herfgb.bmp"
-                    '    imageMiddleRightLocation = imageMiddleRightLocation & "960A.BUG.bmp"
+                    'imageLeftTopLocation = imageLeftTopLocation & "onalogo.bmp"
+                    imageLeftTopLocation = tempProductInfo.LabelTemplate
                 Case Else
                     'GB5x3.LBL
-                    imageLeftTopLocation = imageLeftTopLocation & "chub.bmp"
-                    'imageMiddleRightLocation = imageMiddleRightLocation & "45834.BUG.bmp"
+                    'imageLeftTopLocation = imageLeftTopLocation & "chub.bmp"
+                    imageLeftTopLocation = ""
             End Select
 
-            varTab(1)(availableVariableAssignment.ImageMiddleRightLocation) = imageMiddleRightLocation
-            varTab(1)(availableVariableAssignment.ImageTopLeftLocation) = imageLeftTopLocation
+
+            'varTab(1)(availableVariableAssignment.ProductWeightKG) = FormatNumber(nKGS, 2, TriState.UseDefault, TriState.UseDefault, TriState.False)
+            'varTab(1)(availableVariableAssignment.ProductWeightLB) = FormatNumber(nLBS, 2, TriState.UseDefault, TriState.UseDefault, TriState.False)
+
+            'varTab(1)(availableVariableAssignment.BarcodeReadable) = tBarcodeFooter
+            'varTab(1)(availableVariableAssignment.UseFreezeDate) = IIf(tempProductInfo.SellByDay > 0, PROD_DATE_TO_USE.AddDays(tempProductInfo.SellByDay).ToString("MMddyy"), "")
+            'varTab(1)(availableVariableAssignment.GradeNumber) = ""     'GradeToUse
+            'varTab(1)(availableVariableAssignment.PackDate) = PROD_DATE_TO_USE.ToString("MMddyy")
+            'varTab(1)(availableVariableAssignment.ScaleNumber) = MachineInstance.ScaleNumber
+            'varTab(1)(availableVariableAssignment.BoxCount) = tBoxCount
+            'varTab(1)(availableVariableAssignment.Barcode128) = tBarcodeText
+            'varTab(1)(availableVariableAssignment.PrintTime) = PROD_DATE_TO_USE.ToString("hmmt")
+            'varTab(1)(availableVariableAssignment.ProductDescription) = tempProductInfo.ProductDescription
+            'varTab(1)(availableVariableAssignment.ProductDescription2) = tempProductInfo.ProductDescription2
+            'varTab(1)(availableVariableAssignment.ProductDescriptionTop) = tempProductInfo.TestingDescription
+            'varTab(1)(availableVariableAssignment.Lot) = CURRENT_LOT
+            'varTab(1)(availableVariableAssignment.ProductCode) = tempProductInfo.ProductCode
+            'varTab(1)(availableVariableAssignment.ImageMiddleRightLocation) = imageMiddleRightLocation
+            'varTab(1)(availableVariableAssignment.ImageTopLeftLocation) = imageLeftTopLocation
 
 
-            'update variables to activedocument
-            UpdateVariablesInActiveLabel()
+            ''update variables to activedocument
+            'UpdateVariablesInActiveLabel()
 
             'ActiveLabelDocument.WriteVariables(varTab)
+            WriteToLog("Before open doc", DateTime.Now.ToString("HH:mm:ss:ff"), "", MachineInstance.ScaleNumber)
+            'Dim btDoc As LabelFormatDocument = MyBTApp.Documents.Open(Environment.CurrentDirectory & AppSettings("PrintTemplateLocation_Chub"))
+            Dim btDoc As LabelFormatDocument = BTDocTemplate
+            WriteToLog("After open doc", DateTime.Now.ToString("HH:mm:ss:ff"), "", MachineInstance.ScaleNumber)
+
+            btDoc.SubStrings("WeightKG").Value = FormatNumber(nKGS, 2, TriState.UseDefault, TriState.UseDefault, TriState.False)
+            btDoc.SubStrings("WeightLB").Value = FormatNumber(nLBS, 2, TriState.UseDefault, TriState.UseDefault, TriState.False)
+            btDoc.SubStrings("BarcodeReadable").Value = tBarcodeFooter
+            btDoc.SubStrings("FreezeByDate").Value = IIf(tempProductInfo.SellByDay > 0, PROD_DATE_TO_USE.AddDays(tempProductInfo.SellByDay).ToString("MMddyy"), "")
+            btDoc.SubStrings("ProductGrade").Value = ""
+            btDoc.SubStrings("PackDate").Value = PROD_DATE_TO_USE.ToString("MMddyy")
+            btDoc.SubStrings("ScaleNumber").Value = MachineInstance.ScaleNumber
+            btDoc.SubStrings("BoxCount").Value = tBoxCount
+            btDoc.SubStrings("Barcode128").Value = tBarcodeText
+            btDoc.SubStrings("PackTime").Value = PROD_DATE_TO_USE.ToString("hmmt")
+            btDoc.SubStrings("ProductDesc").Value = tempProductInfo.ProductDescription
+            btDoc.SubStrings("ProductDesc2").Value = tempProductInfo.ProductDescription2
+            btDoc.SubStrings("HeaderText").Value = tempProductInfo.TestingDescription
+            btDoc.SubStrings("Lot").Value = CURRENT_LOT
+            btDoc.SubStrings("ProductCode").Value = tempProductInfo.ProductCode
+            'btDoc.SubStrings("MiddleRightImage").Value = imageMiddleRightLocation      'defaulted to current bug. same on all labels
+            btDoc.SubStrings("TopLeftImage").Value = imageLeftTopLocation
+            'btDoc.SubStrings("ShowCabLogo").Value = imageLeftTopLocation
+            'btDoc.SubStrings("ShowClassicHerfordLogo").Value = imageLeftTopLocation
+            'btDoc.SubStrings("ShowOnaLogo").Value = imageLeftTopLocation
+
+            'btDoc.SubStrings("GrossWeightKG").Value = "Gross " & tGrossKGS & " KG"      'nKGS
+            'btDoc.SubStrings("GrossWeightLB").Value = "Gross " & tGrossLBS & " LB"     'nLBS
+            'btDoc.SubStrings("BoxSize").Value = tempProductInfo.BoxSize
+            'btDoc.SubStrings("ShowBug").Value = tempProductInfo.ShowBug
+
+
+            WriteToLog("Before print job sent", DateTime.Now.ToString("HH:mm:ss:ff"), "", MachineInstance.ScaleNumber)
+            Dim bresult As Result = btDoc.Print()
+            WriteToLog("After print job sent", DateTime.Now.ToString("HH:mm:ss:ff"), "", MachineInstance.ScaleNumber)
+
+            Dim outFile As String = Environment.CurrentDirectory & AppSettings("TempWorkFolder") & MachineInstance.ScaleName & "_" & System.Guid.NewGuid.ToString & ".btw"
+            'btDoc.ExportImageToFile(outFile & ".jpg", ImageType.JPEG, ColorDepth.Mono, New Resolution(305), OverwriteOptions.Overwrite)
+            btDoc.SaveAs(outFile, True)
+            WriteToLog("After save doc", DateTime.Now.ToString("HH:mm:ss:ff"), "", MachineInstance.ScaleNumber)
+
+            'btDoc.Close(SaveOptions.DoNotSaveChanges)
+            'btDoc.Close(SaveOptions.SaveChanges)
+
+
+            'delete copied template file, not needed anymore
+            'System.IO.File.Delete(outFile)
+            'MyBTApp.Stop()
+            'End Using
+            'WriteToLog("after BT stop", DateTime.Now.ToString("HH:mm:ss"), "", MachineInstance.ScaleNumber)
 
         Catch ex As Exception
             WriteToErrorLog("Error", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
@@ -658,141 +719,154 @@ Public Class frmScaleGrinding
         'Return sReturn
 
     End Sub
-    Private Function FillVariablesTabFromActiveLabel() As LabelVariableAssignment
-        Dim sLabelStuff As String = ""
+    'Private Function FillVariablesTabFromActiveLabel() As LabelVariableAssignment
+    '    Dim sLabelStuff As String = ""
 
 
-        Dim availableVariableAssignment As New LabelVariableAssignment
+    '    Dim availableVariableAssignment As New LabelVariableAssignment
 
 
-        Try
-            Dim variables As LabelManager2.Variables = ActiveLabelDocument.Variables
-            Dim availableVariables As New LabelVariableString
+    '    Try
+    '        Dim variables As LabelManager2.Variables = ActiveLabelDocument.Variables
+    '        Dim availableVariables As New LabelVariableString
 
-            varTab(0) = New String(Variables.Count) {}
-            varTab(1) = New String(Variables.Count) {}
-            For i As Integer = 1 To Variables.Count
-                Dim item As LabelManager2.Variable = ActiveLabelDocument.Variables.Item(i)
+    '        varTab(0) = New String(Variables.Count) {}
+    '        varTab(1) = New String(Variables.Count) {}
+    '        For i As Integer = 1 To Variables.Count
+    '            Dim item As LabelManager2.Variable = ActiveLabelDocument.Variables.Item(i)
 
-                Select Case item.Name
-                    Case availableVariables.Barcode128
-                        availableVariableAssignment.Barcode128 = i - 1
-                    Case availableVariables.ProductWeightKG
-                        availableVariableAssignment.ProductWeightKG = i - 1
-                    Case availableVariables.BarcodeReadable
-                        availableVariableAssignment.BarcodeReadable = i - 1
-                    Case availableVariables.UseFreezeDate
-                        availableVariableAssignment.UseFreezeDate = i - 1
-                    Case availableVariables.GradeNumber
-                        availableVariableAssignment.GradeNumber = i - 1
-                    Case availableVariables.PackDate
-                        availableVariableAssignment.PackDate = i - 1
-                    Case availableVariables.ProductDescription2
-                        availableVariableAssignment.ProductDescription2 = i - 1
-                    Case availableVariables.ScaleNumber
-                        availableVariableAssignment.ScaleNumber = i - 1
-                    Case availableVariables.ProductWeightLB
-                        availableVariableAssignment.ProductWeightLB = i - 1
-                    Case availableVariables.BoxCount
-                        availableVariableAssignment.BoxCount = i - 1
-                    Case availableVariables.PrintTime
-                        availableVariableAssignment.PrintTime = i - 1
-                    Case availableVariables.ProductDescription
-                        availableVariableAssignment.ProductDescription = i - 1
-                    Case availableVariables.Lot
-                        availableVariableAssignment.Lot = i - 1
-                    Case availableVariables.ProductCode
-                        availableVariableAssignment.ProductCode = i - 1
-                    Case availableVariables.ImageMiddleRightLocation
-                        availableVariableAssignment.ImageMiddleRightLocation = i - 1
-                    Case availableVariables.ImageTopLeftLocation
-                        availableVariableAssignment.ImageTopLeftLocation = i - 1
-                    Case availableVariables.ProductDescriptionTop
-                        availableVariableAssignment.ProductDescriptionTop = i - 1
-                    Case Else
-                        WriteToLog("LabelVariables item Not found", item.Name, "", MachineInstance.ScaleNumber)
-                End Select
+    '            Select Case item.Name
+    '                Case availableVariables.Barcode128
+    '                    availableVariableAssignment.Barcode128 = i - 1
+    '                Case availableVariables.ProductWeightKG
+    '                    availableVariableAssignment.ProductWeightKG = i - 1
+    '                Case availableVariables.BarcodeReadable
+    '                    availableVariableAssignment.BarcodeReadable = i - 1
+    '                Case availableVariables.UseFreezeDate
+    '                    availableVariableAssignment.UseFreezeDate = i - 1
+    '                Case availableVariables.GradeNumber
+    '                    availableVariableAssignment.GradeNumber = i - 1
+    '                Case availableVariables.PackDate
+    '                    availableVariableAssignment.PackDate = i - 1
+    '                Case availableVariables.ProductDescription2
+    '                    availableVariableAssignment.ProductDescription2 = i - 1
+    '                Case availableVariables.ScaleNumber
+    '                    availableVariableAssignment.ScaleNumber = i - 1
+    '                Case availableVariables.ProductWeightLB
+    '                    availableVariableAssignment.ProductWeightLB = i - 1
+    '                Case availableVariables.BoxCount
+    '                    availableVariableAssignment.BoxCount = i - 1
+    '                Case availableVariables.PrintTime
+    '                    availableVariableAssignment.PrintTime = i - 1
+    '                Case availableVariables.ProductDescription
+    '                    availableVariableAssignment.ProductDescription = i - 1
+    '                Case availableVariables.Lot
+    '                    availableVariableAssignment.Lot = i - 1
+    '                Case availableVariables.ProductCode
+    '                    availableVariableAssignment.ProductCode = i - 1
+    '                Case availableVariables.ImageMiddleRightLocation
+    '                    availableVariableAssignment.ImageMiddleRightLocation = i - 1
+    '                Case availableVariables.ImageTopLeftLocation
+    '                    availableVariableAssignment.ImageTopLeftLocation = i - 1
+    '                Case availableVariables.ProductDescriptionTop
+    '                    availableVariableAssignment.ProductDescriptionTop = i - 1
+    '                Case Else
+    '                    WriteToLog("LabelVariables item Not found", item.Name, "", MachineInstance.ScaleNumber)
+    '            End Select
 
-                varTab(0)(i - 1) = (item.Name)
-                varTab(1)(i - 1) = (item.Value)
-
-
-                sLabelStuff = sLabelStuff & item.Name & "," & item.Value & vbCrLf
-
-                Marshal.ReleaseComObject(item)
-            Next i
-
-            'WriteToLog("LabelVariables", sLabelStuff, "", MachineInstance.ScaleNumber)
-
-            Marshal.ReleaseComObject(Variables)
-
-        Catch ex As Exception
-            WriteToErrorLog("Error", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
-        Finally
+    '            varTab(0)(i - 1) = (item.Name)
+    '            varTab(1)(i - 1) = (item.Value)
 
 
-        End Try
+    '            sLabelStuff = sLabelStuff & item.Name & "," & item.Value & vbCrLf
+
+    '            Marshal.ReleaseComObject(item)
+    '        Next i
+
+    '        'WriteToLog("LabelVariables", sLabelStuff, "", MachineInstance.ScaleNumber)
+
+    '        Marshal.ReleaseComObject(Variables)
+
+    '    Catch ex As Exception
+    '        WriteToErrorLog("Error", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
+    '    Finally
 
 
-        Return availableVariableAssignment
+    '    End Try
 
-    End Function
-    Private Sub UpdateVariablesInActiveLabel()
-        Dim variables As LabelManager2.Variables = ActiveLabelDocument.Variables
 
-        For i As Integer = 0 To varTab(0).Length - 2
-            Dim item As LabelManager2.Variable = variables.Item(i + 1)
-            item.Name = varTab(0)(i)
-            item.Value = varTab(1)(i)
-            Marshal.ReleaseComObject(item)
-        Next i
+    '    Return availableVariableAssignment
 
-        Marshal.ReleaseComObject(variables)
+    'End Function
+    'Private Sub UpdateVariablesInActiveLabel()
+    '    Dim variables As LabelManager2.Variables = ActiveLabelDocument.Variables
 
-    End Sub
+    '    For i As Integer = 0 To varTab(0).Length - 2
+    '        Dim item As LabelManager2.Variable = variables.Item(i + 1)
+    '        item.Name = varTab(0)(i)
+    '        item.Value = varTab(1)(i)
+    '        Marshal.ReleaseComObject(item)
+    '    Next i
+
+    '    Marshal.ReleaseComObject(variables)
+
+    'End Sub
     Private Sub PrintLabelBlank()
 
         Try
-            If (Not (ActiveLabelDocument Is Nothing)) Then
-                ActiveLabelDocument.Close(False)
-                Marshal.ReleaseComObject(ActiveLabelDocument)
-                ActiveLabelDocument = Nothing
+            'If (Not (ActiveLabelDocument Is Nothing)) Then
+            '    ActiveLabelDocument.Close(False)
+            '    Marshal.ReleaseComObject(ActiveLabelDocument)
+            '    ActiveLabelDocument = Nothing
+            'End If
+
+            Dim otherBTDocTemplate As LabelFormatDocument
+            'Public BTDocTemplate As LabelFormatDocument
+            'Public BTNoCodeTemplate As LabelFormatDocument
+            'Public BTWeightIncorrectTemplate As LabelFormatDocument
+
+
+            'Dim templateFile As String = Environment.CurrentDirectory & "\PrintTemplates\NOCODE.lab"
+            'If PRINT_HEAD_TEST Then templateFile = Environment.CurrentDirectory & "\PrintTemplates\PrintHeadTest.lab"
+            'If IsOverUnderWeight() Then templateFile = Environment.CurrentDirectory & "\PrintTemplates\WeightIncorrect.lab"
+            If PRINT_HEAD_TEST Then
+                otherBTDocTemplate = BTPrintHeadTestTemplate
+                'templateFile = Environment.CurrentDirectory & "\PrintTemplates\PrintHeadTest.btw"
+            ElseIf IsOverUnderWeight() Then
+                otherBTDocTemplate = BTWeightIncorrectTemplate
+                'templateFile = Environment.CurrentDirectory & "\PrintTemplates\WeightIncorrect.btw"
+            Else
+                otherBTDocTemplate = BTNoCodeTemplate
+                'templateFile = Environment.CurrentDirectory & "\PrintTemplates\NOCODE.btw"
             End If
 
-            Dim templateFile As String = Environment.CurrentDirectory & "\PrintTemplates\NOCODE.lab"
-            If PRINT_HEAD_TEST Then templateFile = Environment.CurrentDirectory & "\PrintTemplates\PrintHeadTest.lab"
-            If IsOverUnderWeight() Then templateFile = Environment.CurrentDirectory & "\PrintTemplates\WeightIncorrect.lab"
+            If otherBTDocTemplate IsNot Nothing Then
+                otherBTDocTemplate.Print()
+                'otherBTDocTemplate.Close(SaveOptions.DoNotSaveChanges)
 
+                'otherBTDocTemplate = MyBTApp.Documents.Open(templateFile)
+                'otherBTDocTemplate.Print()
+                'otherBTDocTemplate.Close(SaveOptions.DoNotSaveChanges)
 
-            If System.IO.File.Exists(templateFile) Then
-
-                Dim csDocuments As LabelManager2.Documents = MyCsApp.Documents
-                ActiveLabelDocument = csDocuments.Open(templateFile, False)
-                Marshal.ReleaseComObject(csDocuments)
-                'Else
-                '    MessageBox.Show("No template file", "Stop", MessageBoxButtons.OK)
+                'Dim csDocuments As LabelManager2.Documents = MyCsApp.Documents
+                'ActiveLabelDocument = csDocuments.Open(templateFile, False)
+                'Marshal.ReleaseComObject(csDocuments)
             End If
 
-            If (ActiveLabelDocument Is Nothing) Then
-                'MessageBox.Show("A document must be opened To print!")
-                WriteToErrorLog("Error", "No open document", "", MachineInstance.ScaleNumber)
-                Exit Sub
-            End If
+            'If (ActiveLabelDocument Is Nothing) Then
+            '    'MessageBox.Show("A document must be opened To print!")
+            '    WriteToErrorLog("Error", "No open document", "", MachineInstance.ScaleNumber)
+            '    Exit Sub
+            'End If
 
-            'AddPrintingHandlers()
-            'ActiveLabelDocument.Printer.FullName = ""
-            'ActiveLabelDocument.Printer.InitialPrinterName = ""
-            'ActiveLabelDocument.Printer.ModelName = "SATO S84-ex (305 dpi)"
-            'ActiveLabelDocument.Printer.Name = "SATO S84-ex (305 dpi)"
+            'Dim iSuccess As Integer = ActiveLabelDocument.PrintDocument(1)
+            'WriteToLog("after print", iSuccess, templateFile, MachineInstance.ScaleNumber)
 
-            Dim iSuccess As Integer = ActiveLabelDocument.PrintDocument(1)
-            WriteToLog("after print", iSuccess, templateFile, MachineInstance.ScaleNumber)
-
-            Dim outFile As String = Environment.CurrentDirectory & AppSettings("TempWorkFolder") & MachineInstance.ScaleName & "_" & System.Guid.NewGuid.ToString
-            'saves as an image!!! yay!!
-            'Dim strSuccess As String = ActiveLabelDocument.CopyImageToFile(8, "BMP", 0, 100, outfile)
-            Dim strSuccess As String = ActiveLabelDocument.CopyImageToFile(8, "JPG", 0, 100, outFile)
-            WriteToLog("after save", strSuccess, templateFile, MachineInstance.ScaleNumber)
+            'Dim outFile As String = Environment.CurrentDirectory & AppSettings("TempWorkFolder") & MachineInstance.ScaleName & "_" & System.Guid.NewGuid.ToString
+            ''saves as an image!!! yay!!
+            ''Dim strSuccess As String = ActiveLabelDocument.CopyImageToFile(8, "BMP", 0, 100, outfile)
+            'Dim strSuccess As String = ActiveLabelDocument.CopyImageToFile(8, "JPG", 0, 100, outFile)
+            'WriteToLog("after save", strSuccess, templateFile, MachineInstance.ScaleNumber)
 
 
         Catch ex As Exception
@@ -801,60 +875,32 @@ Public Class frmScaleGrinding
         End Try
 
     End Sub
-    Private Sub PrintLabel(outfile As String)
+    'Private Sub PrintLabel(outfile As String)
 
 
-        Try
-            If (ActiveLabelDocument Is Nothing) Then
-                'MessageBox.Show("A document must be opened To print!")
-                WriteToErrorLog("Error", "No open document", "", MachineInstance.ScaleNumber)
-                Exit Sub
-            End If
+    '    Try
+    '        If (ActiveLabelDocument Is Nothing) Then
+    '            'MessageBox.Show("A document must be opened To print!")
+    '            WriteToErrorLog("Error", "No open document", "", MachineInstance.ScaleNumber)
+    '            Exit Sub
+    '        End If
 
 
-            'Dim csDialogs As LabelManager2.Dialogs = MyCsApp.Dialogs
-            'Dim csDialog As LabelManager2.Dialog = csDialogs.Item(LabelManager2.enumDialogType.lppxPrinterSelectDialog)
-            'csDialog.Show(Me.Handle)
-            'Me.Text = MyCsApp.ActivePrinterName
-            'Marshal.ReleaseComObject(csDialogs)
-            'Marshal.ReleaseComObject(csDialog)
-
-            'AddPrintingHandlers()
-            'ActiveLabelDocument.Printer.FullName = ""
-            'ActiveLabelDocument.Printer.InitialPrinterName = ""
-            'ActiveLabelDocument.Printer.ModelName = "SATO S84-ex (305 dpi)"
-            'ActiveLabelDocument.Printer.Name = "SATO S84-ex (305 dpi)"
-
-            Dim iSuccess As Integer = ActiveLabelDocument.PrintDocument(1)
-            WriteToLog("after print", iSuccess, outfile, MachineInstance.ScaleNumber)
-
-            'If Not (_BeginPrintingEventRes Is Nothing) Then
-            '    listBoxEvents.EndInvoke(_BeginPrintingEventRes)
-            '    _BeginPrintingEventRes = Nothing
-            'End If
-
-            'If Not (_EndPrintingEventRes Is Nothing) Then
-            '    listBoxEvents.EndInvoke(_EndPrintingEventRes)
-            '    _EndPrintingEventRes = Nothing
-            'End If
-
-            'RemovePrintingHandlers()
-
-            'saves as an image!!! yay!!
-            'Dim strSuccess As String = ActiveLabelDocument.CopyImageToFile(8, "BMP", 0, 100, outfile)
-            'If inTest Then
-            'Else
-            Dim strSuccess As String = ActiveLabelDocument.CopyImageToFile(8, "JPG", 0, 100, outfile)
-                WriteToLog("after save", strSuccess, outfile, MachineInstance.ScaleNumber)
-            'End If
+    '        Dim iSuccess As Integer = ActiveLabelDocument.PrintDocument(1)
+    '        WriteToLog("after print", iSuccess, outfile, MachineInstance.ScaleNumber)
 
 
-        Catch ex As Exception
-            WriteToErrorLog("Error", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
-        Finally
-        End Try
+    '        Dim strSuccess As String = ActiveLabelDocument.CopyImageToFile(8, "JPG", 0, 100, outfile)
+    '            WriteToLog("after save", strSuccess, outfile, MachineInstance.ScaleNumber)
+    '        'End If
 
-    End Sub
+
+    '    Catch ex As Exception
+    '        WriteToErrorLog("Error", ex.Message, ex.StackTrace, MachineInstance.ScaleNumber)
+    '    Finally
+    '    End Try
+
+    'End Sub
     Private Sub AddTransactionToDB()
 
         Try
@@ -899,24 +945,7 @@ Public Class frmScaleGrinding
         End Try
 
     End Sub
-    'Private Sub CreateInfoForAlpha()
 
-    '    'creating a flat file for Alpha to pick up and pull into the system for inventory
-
-    '    Using sr As New System.IO.StreamWriter(MachineInstance.AlphaLogFileLocation & Convert.ToDateTime(PROD_DATE_TO_USE.ToString("MMddyyyy")) & ".txt", True)
-    '        sr.WriteLine(PROD_DATE_TO_USE.ToString("MM/dd/yyyy HH:mm") & "," & LAST_BARCODE & "," & CUSTOMER)
-    '    End Using
-    '    'Using sr As New System.IO.StreamWriter(AppSettings("logfile2") & Format(PROD_DATE_TO_USE.ToString("MMddyyyy")) & ".txt", True)
-    '    '    sr.WriteLine(PROD_DATE_TO_USE.ToString("MM/dd/yyyy HH:mm") & "," & LAST_BARCODE & "," & CUSTOMER)
-    '    'End Using
-
-    'End Sub
-    'Private Function IsKickoutBox(tempProductInfo As ProductInfo) As Boolean
-    '    IsKickoutBox = False
-    '    If tempProductInfo.KickoutCount > 0 And BOX_COUNT_LOT > 0 Then
-    '        If (BOX_COUNT_LOT Mod tempProductInfo.KickoutCount) = 0 Then IsKickoutBox = True
-    '    End If
-    'End Function
     Private Sub btnSetWeightPrint_Click(sender As Object, e As EventArgs) Handles btnSetWeightPrint.Click
         'button only available in testing mode
         If AppSettings("InTest") = "TRUE" Then
@@ -1323,23 +1352,21 @@ Public Class frmScaleGrinding
         WriteToLog("Program End", Environment.MachineName, "Program End", MachineInstance.ScaleNumber)
         WriteToLog("", "", "", MachineInstance.ScaleNumber)
     End Sub
-
-
     Private Sub rdoAuto_CheckedChanged(sender As Object, e As EventArgs) Handles rdoAuto.CheckedChanged
         MANUAL_PRODUCT_RUN = False
         'grpManualAuto.BackColor = Color.Yellow
         rdoAuto.BackColor = Color.Yellow
         rdoManual.BackColor = SystemColors.Control
+        WriteToLog("PROGRAM SET TO AUTO RUN", "", "", MachineInstance.ScaleNumber)
     End Sub
-
     Private Sub rdoManual_CheckedChanged(sender As Object, e As EventArgs) Handles rdoManual.CheckedChanged
         'allows process to manually select a product to run
         MANUAL_PRODUCT_RUN = True
         'grpManualAuto.BackColor = Color.Red
         rdoManual.BackColor = Color.Red
         rdoAuto.BackColor = SystemColors.Control
+        WriteToLog("PROGRAM SET TO MANUAL RUN", "", "", MachineInstance.ScaleNumber)
     End Sub
-
     Private Sub btnChangeLot_Click(sender As Object, e As EventArgs) Handles btnChangeLot.Click
         Dim ChangeLot As frmEditLot = New frmEditLot(UserInfo)
         ChangeLot.ShowDialog()
@@ -1358,6 +1385,5 @@ Public Class frmScaleGrinding
             CURRENT_LOT = newLot
         End If
     End Sub
-
 
 End Class

@@ -145,20 +145,6 @@ Public Class Login
         lblTimeDisplay.Text = CStr(TimeValue(CStr(Now)))
     End Sub
 
-    'Private Sub nudDayNum_ValueChanged(sender As Object, e As EventArgs)
-    '    If rdoUser.Checked = True And nudDayNum.Value <> 0 Then
-    '        nudDayNum.Value = 0
-    '        MessageBox.Show("User does not have access to change the date", "No Access", MessageBoxButtons.OK)
-    '        dayChanged = False
-    '    Else
-    '        'update with ticker, then pass to form
-    '        lblDateDescription.Text = DateTime.Now.AddDays(nudDayNum.Value).ToString("ddd MMM / dd / yyyy")
-    '        lblDayDescription.Text = DateTime.Now.AddDays(nudDayNum.Value).DayOfYear.ToString
-    '        dayChanged = True
-    '    End If
-    'End Sub
-
-
     Private Sub frmCredentials_AuthenticateUser(sender As Object, e As EventArgs)
 
         '    '    AD Domain = gopack.local
@@ -224,71 +210,4 @@ Public Class Login
         Me.Close()
     End Sub
 
-    'Private Function GetScaleFromMachineName(infoSent As String) As String
-    '    Dim sReturn As String = "5" 'default to Trim
-
-    '    If infoSent = "GOP001539" Then
-    '        'teresa's machine, in test, no default
-    '        sReturn = "8"
-    '        inTest = True
-    '    End If
-    '    'ScaleNumber = COMBO (7/8) OFFAL (6/9) TONGUES (99) TRIM (4/5) STEAK (0/14) GRINDING (13) PATTY (12)   
-
-
-    '    If infoSent.Contains("05") Or infoSent.Contains("TRIM") Then    'scale05
-    '        sReturn = "5"
-    '    End If
-    '    If infoSent.Contains("7") Then
-    '        sReturn = "7"
-    '    End If
-    '    If infoSent.Contains("8") Then
-    '        sReturn = "8"
-    '    End If
-    '    If infoSent.Contains("06") Then 'scale06
-    '        sReturn = "6"
-    '    End If
-    '    If infoSent.Contains("99") Then 'scale99
-    '        sReturn = "99"
-    '    ElseIf infoSent.Contains("09") Then 'scale09
-    '        sReturn = "9"
-    '    End If
-
-    '    If infoSent.Contains("scale00") Then 'scale00
-    '        sReturn = "0"
-    '    End If
-
-    '    If infoSent.Contains("14") Then
-    '        sReturn = "14"
-    '    ElseIf infoSent.Contains("4") Then  'not in use
-    '        sReturn = "4"
-    '    End If
-
-
-    '    If infoSent.Contains("13") Then 'scale13    'Chubline
-    '        sReturn = "13"
-    '    End If
-    '    If infoSent.Contains("12") Then 'scale12    'PattyLine Scale 12
-    '        sReturn = "12"
-    '    End If
-
-    '    Return sReturn
-    'End Function
-
-    'Private Sub btnChangeScale_Click_1(sender As Object, e As EventArgs)
-    '    If rdoTech.Checked Or rdoSupervisor.Checked Then
-    '        Dim formSelectScale As New frmSelectScale
-    '        formSelectScale.ShowDialog()
-    '        MachineInstance = formSelectScale.ReturnMachineInstance
-
-    '        If Not (IsNothing(MachineInstance)) Then
-    '            scaleChanged = True
-
-    '            lblStationDisplay.Text = MachineInstance.ScaleNumber
-    '            lblScaleDisplay.Text = MachineInstance.ScaleName
-    '            lblPlant.Text = MachineInstance.PlantCode
-    '        End If
-    '    Else
-    '        MsgBox("Only a Supervisor or Tech can change scales.", MsgBoxStyle.OkOnly, "Invalid User")
-    '    End If
-    'End Sub
 End Class

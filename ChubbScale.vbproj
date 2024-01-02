@@ -31,12 +31,12 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <OutputPath>..\..\_compiled\ChubScale\</OutputPath>
+    <OutputPath>..\..\_compiled\ChubScale_BarTenderLabel\</OutputPath>
     <DocumentationFile>ChubbScale.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
@@ -73,6 +73,10 @@
     </Reference>
     <Reference Include="RawPrinterHelper">
       <HintPath>DLLs\RawPrinterHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="Seagull.BarTender.Print, Version=11.3.7.1, Culture=neutral, PublicKeyToken=109ff779a1b4cbc7, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>DLLs\Seagull.BarTender.Print.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -221,21 +225,22 @@
     </None>
     <None Include="App.config">
       <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="PrintTemplates\ChublineTemplate.lab">
+    <None Include="PrintTemplates\ChubScaleTemplate.btw">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="PrintTemplates\LabelsOther\SATO.LBL" />
-    <None Include="PrintTemplates\NOCODE.lab">
+    <None Include="PrintTemplates\NOCODE.btw">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="PrintTemplates\PrintHeadTest.lab">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <None Include="PrintTemplates\PrintHeadTest.btw">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="PrintTemplates\WeightIncorrect.lab">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <None Include="PrintTemplates\WeightIncorrect.btw">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\logo.png" />
   </ItemGroup>
@@ -252,33 +257,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="PrintTemplates\45834.BUG.bmp">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PrintTemplates\960A.BUG.bmp">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PrintTemplates\BEEF.BMP">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PrintTemplates\CAB.bmp">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PrintTemplates\chub.bmp">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PrintTemplates\classicherford.bmp">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PrintTemplates\cowhead.bmp">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PrintTemplates\current.BUG.bmp">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PrintTemplates\herfgb.bmp">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="PrintTemplates\LabelsOther\45834.BUG.bmp" />
     <Content Include="PrintTemplates\LabelsOther\960A.BUG.bmp" />
     <Content Include="PrintTemplates\LabelsOther\BEEF - Copy.BMP" />
@@ -292,15 +270,6 @@
     <Content Include="PrintTemplates\LabelsOther\newlogo.bmp" />
     <Content Include="PrintTemplates\LabelsOther\onalogo.bmp" />
     <Content Include="PrintTemplates\LabelsOther\wbona.bmp" />
-    <Content Include="PrintTemplates\newlogo.bmp">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PrintTemplates\onalogo.bmp">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PrintTemplates\wbona.bmp">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>
